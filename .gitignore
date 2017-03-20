@@ -21,7 +21,6 @@
 *.a
 *.core
 *.moc
->>>>>>> 28095ce7817991a4899b1bbbb642d39a1e2d1d09
 *.o
 *.obj
 *.orig
@@ -40,14 +39,14 @@ tags
 .directory
 *.debug
 Makefile*
-*.prl
+#*.prl
 *.app
 moc_*.cpp
 ui_*.h
 qrc_*.cpp
 Thumbs.db
 *.res
-*.rc
+#*.rc
 /.qmake.cache
 /.qmake.stash
 
