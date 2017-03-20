@@ -69,3 +69,4 @@ Thumbs.db
 *.vcproj
 *vcproj.*.*.user
 *.pro.user
+*.user
