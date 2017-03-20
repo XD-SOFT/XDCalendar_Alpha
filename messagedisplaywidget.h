@@ -22,7 +22,7 @@ public:
     ~MessageDisplayWidget();
 
     static void showMessage(QWidget *parent, const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
-                       MessageDisplayButtonType btn = NoButton);
+                       MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
 private:
     Ui::MessageDisplayWidget *ui;
 };
