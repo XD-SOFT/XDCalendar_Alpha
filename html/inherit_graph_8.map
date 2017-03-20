@@ -1,0 +1,5 @@
+<map id="类继承关系图" name="类继承关系图">
+<area shape="rect" id="node1" href="$class_modify_base_class.html" title="ModifyBaseClass" alt="" coords="5,31,128,57"/>
+<area shape="rect" id="node2" href="$class_daily_data.html" title="DailyData" alt="" coords="177,5,256,32"/>
+<area shape="rect" id="node3" href="$class_event_data.html" title="EventData" alt="" coords="176,56,257,83"/>
+</map>

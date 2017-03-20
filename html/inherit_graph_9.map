@@ -1,0 +1,5 @@
+<map id="类继承关系图" name="类继承关系图">
+<area shape="rect" id="node2" href="$class_my_button.html" title="MyButton" alt="" coords="178,5,257,32"/>
+<area shape="rect" id="node4" href="$class_transparent_button.html" title="TransparentButton" alt="" coords="153,56,281,83"/>
+<area shape="rect" id="node3" href="$class_event_text_button.html" title="EventTextButton" alt="" coords="329,5,447,32"/>
+</map>

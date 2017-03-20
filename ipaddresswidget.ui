@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IPAddressWidget</class>
+ <widget class="QWidget" name="IPAddressWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>98</width>
+    <height>34</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="text">
+   <string>ZZZ.ZZZ.ZZZ.ZZZ</string>
+  </property>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

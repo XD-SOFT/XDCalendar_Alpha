@@ -1,0 +1,41 @@
+{
+    "cellphone": "",
+    "email": "zy-li14@hotmail.com",
+    "icon path": "/home/pictures/icon.jpg",
+    "location": "CHINA",
+    "name": "LIZEYAN",
+    "password": "",
+    "school": "THU",
+    "subject": "",
+    "terms": [
+        {
+            "end": "周六 5月 20 1995",
+            "lessons": [
+                [
+                    {
+                        "color": [
+                            100,
+                            100,
+                            100,
+                            100
+                        ],
+                        "day": 1,
+                        "folder": {
+                            "file": [
+                            ],
+                            "folder": [
+                            ],
+                            "name": "root"
+                        },
+                        "location": "CHINA",
+                        "note": "",
+                        "section number": 6,
+                        "subject": "MATH",
+                        "unit": "CLASS 322"
+                    }
+                ]
+            ],
+            "start": "周六 5月 20 1995"
+        }
+    ]
+}

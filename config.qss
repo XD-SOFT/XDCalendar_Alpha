@@ -1,0 +1,318 @@
+QDialog {
+	background-color: white;
+/*	padding: 0;
+	margin: 0;
+	border: 0; */
+}
+
+#lstNav {
+	border: 0px solid black;
+/*	padding: 0;
+	margin: 0;*/
+	padding-top: 6.25px;
+	max-width: 116px;
+	min-width: 116px;
+	show-decoration-selected: 0;
+	outline: none;
+	border-right: 1px solid #d9d9d9;
+}
+
+#lstNav::item {
+/*	padding: 0px; */
+	margin-top: 2.25px;
+	margin-bottom: 2.25px;
+	border: 0px solid black;
+	min-height: 28px;
+	max-height: 28px;
+	font-size: 12px;
+}
+
+#lstNav::item:hover {
+	background: #e3e3e3;
+}
+
+#lstNav::item:selected {
+	background: #1250b5;
+	color: white;
+}
+
+QFrame[styleSheet|="token"] {
+	margin-top: 9px;
+	margin-left: 11px;
+	margin-right: 16px;
+	border: 1px solid #e9e9e9;
+	border-radius: 4px;
+	padding-left: 1em;
+	padding-top: 0.25em;
+	padding-bottom: 0.25em;
+	padding-right: 1em;
+}
+
+QFrame[styleSheet|="token-top"] {
+	margin-top: 12px;
+}
+
+QLabel[styleSheet|="key"], QRadioButton, QLineEdit, QCheckBox {
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
+	border: 0px solid black;
+}
+
+QLabel[styleSheet|="key"], QRadioButton {
+	font-size: 14px;
+}
+
+QLabel[styleSheet|="key"] {
+	color: #1151B5;
+}
+/* ??? */
+/*
+QRadioButton {
+	color: grey;
+}
+*/
+QLabel[styleSheet|="key"] {
+/*	min-width: 5em; */
+	margin-right: 1em;
+}
+
+QRadioButton, QCheckBox {
+	margin-right: 1em;
+}
+/* ??? */
+/*
+QLabel {
+	color: grey;
+}
+*/
+QLineEdit {
+	border: 1px solid grey;
+	margin-right: 1em;
+}
+
+QPushButton {
+	border: 1px solid grey;
+	color: grey;
+/*	min-width: 5em;*/
+	background-color: transparent;
+	min-width: 64px;
+	max-width: 64px;
+}
+
+
+QRadioButton[styleSheet="checkbox"]::indicator::unchecked,
+QCheckBox::indicator::unchecked {
+	image: url(:/configIcon/checkbox-unchecked.svg);
+}
+
+QRadioButton[styleSheet="checkbox"]::indicator::checked,
+QCheckBox::indicator::checked {
+	image: url(:/configIcon/checkbox.svg);
+}
+
+QRadioButton::indicator::unchecked {
+	image: url(:/configIcon/radiobutton-unchecked.svg);
+}
+
+QRadioButton::indicator::checked {
+	image: url(:/configIcon/radiobutton.svg);
+}
+
+QComboBox {
+	background: transparent;
+	border: 1px solid #cfcfcf;
+	border-radius: 4px;
+	min-width: 2.5em;
+	font-size: 12px;
+	margin-right: 6px;
+	min-height: 29px;
+	padding-left: 11px;
+	min-width: 76px;
+	max-width: 76px;
+	margin-bottom: 8.5px;
+	margin-top: 8.5px;
+}
+
+QComboBox::drop-down:button {
+	/* background: transparent; */
+	border: 0px solid back;
+	min-width: 24px;
+}
+
+QComboBox::down-arrow {
+	/*background: yellow;*/
+	image: url(:/configIcon/downarrow.svg);
+	/* border: 1px solid black; */
+}
+
+QComboBox:item {
+	background: white;
+	color: black;
+}
+
+QComboBox:item:selected {
+	background: #e3e3e3;
+}
+
+QPushButton[styleSheet|="avatar"] {
+	max-height: 75px;
+	max-width: 75px;
+	min-height: 75px;
+	min-width: 75px;
+	border: 0px solid black;
+	background-color: transparent;
+	margin-right: 8px;
+	margin-left: 8px;
+}
+
+QPushButton[styleSheet|="avatar-custom"] {
+	margin-left: 18px;
+}
+
+QLabel[styleSheet|="indicator"] {
+	border: 0px solid black;
+	font-size: 12px;
+	color: black;
+}
+
+QPushButton[styleSheet|="link"] {
+	max-width: 1000px; /* Sugar because qss doesn't support none!!! */
+	border: 0;
+}
+
+QLabel[styleSheet|="indicator"], QPushButton[styleSheet|="link-avatarsugar"] {
+	min-height: 38px;
+	max-height: 38px;
+	font-size: 14px;
+}
+
+QPushButton[styleSheet|="link-avatarsugar"] {
+	color: black;
+	text-decoration: underline;
+	border: 0px solid black;
+	margin-left: 10px; /* 26 - 8 * 2 = 10px */
+}
+
+QPushButton[styleSheet|="link-passwordsugar"] {
+	text-align: left;
+	text-decoration: underline;
+	font-size: 12px;
+	color: #ac80fc;
+}
+
+QPushButton[styleSheet|="tagbody"]
+{
+	min-width: 0;
+	max-width: 1000px;
+	max-height: 22px;
+	min-height: 22px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 #f1f1f1,
+		stop: 1 #d6d6d6);
+	border: 0;
+	text-align: left;
+	padding-left: 9px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+	font-size: 11px;
+	color: black;
+}
+
+QToolButton[styleSheet|="tagdel"]
+{
+	max-height: 22px;
+	min-height: 22px;
+	background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 #f1f1f1,
+		stop: 1 #d6d6d6);
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+	background-image: url(:/configIcon/x.svg);
+	background-repeat: none;
+	background-position: center;
+}
+
+QFrame#frmManageTags {
+	border: 0;
+}
+
+QFrame#frmManageTags > QScrollArea {
+	border: 0;
+	background-color: white;
+}
+
+QFrame#frmManageTags QFrame#frmTags {
+	background-color: white;
+	border: 0px solid black;
+}
+
+QFrame#frmManageTags > QLabel[styleSheet|="key"] {
+	margin-top: 0;
+}
+
+/* Adjustment */
+
+QFrame#frmStartOnBoot QLabel[styleSheet|="key"] {
+	min-width: 170px;
+	margin-right: 0;
+}
+
+QFrame#frmStartOnBoot QRadioButton {
+	min-width: 78px;
+	margin-right: 0;
+}
+
+QFrame#frmMode QRadioButton {
+	min-width: 133px;
+	max-width: 133px;
+	margin-right: 0;
+}
+
+QComboBox[styleSheet|="long"] {
+	min-width: 215px;
+}
+
+QFrame#frmSSS QLabel[styleSheet|="key"], QFrame#frmOLS QLabel[styleSheet|="key"] {
+	min-width: 170px;
+	margin-right: 0;
+}
+
+QFrame#frmSSS QRadioButton, QFrame#frmOLS QRadioButton {
+	min-width: 78px;
+	margin-right: 0;
+}
+
+QFrame#frmMis2 QCheckBox {
+	min-width: 105px;
+	margin-right: 0;
+}
+
+QFrame#frmMis2 QCheckBox {
+	min-width: 105px;
+	margin-right: 0;
+}
+
+QFrame#frmMis2 QCheckBox[styleSheet|="last"] {
+	min-width: 0;
+	margin-right: 0;
+}
+
+QFrame#frmMis3 QLabel[styleSheet|="key"] {
+	min-width: 170px;
+	margin-right: 0;
+}
+
+QFrame#frmMis3 QRadioButton {
+	min-width: 105px;
+	margin-right: 0;
+}
+
+QFrame#frmManageTags {
+	padding-right: 0;
+}
+
+QDialogButtonBox QPushButton {
+    margin-right: 5px;
+    margin-left: 5px;
+    margin-bottom: 5px;
+}

@@ -1,0 +1,221 @@
+#include "filelistwidget.h"
+#include "myfileiconprovider.h"
+#include "searchbox.h"
+#include "config.h"
+#include "folder.h"
+#include "teacher.h"
+#include "term.h"
+#include "lesson.h"
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QVBoxLayout>
+#include <QDebug>
+#include <QDesktopServices>
+#include <QProcess>
+#include <QStyleOption>
+#include <QPainter>
+#include <QHeaderView>
+#include <QFileIconProvider>
+#include <qgraphicseffect.h>
+
+//#pragma execution_character_set("utf-8")
+
+FileListWidget::FileListWidget(QWidget *parent) : QWidget(parent)
+{
+    setup ();
+
+    QVBoxLayout* mainLayout = new QVBoxLayout (this);
+    //右侧显示课程信息的文本框
+    contentTextEdit = new QTextEdit();
+    contentTextEdit->setAttribute (Qt::WA_TranslucentBackground);
+
+    //设置阴影
+    QGraphicsDropShadowEffect *shadow_effect = new QGraphicsDropShadowEffect(this);
+    //阴影偏移
+    shadow_effect->setOffset(-3, 3);
+    //阴影颜色 silver gainsboro ghostwhite
+    shadow_effect->setColor(Qt::lightGray);
+    //阴影模糊度
+    shadow_effect->setBlurRadius(10);
+    contentTextEdit->setGraphicsEffect(shadow_effect);
+
+    //设置QTextEdit控件的透明度
+//    QGraphicsOpacityEffect *e3 = new QGraphicsOpacityEffect(this);
+//    e3->setOpacity(0.7);
+//    contentTextEdit->setGraphicsEffect(e3);
+
+    contentTextEdit->setReadOnly(true);
+    mainLayout->addWidget (contentTextEdit,1);
+    //搜索栏
+    //mainLayout->addWidget (searchBox, 1);
+    //文件列表
+    mainLayout->addWidget (fileTreeWidget, 10);
+
+    //保证不被绘制上的部分透明
+    fileTreeWidget->setAttribute (Qt::WA_TranslucentBackground);
+    //设置表头
+    //    QStringList header;
+    //    header<<"ECJTU"<<"CERT";
+    //    fileTreeWidget->setHeaderLabels(header);
+
+
+    //设置根节点子节点之间的缩进距离
+    fileTreeWidget->setIndentation(10);
+
+    //设置fileTreeWidget  每一项的高度 鼠标扫过 按下的颜色 去掉虚线
+    fileTreeWidget->setStyleSheet("​​QTreeWidget{background-image:url(./image/treelistbk.jpg);} "
+                                  "QTreeWidget::item{height:40px;} "
+                                  "QTreeWidget::item:hover{background-color:rgb(192,192,192)} "
+                                  "QTreeWidget::item:selected{background-color:rgb(192,192,192)}"
+                                  "QTreeWidget::branch {image:none;}"
+                                   );
+
+    fileTreeWidget->header ()->close ();
+
+    //双击文件打开相应文件
+    connect(fileTreeWidget,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this,SLOT(openFile(QTreeWidgetItem* ,int)));
+
+    //单击展开文件列表
+    connect(fileTreeWidget,SIGNAL(itemClicked(QTreeWidgetItem*,int)), this,SLOT(spreadFile(QTreeWidgetItem* ,int)));
+
+
+//    setAttribute (Qt::WA_TranslucentBackground);
+}
+
+void FileListWidget::openFile(QTreeWidgetItem* treeItem,int num)
+{
+
+    qDebug() << "openFile: " << treeItem->text(0) << " num: " << num;
+    //QString path = fileMap[treeItem->text(0)];
+    //QString path = nodeMap[treeItem]->fileInfo().absoluteFilePath();
+    QString path = nodeMap[treeItem];
+    path.replace("/","\\");
+    qDebug() << "file path: " << path << endl;
+    QProcess::startDetached("explorer " + path);
+    //QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(path).absoluteFilePath()));
+}
+
+void FileListWidget::spreadFile(QTreeWidgetItem* treeItem,int num)
+{
+    treeItem->setExpanded(true);
+}
+
+void FileListWidget::updateContent(Folder* root)
+{
+//    qDebug() << "update content: " << root->size() << endl;
+    link(root);
+    update ();
+}
+
+FileListWidget::~FileListWidget () = default;
+
+void FileListWidget::setup ()
+{
+    searchBox = new SearchBox (this);
+    connect (searchBox, SIGNAL (search (QString)), this, SLOT (search (QString)));
+
+    fileTreeWidget = new QTreeWidget (this);
+
+}
+
+void FileListWidget::search (const QString& keyword)
+{
+    if (mLinkedFolder == nullptr)
+        return;
+    static auto curIt = name2Item.begin ();
+    if (lastSearchTarget.isEmpty () || keyword.isEmpty () || keyword != lastSearchTarget)
+    {
+        lastSearchTarget = keyword;
+        curIt = name2Item.begin ();
+    }
+    auto itBegin = curIt;
+    while (true)
+    {
+        bool found = false;
+        if (curIt.key ().contains (keyword))
+        {
+            fileTreeWidget->setCurrentItem (curIt.value ());
+            found = true;
+        }
+        ++curIt;
+        if (curIt == name2Item.end ())
+            curIt = name2Item.begin ();
+        if (found)
+            break;
+        if (curIt == itBegin)
+        {
+            curIt = name2Item.begin ();
+            break;
+        }
+    }
+}
+
+void FileListWidget::link (const Folder* folder)
+{
+    if (mLinkedFolder != nullptr)
+        disconnect (mLinkedFolder, SIGNAL (changed ()), this, SLOT (update ()));
+    mLinkedFolder = folder;
+    if (folder != nullptr)
+        connect (folder, SIGNAL (changed ()), this, SLOT (update ()));
+}
+
+void FileListWidget::update ()
+{
+    fileTreeWidget->clear ();
+    name2Item.clear ();
+    lastSearchTarget.clear ();
+    fileTreeWidget->addTopLevelItem (getItemFromFolder (mLinkedFolder));
+}
+
+//2016/12/14  修改
+QTreeWidgetItem* FileListWidget::getItemFromFolder (const Folder* folder)
+{
+    //static QFileIconProvider* provider = new MyFileIconProvider;
+    QTreeWidgetItem* ret = new QTreeWidgetItem ({folder->name ()});
+    ret->setIcon(0,QIcon("./image/0001.png"));
+    QString folderPath = Arg::configDir.absolutePath() + "/SaveFile/" + folder->name();
+    nodeMap.insert(ret, folderPath);
+    name2Item.insert (folder->name (), ret);
+    for (const auto& f: folder->files ())
+    {
+        QTreeWidgetItem* node = new QTreeWidgetItem (ret, {f->name ()});
+        //设置文件图标
+        node->setIcon (0,QIcon("./image/0002.png"));
+        //node->setIcon (0, provider->icon (f->fileInfo ()));
+        nodeMap.insert(node, f->fileInfo().absoluteFilePath());
+        ret->addChild (node);
+        name2Item.insert (f->name (), node);
+    }
+    for (const auto& f: folder->subfolders ())
+    {
+        ret->addChild (getItemFromFolder (f));
+    }
+    return ret;
+}
+
+
+//修改右侧显示课程信息文本框的内容
+void FileListWidget::updatecontentTextEdit(QMap<QString, QString> lessonMap)
+{
+    contentTextEdit->clear();
+    contentTextEdit->insertPlainText(lessonMap["date"]);
+    contentTextEdit->insertPlainText("  ");
+    contentTextEdit->insertPlainText(lessonMap["subject"]);
+    //换行
+    QString temp="";
+    contentTextEdit->insertPlainText(temp+='\n');
+
+    contentTextEdit->insertPlainText(lessonMap["unit"]);
+    contentTextEdit->insertPlainText("  ");
+    contentTextEdit->insertPlainText(lessonMap["location"]);
+
+
+}
+
+void FileListWidget::paintEvent(QPaintEvent *)
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}

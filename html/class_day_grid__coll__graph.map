@@ -1,0 +1,6 @@
+<map id="DayGrid" name="DayGrid">
+<area shape="rect" id="node3" href="$class_transparent_button.html" title="TransparentButton" alt="" coords="328,81,456,108"/>
+<area shape="rect" id="node5" href="$class_day_widget.html" title="DayWidget" alt="" coords="157,200,243,227"/>
+<area shape="rect" id="node7" href="$class_daily_data.html" title="DailyData" alt="" coords="99,81,178,108"/>
+<area shape="rect" id="node8" href="$class_modify_base_class.html" title="ModifyBaseClass" alt="" coords="77,5,200,32"/>
+</map>

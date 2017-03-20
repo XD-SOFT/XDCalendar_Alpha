@@ -1,0 +1,37 @@
+[
+	{
+	"id":1,
+	"fk_termid":1,
+	"name":"冬季作息时间表-1",
+	"createtime":"2016-09-18",
+	"updatetime":"2016-09-18",
+	"Startdate":"2016/09/19", 
+	"Enddate":"2017-02-01",
+	"section":7,
+	"Grades":"1,2,3"
+	},
+	
+	{
+	"id":2,
+	"fk_termid":1,
+	"name":"冬季作息时间表-2",
+	"createtime":"2016-09-18",
+	"updatetime":"2016-09-18",
+	"Startdate":"2016/09/19", 
+	"Enddate":"2017-02-01",
+	"section":8,
+	"Grades":"1,2"
+	},
+	
+	{
+	"id":3,
+	"fk_termid":1,
+	"name":"冬季作息时间表-3",
+	"createtime":"2016-09-18",
+	"updatetime":"2016-09-18",
+	"Startdate":"2016/09/19", 
+	"Enddate":"2017-02-01",
+	"section":9,
+	"Grades":"3"
+	}
+]

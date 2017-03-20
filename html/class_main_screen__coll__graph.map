@@ -1,0 +1,9 @@
+<map id="MainScreen" name="MainScreen">
+<area shape="rect" id="node3" href="$class_day_grid.html" title="DayGrid" alt="" coords="265,333,335,360"/>
+<area shape="rect" id="node11" href="$class_month_choose.html" title="MonthChoose" alt="" coords="137,333,239,360"/>
+<area shape="rect" id="node5" href="$class_transparent_button.html" title="TransparentButton" alt="" coords="356,81,484,108"/>
+<area shape="rect" id="node7" href="$class_day_widget.html" title="DayWidget" alt="" coords="186,200,273,227"/>
+<area shape="rect" id="node9" href="$class_daily_data.html" title="DailyData" alt="" coords="127,81,206,108"/>
+<area shape="rect" id="node10" href="$class_modify_base_class.html" title="ModifyBaseClass" alt="" coords="105,5,228,32"/>
+<area shape="rect" id="node12" href="$class_drag_box.html" title="DragBox" alt="" coords="493,333,565,360"/>
+</map>

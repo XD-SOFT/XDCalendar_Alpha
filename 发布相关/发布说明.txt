@@ -1,0 +1,4 @@
+gif文件夹必须带，
+release 下background必须带
+ColorPicker.dll
+QtSingleApplication.dll

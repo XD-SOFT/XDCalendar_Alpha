@@ -1,0 +1,90 @@
+#ifndef HANDLER_H
+#define HANDLER_H
+
+#include <QObject>
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+
+ ///Mark,这个类会多次创建多次连接信号....修改到源码中去.
+class Handler: public QObject
+{
+    Q_OBJECT
+
+public:
+    Handler(QString arguments);
+
+signals:
+    void updateUi(QJsonObject);
+
+public slots:
+    void Finished(QNetworkReply *reply)
+    {
+        //qDebug()<<"handler Finished"<<endl;
+        if (reply->error() == QNetworkReply::NoError)
+             {
+                 QByteArray bytes = reply->readAll();
+                 //qDebug()<<bytes;
+                 //QString res = QString::fromUtf8(bytes);
+                 //qDebug()<<"report: "<<res<<endl;
+                 QJsonObject jo = QJsonDocument::fromJson(bytes).object();
+                 //qDebug()<<jo<<endl;
+                 //qDebug() << "jo size: " <<jo.length()<<endl;
+                 //qDebug() << "jo: " << jo["summary\\"].toArray()<<endl;
+
+
+                 if(jo["status"] == "tokenFalseRedirect")
+                 {
+                     qDebug()<<"false token"<<endl;
+                     exit(-1);
+                     //return;
+                     //QMessageBox::information(this, "提示", "用户名或密码错误");
+                 }
+                 else
+                 {
+                     emit updateUi(jo);
+                 }
+
+             }
+         else
+             {
+                 reconnect++;
+                 qDebug()<<"handle errors here";
+                 QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+                 //statusCodeV是HTTP服务器的相应码，reply->error()是Qt定义的错误码，可以参考QT的文档
+                 qDebug( "found error ....code: %d %d\n", statusCodeV.toInt(), (int)reply->error());
+                 qDebug(qPrintable(reply->errorString()));
+                 /*
+                 if(reconnect<=10)
+                 {
+                     run();
+                 }
+                 */
+                 //QMessageBox::information(this, "提示", "服务器连接错误");
+             }
+             reply->deleteLater();
+
+    }
+
+    void run();
+//{
+//        //qDebug()<<"handler run with arguments: "<<arguments<<endl;
+//
+//        QNetworkAccessManager* pManager = new QNetworkAccessManager();
+//        QNetworkRequest *request = new QNetworkRequest();
+//        connect(pManager,SIGNAL(finished(QNetworkReply*)),this,SLOT(Finished(QNetworkReply*)));
+//        //request->setUrl(QUrl("http://10.129.159.73:8080/Desktop/login.action?username=admin&password=admin"));
+//        //request->setUrl(QUrl("https://10.129.159.73:8080/Desktop/urlDelResKeyword.action?id=5"));
+//        request->setUrl(QUrl(arguments));
+//        pManager->get(*request);
+//        qDebug()<<"run finished"<<endl;
+//    }
+
+private:
+    int reconnect = 0;
+    QString arguments;
+
+};
+
+#endif // HANDLER_H
