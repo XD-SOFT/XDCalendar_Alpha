@@ -434,16 +434,16 @@ bool Arg::getNetReusetHostUrl(QString &sNetRequestUrl)
 {
     if(sNetHostUrl.isEmpty()) {
         QSettings configSettings("./UserConfig/config", QSettings::IniFormat);
-        QString sServerIp =  configSettings.value("ServerIP", QString()).toString();
+        IP =  configSettings.value("ServerIP", QString()).toString();
 
-        if(sServerIp.isEmpty()) {
+        if(IP.isEmpty()) {
             QMessageBox::warning(0, tr("教师客户端"), tr("请配置服务器"));
 
             return false;
         }
 
         int port = configSettings.value("ServerPort", 8080).toInt();
-        sNetHostUrl = QString("http://%1:%2/Desktop/").arg(sServerIp).arg(port);
+        sNetHostUrl = QString("http://%1:%2/Desktop/").arg(IP).arg(port);
     }
 
     sNetRequestUrl = sNetHostUrl;
