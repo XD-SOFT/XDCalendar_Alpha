@@ -254,11 +254,10 @@ void FileTransfer::ftpDownload()
 //    url.setPassword("123456"); //设置ftp用户密码
 //    url.setUserName("user3");//设置ftp用户名
 
-    qDebug()<<filearguments["detailID"]<<","<<filearguments["fileName"]<<endl;
+    qDebug()<< "upload file args:" << filearguments["detailID"]<<","<<filearguments["fileName"]<<endl;
 
     QNetworkRequest request(url);
 //    request.setUrl(m_url);
-    qDebug()<<"Ftp download url: "<< url;
 //    QNetworkAccessManager* manager = new QNetworkAccessManager;
     if(accessManager == Q_NULLPTR) {
         accessManager = new QNetworkAccessManager;
