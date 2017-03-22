@@ -15,8 +15,8 @@
 
 void FileTransfer::slotError(QNetworkReply::NetworkError code)
 {
-//    --Arg::sDownLoadFileCount;
-//    emit uploadFileError("code.errorString()");
+    //    --Arg::sDownLoadFileCount;
+    //    emit uploadFileError("code.errorString()");
 }
 
 void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
@@ -72,21 +72,21 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
             }
         }
 
-//        if(bCreatUpload) {
-//            //向数据库资源表内插入记录
-//            ResFilesDB *pResFileDB = DataClassInstanceManage::getInstance()->getResFilesDBPtr();
-//    //        ResFilesDB* resfile = new ResFilesDB(this);
-//            connect(pResFileDB, SIGNAL(addFinish(QJsonObject)), this, SLOT(uiState(QJsonObject)), Qt::UniqueConnection);
-//            resfile->setLessonDetailId(detailID.toInt());
-//            resfile->setRemark(tr(""));
-//            resfile->setUpdateTime(QDate::currentDate());
-//            resfile->setUseDataTime(QDate::fromString(date, "yyyy-M-d"));
-//            resfile->setState(1);
-//            //url的拼装
-//            resfile->setFileUrl(Arg::ftpStr+fileNewName);
-//            resfile->setFileName(filePath["fileName"].split("/").takeAt(1));
-//            resfile->add();
-//        }
+        //        if(bCreatUpload) {
+        //            //向数据库资源表内插入记录
+        //            ResFilesDB *pResFileDB = DataClassInstanceManage::getInstance()->getResFilesDBPtr();
+        //    //        ResFilesDB* resfile = new ResFilesDB(this);
+        //            connect(pResFileDB, SIGNAL(addFinish(QJsonObject)), this, SLOT(uiState(QJsonObject)), Qt::UniqueConnection);
+        //            resfile->setLessonDetailId(detailID.toInt());
+        //            resfile->setRemark(tr(""));
+        //            resfile->setUpdateTime(QDate::currentDate());
+        //            resfile->setUseDataTime(QDate::fromString(date, "yyyy-M-d"));
+        //            resfile->setState(1);
+        //            //url的拼装
+        //            resfile->setFileUrl(Arg::ftpStr+fileNewName);
+        //            resfile->setFileName(filePath["fileName"].split("/").takeAt(1));
+        //            resfile->add();
+        //        }
 
         emit fileUploadFinished(sFilePathName);
     }
@@ -104,10 +104,10 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
 
 
     m_replyArgsHash.remove(reply);
-//    replyList.removeAll(reply);
+    //    replyList.removeAll(reply);
 
     reply->deleteLater();
- }
+}
 
 void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 {
@@ -133,17 +133,17 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
             qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
         }
 
-//        // 重命名临时文件
-//        QFileInfo fileInfo(filePath);
-//        QFileInfo newFileInfo = fileInfo.absolutePath() + filearguments["fileName"];
-//        QDir dir1;
-//        if (dir1.exists(fileInfo.absolutePath()))
-//        {
-//            if (newFileInfo.exists())
-//                newFileInfo.dir().remove(newFileInfo.fileName());
-//            QFile::rename(filePath, newFileInfo.absoluteFilePath());
-//        }
-/*
+        //        // 重命名临时文件
+        //        QFileInfo fileInfo(filePath);
+        //        QFileInfo newFileInfo = fileInfo.absolutePath() + filearguments["fileName"];
+        //        QDir dir1;
+        //        if (dir1.exists(fileInfo.absolutePath()))
+        //        {
+        //            if (newFileInfo.exists())
+        //                newFileInfo.dir().remove(newFileInfo.fileName());
+        //            QFile::rename(filePath, newFileInfo.absoluteFilePath());
+        //        }
+        /*
         QDir *createfile = new QDir;
         bool exist = createfile->exists(filePath);
         if (exist){
@@ -186,24 +186,24 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 
         QFile* file = new QFile(filePath);
 
-//        if(file->exists())
-//        {
-//            qDebug()<<"file exists when ftp download"<<endl;
+        //        if(file->exists())
+        //        {
+        //            qDebug()<<"file exists when ftp download"<<endl;
 
-//            return;
-//        }
-//        else
-//        {
-            qDebug()<<"create file for a course in specific folder"<<endl;
-            file->open(QIODevice::WriteOnly);//只读方式打开文件
-            file->write(reply->readAll());
-            file->close();
-//        }
+        //            return;
+        //        }
+        //        else
+        //        {
+        qDebug()<<"create file for a course in specific folder"<<endl;
+        file->open(QIODevice::WriteOnly);//只读方式打开文件
+        file->write(reply->readAll());
+        file->close();
+        //        }
 
 
         QJsonObject jo;
         qDebug() << "jo size: " <<jo.length()<<endl;
-//        emit updateUi(jo);
+        //        emit updateUi(jo);
         emit downloadFinished();
     }
     else
@@ -211,18 +211,18 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
         qDebug()<<"handle errors here";
         QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
         qDebug( "found error ....code: %d %d\n", statusCodeV.toInt(), (int)reply->error());
-//        qDebug();
+        //        qDebug();
 
         emit ftpDownloadError(qPrintable(reply->errorString()));
     }
 
 
 
-//    replyList.removeAll(reply);
+    //    replyList.removeAll(reply);
     m_replyArgsHash.remove(reply);
 
     reply->deleteLater();
- }
+}
 
 void FileTransfer::ftpDownload()
 {
@@ -240,25 +240,25 @@ void FileTransfer::ftpDownload()
             + filearguments["fileName"];
 
 
-//    filearguments["host"] = Arg::IP;
+    //    filearguments["host"] = Arg::IP;
     url.setPath("/" + filename);//设置URL路径
     url.setHost(/*filearguments["host"]*/Arg::IP);//设置主机地址
     url.setPort(2121);//设置URL的端口.
     url.setPassword("123456"); //设置ftp用户密码
     url.setUserName("user3");//设置ftp用户名
 
-//    filearguments["host"] = Arg::IP;
-//    url.setHost(filearguments["host"]);//设置主机地址
-//    url.setPath("/" + filename);//设置URL路径
-//    url.setPort(2121);//设置URL的端口.
-//    url.setPassword("123456"); //设置ftp用户密码
-//    url.setUserName("user3");//设置ftp用户名
+    //    filearguments["host"] = Arg::IP;
+    //    url.setHost(filearguments["host"]);//设置主机地址
+    //    url.setPath("/" + filename);//设置URL路径
+    //    url.setPort(2121);//设置URL的端口.
+    //    url.setPassword("123456"); //设置ftp用户密码
+    //    url.setUserName("user3");//设置ftp用户名
 
     qDebug()<< "upload file args:" << filearguments["detailID"]<<","<<filearguments["fileName"]<<endl;
 
     QNetworkRequest request(url);
-//    request.setUrl(m_url);
-//    QNetworkAccessManager* manager = new QNetworkAccessManager;
+    //    request.setUrl(m_url);
+    //    QNetworkAccessManager* manager = new QNetworkAccessManager;
     if(accessManager == Q_NULLPTR) {
         accessManager = new QNetworkAccessManager;
         connect(accessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator*)),
@@ -266,9 +266,9 @@ void FileTransfer::ftpDownload()
         connect(accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(ftpDownloadReplyFinished(QNetworkReply*)));
     }
 
-//    if(reply != Q_NULLPTR) {
-//        disconnect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
-//    }
+    //    if(reply != Q_NULLPTR) {
+    //        disconnect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)));
+    //    }
 
     ++Arg::sDownLoadFileCount;
 
@@ -279,10 +279,10 @@ void FileTransfer::ftpDownload()
     m_replyArgsHash.insert(reply, filearguments);
     m_timerReplyHash.insert(pTimer, reply);
     connect(reply, SIGNAL(finished()), this, SLOT(finished()), Qt::UniqueConnection);
-//    qDebug()<<"***adsdsd"<<endl;
+    //    qDebug()<<"***adsdsd"<<endl;
     connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(onDownloadProgress(qint64, qint64)));
-//    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::UniqueConnection);
-//    connect(reply, SIGNAL(readyRead()), this, SLOT(readyRead()));
+    //    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::UniqueConnection);
+    //    connect(reply, SIGNAL(readyRead()), this, SLOT(readyRead()));
 
     pTimer->start(300000);
     //    replyList.append(reply);
@@ -379,7 +379,7 @@ void FileTransfer::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     if(pTimer != Q_NULLPTR) {
         m_timerReplyHash.remove(pTimer);
 
-//        qDebug() << "down load time out";
+        //        qDebug() << "down load time out";
 
         if(pTimer != Q_NULLPTR) {
             delete pTimer;
@@ -415,8 +415,8 @@ void FileTransfer::handleDwonloadFiles(Lesson *pLesson)
 
             m_upOrDownloadFileHash.remove(pLesson);
 
-//            --Arg::sDownLoadFileCount;
-//            emit downloadFinished();
+            //            --Arg::sDownLoadFileCount;
+            //            emit downloadFinished();
         }
     }
 }
@@ -432,7 +432,7 @@ void FileTransfer::handleUploadFiles(Lesson *pLesson)
 
             m_upOrDownloadFileHash.remove(pLesson);
 
-//            emit uploadFileFinished();
+            //            emit uploadFileFinished();
         }
     }
 }
@@ -509,7 +509,7 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
 
         if(bCreateUpload) {
             //向数据库资源表内插入记录
-    //        ResFilesDB *pResFileDB = DataClassInstanceManage::getInstance()->getResFilesDBPtr();
+            //        ResFilesDB *pResFileDB = DataClassInstanceManage::getInstance()->getResFilesDBPtr();
             resfile = new ResFilesDB(this);
             connect(resfile, SIGNAL(addFinish(const QJsonObject&)), this, SLOT(addFinished(const QJsonObject&)), Qt::UniqueConnection);
             resfile->setLessonDetailId(detailID.toInt());
@@ -520,9 +520,12 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
             //url的拼装
             resfile->setFileUrl(Arg::ftpStr+fileNewName);
             resfile->setFileName(filePath["fileName"].split("/").takeAt(1));
-    //        resfile->add();
+            //        resfile->add();
         }
-//        QByteArray data = file.readAll();
+        //        QByteArray data = file.readAll();
+#define HTTP_USE 0
+
+#if HTTP_USE
         QUrl url;
         url.setScheme("ftp");
         url.setPath(arguments["path"]);
@@ -530,7 +533,20 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
         url.setUserName(arguments["username"]);
         url.setPassword(arguments["password"]);
         url.setPort(2121);//设置URL的端口.
+#else
+        QString uPath ="\/Desktop\/clientUploadFile";
+        QString uFilePath ="?filePath="+QString("\\")+QString("upload")+QString("\\")+Arg::username+QString("\\");
+        QString uQuery =QString("\&userId=") + QString::number(Arg::userId) +
+                        QString("\&detailID=") + detailID +
+                        QString("\&date=") + date +
+                        QString("\&token=111111")+
+                        QString("\&username=") + Arg::username+
+                        QString("\&fileName=") + arguments["path"];
+        QString u=QString("http") + QString("\:\/\/") + arguments["host"]/* QString("192.168.2.127")*/+ QString("\:") + QString("8080") + uPath + uFilePath + uQuery;
+        qDebug()<<"--------url:"<<u;
+        QUrl url(u);
 
+#endif
         QTimer *pTimer = new QTimer(this);
         connect(pTimer, &QTimer::timeout, this, &FileTransfer::uploadTimeOut);
 
@@ -550,7 +566,7 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
         m_uploadReplyFileMap.insert(reply, pLoadFile);
 
         connect(reply, SIGNAL(uploadProgress(qint64, qint64)), this, SLOT(uploadProgress(qint64,qint64)));
-//        connect(reply, SIGNAL(finished()), this, SLOT(uploadFinished()));
+        //        connect(reply, SIGNAL(finished()), this, SLOT(uploadFinished()));
         connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::UniqueConnection);
     }
     else {
@@ -572,13 +588,13 @@ void FileTransfer::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
             pTimer = Q_NULLPTR;
         }
     }
-//    qreal fValue = static_cast<qreal>(bytesSent) / static_cast<qreal>(bytesTotal);
+    //    qreal fValue = static_cast<qreal>(bytesSent) / static_cast<qreal>(bytesTotal);
     if(bytesSent == bytesTotal) {
         --Arg::sUpLoadFileCount;
 
-//        m_uploadFile->close();
-//        delete m_uploadFile;
-//        m_uploadFile = Q_NULLPTR;
+        //        m_uploadFile->close();
+        //        delete m_uploadFile;
+        //        m_uploadFile = Q_NULLPTR;
 
         emit uploadFileFinished();
 
