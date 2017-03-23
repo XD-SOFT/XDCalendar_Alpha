@@ -72,3 +72,7 @@ Thumbs.db
 *.user
 *.user
 *.user
+*.user
+UserConfig/config1
+UserConfig/config
+MoonCalendar.pro.user

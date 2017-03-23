@@ -523,9 +523,9 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
             //        resfile->add();
         }
         //        QByteArray data = file.readAll();
-#define FTP_USE 0
+#define FTP_USE
 
-#if     FTP_USE
+#ifndef FTP_USE
         QUrl url;
         url.setScheme("ftp");
         url.setPath(arguments["path"]);
