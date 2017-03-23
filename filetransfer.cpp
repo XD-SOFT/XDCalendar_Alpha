@@ -21,6 +21,8 @@ void FileTransfer::slotError(QNetworkReply::NetworkError code)
 
 void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
 {
+    --Arg::sUpLoadFileCount;
+
     qDebug()<<"ftp upload reply"<<endl;
     QByteArray bytes = reply->readAll();  //获取字节
     QString result(bytes);  //转化为字符串
@@ -101,7 +103,7 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
         emit uploadFileError(sFilePathName, qPrintable(reply->errorString()));
     }
 
-
+    emit uploadFileFinished();
 
     m_replyArgsHash.remove(reply);
     //    replyList.removeAll(reply);
@@ -594,14 +596,13 @@ void FileTransfer::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
     //    qreal fValue = static_cast<qreal>(bytesSent) / static_cast<qreal>(bytesTotal);
     if(bytesSent == bytesTotal) {
 
-        //       --Arg::sUpLoadFileCount;
+//        emit uploadFileFinished();
+        ///TODO,进度显示相关.
+#ifndef FTP_USE //FTP是单线程传输，跟http不一样，http可能多次进入这个函数.
 
+#else
 
-        //        m_uploadFile->close();
-        //        delete m_uploadFile;
-        //        m_uploadFile = Q_NULLPTR;
-
-        emit uploadFileFinished();
+#endif
 
         qDebug() << "upload complete";
     }

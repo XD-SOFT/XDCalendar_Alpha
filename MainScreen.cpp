@@ -1170,7 +1170,7 @@ void MainScreen::drawExcludeShadowPart(QPainter *painter, QPaintEvent *ev)
 //}
 
 
-void MainScreen::showSideBar (bool on)
+void MainScreen::showSideBar(bool on)
 {
     ///Modified by BiXiaoxia 2016.12.23,重新规划右侧信息显示与编辑窗口.
     isSideBarShown = on;
@@ -1179,17 +1179,27 @@ void MainScreen::showSideBar (bool on)
     m_pInfoSettingsStackWgt->setFixedWidth (on ? m_pInfoSettingsStackWgt->sizeHint ().width (): 0);
     setFixedSize(sizeHint());
 
+    int nWidth = m_pInfoSettingsStackWgt->sizeHint().width();
+
     if(on) {
         QPixmap icon(":/Icon/sidecontrolbuttonbg_checked.png");
         mHideTabButton->setIcon(icon);
 
         mHideTabButton->setToolTip(tr("关闭侧边栏"));
+
+        if(Arg::isLocked()) {
+            move(pos().x() - nWidth, pos().y());
+        }
     }
     else {
         QPixmap icon(":/Icon/sidecontrolbuttonbg.png");
         mHideTabButton->setIcon(icon);
 
         mHideTabButton->setToolTip(tr("显示侧边栏"));
+
+        if(Arg::isLocked()) {
+            move(pos().x() + nWidth, pos().y());
+        }
     }
 
       ///Mark delete 2017.03.03,暂时注释掉，编辑状态页面暂时不显示.
