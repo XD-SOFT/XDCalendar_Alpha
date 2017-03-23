@@ -523,9 +523,9 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
             //        resfile->add();
         }
         //        QByteArray data = file.readAll();
-#define HTTP_USE 0
+#define FTP_USE 0
 
-#if HTTP_USE
+#if     FTP_USE
         QUrl url;
         url.setScheme("ftp");
         url.setPath(arguments["path"]);
@@ -534,17 +534,18 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
         url.setPassword(arguments["password"]);
         url.setPort(2121);//设置URL的端口.
 #else
+        //http://101.200.176.87:8080/Desktop/clientUploadFile?filePath=/c/v/b/&userId=16&detailID=253&date=2017-3-23&token=111111&usernamelilu
         QString uPath ="\/Desktop\/clientUploadFile";
         QString uFilePath ="?filePath="+QString("\\")+QString("upload")+QString("\\")+Arg::username+QString("\\");
         QString uQuery =QString("\&userId=") + QString::number(Arg::userId) +
-                        QString("\&detailID=") + detailID +
-                        QString("\&date=") + date +
-                        QString("\&token=111111")+
-                        QString("\&username=") + Arg::username+
-                        QString("\&fileName=") + arguments["path"];
-        QString u=QString("http") + QString("\:\/\/") + arguments["host"]/* QString("192.168.2.127")*/+ QString("\:") + QString("8080") + uPath + uFilePath + uQuery;
-        qDebug()<<"--------url:"<<u;
-        QUrl url(u);
+                QString("\&detailID=") + detailID +
+                QString("\&date=") + date +
+                QString("\&token=111111")+
+                QString("\&username=") + Arg::username+
+                QString("\&fileName=") + arguments["path"];
+        QString address =QString("http\:\/\/\%1:8080\%2\%3\%4").arg("101.200.176.87").arg(uPath).arg(uFilePath).arg(uQuery);
+        QUrl url(address);
+         qDebug()<<"--------url:"<<address;
 
 #endif
         QTimer *pTimer = new QTimer(this);
@@ -552,6 +553,8 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
 
         qDebug()<<"test: "<<url.path()<<endl;
         ++Arg::sUpLoadFileCount;
+
+        qDebug()<<"---------sUpLoadFileCount++="<<Arg::sUpLoadFileCount;
         reply = manager->put(QNetworkRequest(url), pLoadFile);
 
         m_timerReplyHash.insert(pTimer, reply);
@@ -590,7 +593,9 @@ void FileTransfer::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
     }
     //    qreal fValue = static_cast<qreal>(bytesSent) / static_cast<qreal>(bytesTotal);
     if(bytesSent == bytesTotal) {
-        --Arg::sUpLoadFileCount;
+
+        //       --Arg::sUpLoadFileCount;
+
 
         //        m_uploadFile->close();
         //        delete m_uploadFile;
