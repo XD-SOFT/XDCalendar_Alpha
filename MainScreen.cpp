@@ -1179,17 +1179,27 @@ void MainScreen::showSideBar (bool on)
     m_pInfoSettingsStackWgt->setFixedWidth (on ? m_pInfoSettingsStackWgt->sizeHint ().width (): 0);
     setFixedSize(sizeHint());
 
+    QSize ss = m_pInfoSettingsStackWgt->sizeHint();
+
     if(on) {
         QPixmap icon(":/Icon/sidecontrolbuttonbg_checked.png");
         mHideTabButton->setIcon(icon);
 
         mHideTabButton->setToolTip(tr("关闭侧边栏"));
+
+        if(Arg::isLocked()) {
+            move(pos().x() - ss.width(), pos().y());
+        }
     }
     else {
         QPixmap icon(":/Icon/sidecontrolbuttonbg.png");
         mHideTabButton->setIcon(icon);
 
         mHideTabButton->setToolTip(tr("显示侧边栏"));
+
+        if(Arg::isLocked()) {
+            move(pos().x() + ss.width(), pos().y());
+        }
     }
 
       ///Mark delete 2017.03.03,暂时注释掉，编辑状态页面暂时不显示.
