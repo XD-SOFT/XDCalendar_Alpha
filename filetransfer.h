@@ -23,16 +23,15 @@ class FileTransfer : public QObject
 {
     Q_OBJECT
 public:
-    FileTransfer();
+    FileTransfer(QObject *parent);
+
+    ~FileTransfer();
 
 
     FileTransfer(const QMap<QString, QString> &arguments, QDialog* dialog);
 
 
-    FileTransfer(const QMap<QString, QString> &arguments)
-    {
-        this->filearguments = arguments;
-    }
+    FileTransfer(const QMap<QString, QString> &arguments, QObject *parent);
 
     void ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLesson, bool bCreateUpload = true);
 
@@ -51,6 +50,8 @@ signals:
 protected slots:
 
 //    void ftpUpload(const QMap<QString, QString> &arguments);
+
+    void abortTransfer();
 
     void httpDownload();
 
@@ -102,6 +103,8 @@ private:
     QHash<QNetworkReply*, QMap<QString, QString> > m_replyArgsHash;
 
     QHash<QTimer*, QNetworkReply*> m_timerReplyHash;
+
+    bool m_bAbort = false;
 
 signals:
 //    void updateUi(QJsonObject);

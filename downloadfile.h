@@ -10,9 +10,8 @@ class downloadFile : public QObject
 {
     Q_OBJECT
 public:
-    explicit downloadFile(){
+    explicit downloadFile();
 
-    }
 
     void handleDownloadFiles(Lesson *pLesson);
 

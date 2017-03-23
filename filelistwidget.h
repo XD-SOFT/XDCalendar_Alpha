@@ -30,7 +30,7 @@ public:
     explicit FileListWidget(QWidget *parent = 0);
     ~FileListWidget ();
     void updatecontentTextEdit(const QMap<QString, QString> &lessonMap);
-    void updateContent(Folder* root);
+    void updateContent(Folder* root, bool bMust = false);
     void setFileMap(const QMap<QString, QString> &fileMap){ this->fileMap = fileMap; }
 
     void setLesson(Lesson* les)
