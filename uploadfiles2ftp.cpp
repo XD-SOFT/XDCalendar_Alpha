@@ -192,9 +192,13 @@ void UploadFiles2Ftp::uiState(QJsonObject jo)
         course.first = lesson->getLessonDetailId();
         course.second = lesson->getDate().toString("yyyy-M-d");
 
-        qDebug()<<"first: "<<course.first<<" second: "<<course.second<<endl;
-        Arg::fileIdMap[course].insert(filename, fileid);
-
+//        qDebug()<<"first: "<<course.first<<" second: "<<course.second<<endl;
+        ///Replace by following code.
+//        Arg::fileIdMap[course].insert(filename, fileid);
+        QMap<QString, int> fileIDMap;
+        fileIDMap.insert(filename, fileid);
+        Arg::fileIdMap.insert(course, fileIDMap);
+        ///
     }
 
     //QMessageBox::information(this, tr("提示"), QString(QJsonDocument(jo).toJson()));

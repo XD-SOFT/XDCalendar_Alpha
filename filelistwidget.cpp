@@ -40,6 +40,7 @@
 //#pragma execution_character_set("utf-8")
 
 const int RESOURCE_ABSOLUTELY_PATH_ROLE = Qt::UserRole + 1000;
+//const int RESOURCE_FILE_ROLE = Qt::UserRole + 1001;
 
 FileListWidget::FileListWidget(QWidget *parent) : QWidget(parent)
 {
@@ -395,34 +396,35 @@ void FileListWidget::setup ()
 
 void FileListWidget::search (const QString& keyword)
 {
-    if (mLinkedFolder == nullptr)
-        return;
-    static auto curIt = name2Item.begin ();
-    if (lastSearchTarget.isEmpty () || keyword.isEmpty () || keyword != lastSearchTarget)
-    {
-        lastSearchTarget = keyword;
-        curIt = name2Item.begin ();
-    }
-    auto itBegin = curIt;
-    while (true)
-    {
-        bool found = false;
-        if (curIt.key ().contains (keyword))
-        {
-            fileTreeWidget->setCurrentItem (curIt.value ());
-            found = true;
-        }
-        ++curIt;
-        if (curIt == name2Item.end ())
-            curIt = name2Item.begin ();
-        if (found)
-            break;
-        if (curIt == itBegin)
-        {
-            curIt = name2Item.begin ();
-            break;
-        }
-    }
+    ///Mark 2017.03.24 by BiXiaoxia，这种就是多余，以后换成自己实现MODEL VIEW处理.
+//    if (mLinkedFolder == nullptr)
+//        return;
+//    static auto curIt = name2Item.begin ();
+//    if (lastSearchTarget.isEmpty () || keyword.isEmpty () || keyword != lastSearchTarget)
+//    {
+//        lastSearchTarget = keyword;
+//        curIt = name2Item.begin ();
+//    }
+//    auto itBegin = curIt;
+//    while (true)
+//    {
+//        bool found = false;
+//        if (curIt.key ().contains (keyword))
+//        {
+//            fileTreeWidget->setCurrentItem (curIt.value ());
+//            found = true;
+//        }
+//        ++curIt;
+//        if (curIt == name2Item.end ())
+//            curIt = name2Item.begin ();
+//        if (found)
+//            break;
+//        if (curIt == itBegin)
+//        {
+//            curIt = name2Item.begin ();
+//            break;
+//        }
+//    }
 }
 
 void FileListWidget::link (/*const*/ Folder* folder)
@@ -496,6 +498,7 @@ void FileListWidget::update ()
     if(m_provider == Q_NULLPTR) {
         m_provider = new MyFileIconProvider;
     }
+
 //    QTreeWidgetItem* ret = new QTreeWidgetItem ({folder->name ()});
 //    ///Mark,暂时这么处理吧.
 //    ret->setSizeHint(0, QSize(10, 0));
@@ -542,7 +545,7 @@ void FileListWidget::update ()
 
 //        nodeMap.insert(node, f->fileInfo().absoluteFilePath());
 //        ret->addChild (node);
-        name2Item.insert (f->name (), node);
+//        name2Item.insert (f->name (), node);
     }
 
     ///Mark2017.02.27，这里暂时不要做这个处理了，这里跟设计上本来就是出问题了,重构再加入.
@@ -692,7 +695,9 @@ void FileListWidget::deleteFile(int nRow)
     QTreeWidgetItem *pCurItem = fileTreeWidget->topLevelItem(nRow);
     QWidget *pWgt = fileTreeWidget->itemWidget(pCurItem, 0);
     QString path = pCurItem->data(0, RESOURCE_ABSOLUTELY_PATH_ROLE).toString();
-    qDebug()<<path<<endl;
+//    File *pFile = pCurItem->data(0, RESOURCE_FILE_ROLE).toInt();
+
+//  qDebug()<<path<<endl;
 
     QString date = Arg::currentLesson()->getDate().toString("yyyy-M-d");
     //QString date = mLinkedLesson->getDate().toString("yyyy-M-d");
@@ -730,24 +735,33 @@ void FileListWidget::deleteFile(int nRow)
 
 
     //-------------------删除资源文件数据库记录-----------------------//
-    QPair<int, QString> course;
-    course.first = Arg::currentLesson()->getLessonDetailId();
-    course.second = date;
-    int fileid = Arg::fileIdMap[course][path.split("/").last()];
+    ///Delete 2017.03.24.
+//    QPair<int, QString> course;
+//    course.first = Arg::currentLesson()->getLessonDetailId();
+//    course.second = date;
+//    QString sCoureName = path.split("/").last();
+//    int fileid = Arg::fileIdMap[course][sCoureName];
+    ///End.
 //    ResFilesDB resdb;
 //    resdb.setId(fileid);
 //    connect(&resdb, SIGNAL(delFinish(QJsonObject)), this, SLOT(nwState(QJsonObject)));
 //    resdb.del();
-    ResFilesDB *pResFileDB = DataClassInstanceManage::getInstance()->getResFilesDBPtr();
-    pResFileDB->setId(fileid);
-    pResFileDB->del();
-    qDebug()<<"del filid: "<<fileid<<endl;
+    File* uifile = mLinkedLesson->name2File[path.split("/").last()];
+
+    if(uifile != Q_NULLPTR) {
+        ResFilesDB *pResFileDB = DataClassInstanceManage::getInstance()->getResFilesDBPtr();
+        pResFileDB->setId(uifile->getFileID());
+        pResFileDB->del();
+    }
+
+
+//    qDebug()<<"del filid: "<< nFileID <<endl;
 
     //---------------------删除界面元素------------------------//
     //File* uifile = new File(fp, mLinkedLesson->rootFolder());
-    File* uifile = mLinkedLesson->name2File[path.split("/").last()];
-    qDebug()<<"uifile pointer in remmove: "<<uifile<<endl;
-    qDebug()<<"linked lesson before remove: "<<mLinkedLesson->rootFolder()->size(false)<<endl;
+//    File* uifile = mLinkedLesson->name2File[path.split("/").last()];
+//    qDebug()<<"uifile pointer in remmove: "<<uifile<<endl;
+//    qDebug()<<"linked lesson before remove: "<<mLinkedLesson->rootFolder()->size(false)<<endl;
 
     if(uifile != nullptr)
     {
@@ -755,7 +769,7 @@ void FileListWidget::deleteFile(int nRow)
 
         mLinkedLesson->rootFolder()->remove(uifile);
 
-        qDebug()<<"linked lesson after remove: "<<mLinkedLesson->rootFolder()->size(false)<<endl;
+//        qDebug()<<"linked lesson after remove: "<<mLinkedLesson->rootFolder()->size(false)<<endl;
 
         //qDebug()<<"linked folder before remove: "<<mLinkedFolder->size(false)<<endl;
         //mLinkedFolder->remove(uifile);
@@ -838,7 +852,8 @@ void FileListWidget::addFileComplete(File *file)
     connect(nodeWidget, &CourseTreeWidget::uploadFile, this, &FileListWidget::uploadFile);
     QString sFilePathName = fiInfo.absoluteFilePath();
     node->setData(0, RESOURCE_ABSOLUTELY_PATH_ROLE, sFilePathName);
-    name2Item.insert(file->name (), node);
+
+//    name2Item.insert(file->name (), node);
     m_bUsedReset = true;
 
     fileTreeWidget->expandItem(node);

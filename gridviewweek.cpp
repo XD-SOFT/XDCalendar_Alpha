@@ -1100,6 +1100,11 @@ QSize CourseGrid::sizeHint () const
 
 void CourseGrid::getFilesState(const QJsonObject & json)
 {
+    if(json["status"].toString() == "false"){
+        qDebug()<<"api status is false"<<endl;
+        return;
+    }
+
     Lesson* les = Arg::nw->getFilesState(json, m_weekLessonVec);
     //les是Arg::nw->getFilesState里面返回的m_weekLessonVec里面对应的Lesson指针,不过目前没啥用
     if(les != nullptr){

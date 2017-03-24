@@ -358,7 +358,7 @@ void GetDataNW::reset()
 {
     lessons.clear();
     fileMap.clear();
-    courseFileMap.clear();
+    Arg::fileIdMap.clear();
 
     courseNum = 0;
     courseCount = 0;
@@ -375,25 +375,28 @@ void GetDataNW::reset()
 Lesson* GetDataNW::getFilesState(const QJsonObject &json, QVector<QMap<int, Lesson*> > &pRepyLesson) //获取每个课程格子的资源文件
 {
 #if 1
-//    ///记录数据延迟显示.
-//    static int nQueryCount = 0;
-//    ++nQueryCount;
-//    ///End.
+//    if(json["status"].toString() == "false"){
+//        qDebug()<<"api status is false"<<endl;
+//        return nullptr;
+//    }
+
+//    Arg::fileIdMap.clear();
+    //    ///记录数据延迟显示.
+    //    static int nQueryCount = 0;
+    //    ++nQueryCount;
+    //    ///End.
 
     qDebug()<<"####################GetDateNW lessonFiles: #######################"<<endl;
-    qDebug()<<json<<endl;
-    qDebug()<<"########################################################"<<endl;
+    //    qDebug()<<json<<endl;
+    //    qDebug()<<"########################################################"<<endl;
     QJsonArray filesA = json["result"].toArray ();
-
-    if(json["status"].toString() == "false"){
-        qDebug()<<"api status is false"<<endl;
-        return nullptr;
-    }
 
     //----记录数据库返回的课程信息，用于匹配参数weekLessons中的某一节课程
     QString lesDate;
     int lesDetailId;
-
+    QMap<QString, int> id2name; //文件名与ID Map.
+    fileMap.clear();
+    QList<QString> filelist;
 
     for(auto file : filesA)
     {
@@ -407,36 +410,51 @@ Lesson* GetDataNW::getFilesState(const QJsonObject &json, QVector<QMap<int, Less
         //qDebug()<<"--------Date: "<<date<<"-------------"<<endl;
         QString filename = file.toObject()["filename"].toString();
 
-        QPair<int, QString> course;
-        course.first = detId;
-        course.second = date;
+//        QPair<int, QString> course;
+//        course.first = detId;
+//        course.second = date;
 
-        QList<QString> filelist;
-        QMap<QString, int> id2name;
-        if(fileMap.find(course) == fileMap.end()) //文件所属课程尚未构造map
-        {
+
+//        if(fileMap.find(course) == fileMap.end()) //文件所属课程尚未构造map
+//        {
             //qDebug()<<"course has no map: "<<course.first<<" "<<course.second<<endl;
+
+        if(!filelist.contains(filename)) {
             filelist.append(filename);
+        }
+
+        if(!id2name.contains(filename)) {
             id2name.insert(filename, id);
-            fileMap[course] = filelist;
-            courseFileMap[course] = id2name;
-
         }
-        else //文件所属课程已经在map里
-        {
-            filelist = fileMap[course];
-            id2name = courseFileMap[course];
-            if(!filelist.contains(filename)) //文件尚未被加入到该课程中
-            {
-                //qDebug()<<"add file: "<<filename<<" to course: "<<course.first<<" "<<course.second<<endl;
-                filelist.append(filename);
-                id2name.insert(filename, id);
-                fileMap[course] = filelist;
-                courseFileMap[course] = id2name;
-            }
+//        fileMap.insert(course, filelist);
+//        fileMap[course] = filelist;
+            //            Arg::fileIdMap[course] = id2name;
 
-        }
+//        }
+//        else //文件所属课程已经在map里
+//        {
+//            filelist = fileMap[course];
+//            id2name = Arg::fileIdMap[course];
+
+//            if(!filelist.contains(filename)) //文件尚未被加入到该课程中
+//            {
+//                //qDebug()<<"add file: "<<filename<<" to course: "<<course.first<<" "<<course.second<<endl;
+//                filelist.append(filename);
+//                id2name.insert(filename, id);
+//                fileMap[course] = filelist;
+//                //                Arg::fileIdMap[course] = id2name;
+//            }
+
+//        }
     }
+
+
+    QPair<int, QString> course;
+    course.first = lesDetailId;
+    course.second = lesDate;
+
+    fileMap.insert(course, filelist);
+
 
     //courseCount++;
     qDebug()<<"fileMap size: "<<fileMap.size()<<endl;
@@ -454,29 +472,38 @@ Lesson* GetDataNW::getFilesState(const QJsonObject &json, QVector<QMap<int, Less
                     lesson_mapIt.value()->getLessonDetailId() == lesDetailId){
                 qDebug()<<"find the mother of the resource files "<<lesDetailId<<" "<<lesDate<<endl;
                 les = lesson_mapIt.value();
+
+                break; //找到中断循环.
             }
+        }
+
+        if(les != nullptr) {
+            break;
         }
     }
 
 
     //if(courseCount == courseNum) //获取文件列表完毕
     //{
-        qDebug()<<"Strar to download, courseCount: "<<endl;
-        Arg::fileIdMap = courseFileMap;
-        fetchFiles(les);
-        return les;
+    qDebug()<<"Strar to download, courseCount: "<<endl;
+    //        Arg::fileIdMap = courseFileMap;
+    if((les != nullptr) && (!id2name.isEmpty())) {
+        fetchFiles(les, id2name);
+    }
+
+    return les;
     //}
 
     //qDebug()<<"files array: "<<filesA<<endl;
     //QDir root = Arg::configDir;
     //qDebug() << "root: " << root << endl;
 
-//    ///Add by 2017.02.13,最后通知ui显示.
+    //    ///Add by 2017.02.13,最后通知ui显示.
 
-//    if(nQueryCount == m_nFileResQueryCount) {
-//        //emit showMainWindow();
-//        return;
-//    }
+    //    if(nQueryCount == m_nFileResQueryCount) {
+    //        //emit showMainWindow();
+    //        return;
+    //    }
 
 #endif
 
@@ -507,7 +534,7 @@ void GetDataNW::getRemarkState(const QJsonObject &json) //获取每个课程格�
 }
 
 //--------------------从ftp下载文件------------------------------//
-void GetDataNW::fetchFiles(Lesson* les)
+void GetDataNW::fetchFiles(Lesson* les, const QMap<QString, int> &fileNameIDMap)
 {
 
     if(les == nullptr){
@@ -562,6 +589,9 @@ void GetDataNW::fetchFiles(Lesson* les)
                 File* file = new File(fp, les->rootFolder());
                 les->rootFolder()->add(file);
 //                les->notify();
+
+                quint32 nID = fileNameIDMap.value(file->name());
+                file->setFileID(nID);
 
                 les->name2File.insert(file->name(), file);
 

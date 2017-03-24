@@ -68,7 +68,7 @@ public:
     static QString tokenStr;
     static QString tokenStr2;
     static QString token;
-    static QString ftpStr;
+//    static QString resUrl;
     static QString IP;
     static int lessonId; //课程主表ID
     static QString username;

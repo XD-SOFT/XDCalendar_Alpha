@@ -22,24 +22,24 @@ public:
     int getState() { return state; }
     void setLessonDetailId(int lessonDetailId) { this->lessonDetailId = lessonDetailId; }
     int getLessonDetailId() { return lessonDetailId; }
-    void setRemark(QString remark) { this->remark = remark; }
+    void setRemark(const QString &remark) { this->remark = remark; }
     QString getRemark() { return remark; }
-    void setUpdateTime(QDate updatetime) { this->updatetime = updatetime; }
+    void setUpdateTime(const QDate &updatetime) { this->updatetime = updatetime; }
     QDate getUpdateTime() { return updatetime; }
-    void setUseDataTime(QDate usedatatime) { this->usedatatime = usedatatime; }
+    void setUseDataTime(const QDate &usedatatime) { this->usedatatime = usedatatime; }
     QDate getUsedDataTime() { return usedatatime; }
-    void setFileUrl(QString url) { this->fileurl = url; }
+    void setFileUrl(const QString &url) { this->fileurl = url; }
     QString getFileUrl() { return fileurl; }
-    void setFileName(QString filename) { this->filename = filename; }
+    void setFileName(const QString &filename) { this->filename = filename; }
     QString getFileName() { return filename; }
-    void setFilePic(QString filepic) { this->filepic = filepic; }
+    void setFilePic(const QString &filepic) { this->filepic = filepic; }
     QString getFilePic() { return filepic; }
-    void setFileIco(QString fileico) { this->fileico = fileico; }
+    void setFileIco(const QString &fileico) { this->fileico = fileico; }
     QString getFileIco() { return fileico; }
-    void setKeyword(QVector<int> keyword) { this->keyword = keyword; }
+    void setKeyword(const QVector<int> &keyword) { this->keyword = keyword; }
     QVector<int> getKeyword() { return keyword; }
 
-    void setBaseUrl(QString url) { this->baseUrl = url; }
+    void setBaseUrl(const QString &url) { this->baseUrl = url; }
     QString getBaseUrl() { return baseUrl; }
 
     void add(); //为某一课程格子增加资源文件

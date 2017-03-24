@@ -7,6 +7,16 @@
 #include <QJsonArray>
 #include <algorithm>
 #include <QDebug>
+void File::setFileID(int nFileID)
+{
+    m_nFileID = nFileID;
+}
+
+int File::getFileID() const
+{
+    return m_nFileID;
+}
+
 File::File (QObject* parent): QObject (parent)
 {}
 
@@ -140,8 +150,8 @@ void Folder::remove (File* file)
     qDebug()<<"remove file info: "<<file->name()<<endl;
     if (mFiles.contains (file))
     {
-        qDebug()<<" remove contains"<<endl;
-        qDebug()<<mFiles.remove (file);
+//        qDebug()<<" remove contains"<<endl;
+        mFiles.remove (file);
         mUsedNames.remove(file->name());
 
         emit fileRemovedComplete(file);

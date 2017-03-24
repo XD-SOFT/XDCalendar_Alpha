@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include "resfilesdb.h"
+#include "lesson.h"
 
 #define FTP_USE
 
@@ -50,24 +51,25 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
         pFile = Q_NULLPTR;
     }
 
-    if(m_replyArgsHash.contains(reply)) {
-        QMap<QString, QString> replyArgs = m_replyArgsHash.value(reply);
-        QList<Lesson*> lessKeyList = m_upOrDownloadFileHash.keys();
+    //因为还要写上传文件资源id，所以这块不放进这里处理.
+//    if(m_replyArgsHash.contains(reply)) {
+//        QMap<QString, QString> replyArgs = m_replyArgsHash.value(reply);
+//        QList<Lesson*> lessKeyList = m_upOrDownloadFileHash.keys();
 
-        for(auto itor = lessKeyList.begin(); itor != lessKeyList.end(); ++itor) {
-            Lesson *pLesson = *itor;
+//        for(auto itor = lessKeyList.begin(); itor != lessKeyList.end(); ++itor) {
+//            Lesson *pLesson = *itor;
 
-            QList<QMap<QString, QString> > lessonFilesArgList = m_upOrDownloadFileHash.values(pLesson);
+//            QList<QMap<QString, QString> > lessonFilesArgList = m_upOrDownloadFileHash.values(pLesson);
 
-            for(auto argItor = lessonFilesArgList.begin(); argItor != lessonFilesArgList.end(); ++argItor) {
-                if(replyArgs == *argItor) {
-                    m_upOrDownloadFileHash.remove(pLesson, replyArgs);
+//            for(auto argItor = lessonFilesArgList.begin(); argItor != lessonFilesArgList.end(); ++argItor) {
+//                if(replyArgs == *argItor) {
+//                    m_upOrDownloadFileHash.remove(pLesson, replyArgs);
 
-                    break;
-                }
-            }
-        }
-    }
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
 
     //无错误返回
@@ -82,6 +84,8 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
             if(pResFilesDB != Q_NULLPTR) {
                 pResFilesDB->add();
             }
+
+//            m_replyResDBMap.remove(reply);
         }
 
         //        if(bCreatUpload) {
@@ -112,19 +116,17 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
             qDebug(qPrintable(reply->errorString()));
 
             emit uploadFileError(sFilePathName, qPrintable(reply->errorString()));
+
+            reply->deleteLater();
         }
     }
 
     emit uploadFileFinished();
 
-    m_replyArgsHash.remove(reply);
+//    m_replyArgsHash.remove(reply);
     //    replyList.removeAll(reply);
 
-    reply->deleteLater();
-
-    if(Arg::sUpLoadFileCount == 0){
-        manager->deleteLater();
-    }
+//    reply->deleteLater();
 }
 
 void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
@@ -499,8 +501,6 @@ FileTransfer::finished()
 {
     QNetworkReply *pReply = qobject_cast<QNetworkReply *>(sender());
 
-
-
     pReply->deleteLater();
 }
 
@@ -542,6 +542,8 @@ FileTransfer::~FileTransfer()
 //        manager = Q_NULLPTR;
 //    }
 
+    manager->deleteLater();
+    accessManager->deleteLater();
 }
 
 FileTransfer::FileTransfer(const QMap<QString, QString> &arguments, QDialog *dialog):
@@ -604,7 +606,7 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
     qDebug()<<"filePath: "<<arguments["filePath"]<<endl;
     QFile *pLoadFile = new QFile(arguments["filePath"]);
 
-    if(pLoadFile->open(QIODevice::ReadWrite)) {
+    if(pLoadFile->open(QIODevice::ReadOnly)) {
 
         ///Mark todo
         ResFilesDB* resfile = Q_NULLPTR;
@@ -620,7 +622,8 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
             resfile->setUseDataTime(QDate::fromString(date, "yyyy-M-d"));
             resfile->setState(1);
             //url的拼装
-            resfile->setFileUrl(Arg::ftpStr+fileNewName);
+            QString sResUrl = QString("%1/%2").arg(Arg::username).arg(fileNewName);
+            resfile->setFileUrl(sResUrl);
             resfile->setFileName(filePath["fileName"].split("/").takeAt(1));
             //        resfile->add();
         }
@@ -637,17 +640,22 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
         url.setPort(2121);//设置URL的端口.
 #else
         //http://101.200.176.87:8080/Desktop/clientUploadFile?filePath=/c/v/b/&userId=16&detailID=253&date=2017-3-23&token=111111&usernamelilu
-        QString uPath ="\/Desktop\/clientUploadFile";
-        QString uFilePath ="?filePath="+QString("\\")+QString("upload")+QString("\\")+Arg::username+QString("\\");
-        QString uQuery =QString("\&userId=") + QString::number(Arg::userId) +
-                QString("\&detailID=") + detailID +
-                QString("\&date=") + date +
-                QString("\&token=111111")+
-                QString("\&username=") + Arg::username+
-                QString("\&fileName=") + arguments["path"];
-        QString address =QString("http\:\/\/\%1:8080\%2\%3\%4").arg(Arg::IP).arg(uPath).arg(uFilePath).arg(uQuery);
+        QString uPath ="clientUploadFile";
+        QString uFilePath ="?filePath="+QString("/")+QString("upload")+QString("/")+Arg::username+QString("/");
+        QString uQuery =QString("&userId=") + QString::number(Arg::userId) +
+                QString("&detailID=") + detailID +
+                QString("&date=") + date +
+                QString("&token=111111")+
+                QString("&username=") + Arg::username+
+                QString("&fileName=") + arguments["path"];
+
+        QString sServerConfig;
+        Arg *pArg = Arg::getInstance();
+        pArg->getNetReusetHostUrl(sServerConfig);
+
+        QString address =QString("%1\%2\%3\%4").arg(sServerConfig).arg(uPath).arg(uFilePath).arg(uQuery);
         QUrl url(address);
-         qDebug()<<"--------url:"<<address;
+        qDebug()<<"--------url:"<<address;
 
 #endif
         QTimer *pTimer = new QTimer(this);
@@ -657,7 +665,9 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
         ++Arg::sUpLoadFileCount;
 
         qDebug()<<"---------sUpLoadFileCount++="<<Arg::sUpLoadFileCount;
-        reply = manager->put(QNetworkRequest(url), pLoadFile);
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
+        reply = manager->post(request, pLoadFile);
 
         m_timerReplyHash.insert(pTimer, reply);
         pTimer->start(300000);
@@ -666,6 +676,7 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
 
         if(resfile !=  Q_NULLPTR) {
             m_replyResDBMap.insert(reply, resfile);
+            m_resDBAndLessonMap.insert(resfile, pLesson);
         }
 
         m_uploadReplyFileMap.insert(reply, pLoadFile);
@@ -708,10 +719,67 @@ void FileTransfer::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
     }
 }
 
-void FileTransfer::addFinished(const QJsonObject &)
+void FileTransfer::addFinished(const QJsonObject &jo)
 {
+    ResFilesDB *pSender = dynamic_cast<ResFilesDB*>(sender());
+    if(!m_resDBAndLessonMap.contains(pSender)) {
+        delete pSender;
+        pSender = Q_NULLPTR;
+        return;
+    }
+
+    Lesson *pLesson = m_resDBAndLessonMap.value(pSender);
+    if(pLesson == Q_NULLPTR) {
+        return;
+    }
+
+    QString filename = jo["filename"].toString();
+    int fileid = jo["id"].toInt();
+    qDebug()<<"filename: "<<filename<<" fileid: "<<fileid<<endl;
+
+    QPair<int, QString> course;
+    course.first = pLesson->getLessonDetailId();
+    course.second = pLesson->getDate().toString("yyyy-M-d");
+
+    if(pLesson->name2File.contains(filename)) {
+        File *pFile = pLesson->name2File.value(filename);
+        pFile->setFileID(fileid);
+    }
+
+    QNetworkReply *reply = m_replyResDBMap.key(pSender);
+    if(m_replyArgsHash.contains(reply)) {
+        QMap<QString, QString> replyArgs = m_replyArgsHash.value(reply);
+        QList<Lesson*> lessKeyList = m_upOrDownloadFileHash.keys();
+
+        for(auto itor = lessKeyList.begin(); itor != lessKeyList.end(); ++itor) {
+            Lesson *pLesson = *itor;
+
+            QList<QMap<QString, QString> > lessonFilesArgList = m_upOrDownloadFileHash.values(pLesson);
+
+            for(auto argItor = lessonFilesArgList.begin(); argItor != lessonFilesArgList.end(); ++argItor) {
+                if(replyArgs == *argItor) {
+                    m_upOrDownloadFileHash.remove(pLesson, replyArgs);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    m_replyResDBMap.remove(reply);
+    m_replyArgsHash.remove(reply);
+//    reply->deleteLater();
+
+    //        qDebug()<<"first: "<<course.first<<" second: "<<course.second<<endl;
+    ///Replace by following code.
+    //        Arg::fileIdMap[course].insert(filename, fileid);
+//    QMap<QString, int> fileIDMap;
+//    fileIDMap.insert(filename, fileid);
+//    Arg::fileIdMap.insert(course, fileIDMap);
+//    ///
+
+
     //删除resfiledb.
-    QObject *pSender = sender();
     pSender->deleteLater();
 }
 

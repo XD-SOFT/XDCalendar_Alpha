@@ -51,9 +51,9 @@ public:
 
     void mapNetwork2LocalUI();
 
-    void fetchFiles(Lesson*); //下载每个课程格子所需的文件
+    void fetchFiles(Lesson*, const QMap<QString, int> &fileNameIDMap); //下载每个课程格子所需的文件
 
-    Lesson* getFilesState(const QJsonObject&, QVector<QMap<int, Lesson*> >&);  //获取每一个课程格子所需的文件
+    Lesson *getFilesState(const QJsonObject&, QVector<QMap<int, Lesson*> >&);  //获取每一个课程格子所需的文件
 
     void changeTerm(const QJsonObject &jsonObj);
 
@@ -66,7 +66,7 @@ private:
 
 //    QVector<ScheduleDetailDB*> my_sections;
     QMap< QPair<int, QString>, QList<QString> > fileMap; //用于存储每节课的文件列表
-    QMap< QPair<int, QString>, QMap<QString, int> > courseFileMap; //用于存储某节课的文件ID和文件名映射
+//    QMap< QPair<int, QString>, QMap<QString, int> > courseFileMap; //用于存储某节课的文件ID和文件名映射
     int courseNum; //记录总共有多少节课
     int courseCount; //getFileState里增加,用于判断是否获取完毕
 

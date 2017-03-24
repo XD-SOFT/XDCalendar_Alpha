@@ -937,18 +937,24 @@ bool CourseCellWidget::copyFileToPath(QString sourceDir ,QString toDir, QString 
         }
     }//end if
 
-    QString store = CopyHelper::store(sourceDir, toDir);
-    qDebug()<<store<<endl;
+//    QString store = CopyHelper::store(sourceDir, toDir);
+//    qDebug()<<store<<endl;
+    QFile::copy(sourceDir, toDir);
 
     ///Mark,暂时这么处理，同名的覆盖，这里删除,Beta版本再做处理.
     QString disFileName = fileName.split("/").last();
-       if(mLinkedLesson->name2File.contains(disFileName)) {
+    if(mLinkedLesson->name2File.contains(disFileName)) {
         File *pFile = mLinkedLesson->name2File.value(disFileName);
-//        delete pFile;
-//        pFile = Q_NULLPTR;
+        //        delete pFile;
+        //        pFile = Q_NULLPTR;
         mLinkedLesson->rootFolder()->remove(pFile);
         mLinkedLesson->name2File.remove(fileName);
     }
+    else {
+        fileNumWidget->addFile();
+        fileNumWidget->update();
+    }
+
     ///End.
 
     fileMap.insert(fileName, toDir);
@@ -964,13 +970,13 @@ bool CourseCellWidget::copyFileToPath(QString sourceDir ,QString toDir, QString 
     my_urls.append(QUrl::fromLocalFile(toDir));
     QString fp = "./SaveFile/" + fileName;
     File* file = new File(fp, mLinkedLesson->rootFolder());
-    qDebug() << "add file: " << file << " name: " << file->name() << endl;
+//    qDebug() << "add file: " << file << " name: " << file->name() << endl;
     mLinkedLesson->rootFolder()->add(file);
-    qDebug()<<"ddddfile"<<endl;
-    fileNumWidget->addFile();
-    fileNumWidget->update();
+//    qDebug()<<"ddddfile"<<endl;
+//    fileNumWidget->addFile();
+//    fileNumWidget->update();
 
-    qDebug() << "add dddd: "<<endl;
+//    qDebug() << "add dddd: "<<endl;
 
     mLinkedLesson->name2File.insert(file->name(), file);
     qDebug() << "add map: "<<endl;
@@ -1111,7 +1117,7 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
        if(fileInfo.isFile())
        {
             //fileCopy(url.toLocalFile(), NewPath, url.fileName());
-           copyFileToPath(url.toLocalFile(), NewPath, fileName, true);
+           copyFileToPath(url.toLocalFile(), NewPath, fileName, false);
            //qDebug() << store << endl;
        }
       else
@@ -1255,10 +1261,10 @@ void CourseCellWidget::unlink()
     link(nullptr);
 
     ///Mark，这个的管理不归CourseCellWidget.
-//    if(mLinkedLesson != Q_NULLPTR) {
-//        delete mLinkedLesson;
-//        mLinkedLesson = Q_NULLPTR;
-//    }
+    if(mLinkedLesson != Q_NULLPTR) {
+        delete mLinkedLesson;
+        mLinkedLesson = Q_NULLPTR;
+    }
 }
 
 TextShowWindowXD::TextShowWindowXD(QWidget *parent):QFrame(parent)

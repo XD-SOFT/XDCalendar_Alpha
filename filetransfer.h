@@ -95,6 +95,8 @@ private:
 
     QMap<QNetworkReply*, ResFilesDB*> m_replyResDBMap;
 
+    QMap<ResFilesDB*, Lesson*> m_resDBAndLessonMap; //资源DB与Lesson课程对象指针map.
+
     QMap<QNetworkReply*, QFile*> m_uploadReplyFileMap;
 
     //课程上传或者下载文件哈希表.

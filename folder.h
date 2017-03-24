@@ -14,6 +14,11 @@ class File: public QObject
 {
     Q_OBJECT
 public:
+    void setFileID(int nFileID);
+
+    int getFileID() const;
+
+public:
     explicit File (QObject *parent = 0);
     //Construct a File via a QJsonObject. Coresponding signals will be emitted.
     explicit File (const QJsonObject& json, QObject* parent = nullptr);
@@ -48,6 +53,9 @@ signals:
 
 private:
     QFileInfo mFile;
+
+    //加入数据库返回的文件ID.
+    int m_nFileID;
 };
 
 class Folder : public QObject

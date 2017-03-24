@@ -56,7 +56,7 @@ QString Arg::tokenStr = "";
 QString Arg::tokenStr2 = "?username=admin&token=111111";
 QString Arg::token = "";
 
-QString Arg::ftpStr = "ftp://101.200.176.87:2121/";
+//QString Arg::resUrl/* = "ftp://101.200.176.87:2121/"*/;
 
 
 QString Arg::IP = "101.200.176.87";
