@@ -18,12 +18,17 @@ namespace Ui {
 class MessageDisplayWidget;
 }
 
+class QEventLoop;
 enum class MessageDisplayButtonType : quint8 {
     Ok = 0,
     Cacel = 1,
     NoButton = 255
 };
-
+//上面每添加一个新的按键,必须添加对应的名称和图标 ；按键的值=对应当前数据组的下标索引
+static QString MessageDisplayButtonName[][2]={
+    "Ok",   ":/image/start-up.jpg",
+    "Cacel", ":/image/start-up.jpg"
+};
 class MessageDisplayWidget : public FramelessModalMovableShadowWidget
 {
     Q_OBJECT
@@ -31,14 +36,21 @@ class MessageDisplayWidget : public FramelessModalMovableShadowWidget
 public:
     ~MessageDisplayWidget();
 
-    static void showMessage(const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
+    static int showMessage(QWidget *parent ,const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
                        MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
+
+private slots:
+    void on_pOkBtn_clicked();
+    void on_pBtn_clicked();
 
 private:
     explicit MessageDisplayWidget(QWidget *parent = 0);
+    MessageDisplayWidget(const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn,
+                           MessageDisplayButtonType btn, QWidget *parent = Q_NULLPTR );
 
 private:
     Ui::MessageDisplayWidget *ui;
+    static QEventLoop *m_pEvLoop;
 };
 
 #endif // XDSF_MESSAGEDISPLAYWIDGET_H
