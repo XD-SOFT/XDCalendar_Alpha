@@ -4,6 +4,7 @@
 * 1.InputTextWidget *pInputTextWgt = new InputTextWidget;
 * pInputTextWgt->show();
 * pInputTextWgt->getText();
+* 这个类使用必须自己管理释放.因为阴影不能设置父窗口对象.
 *
 * 2. QString sText = InputTextWidget::getText(....);
 * @version 2017.02.09.

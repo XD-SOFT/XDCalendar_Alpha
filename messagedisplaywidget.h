@@ -1,6 +1,7 @@
 /**
  * XDCalendar Project 2017-03-18 version
   * 风格化的信息提示框，替代QMessageBox.
+  * 这个类使用必须自己管理释放.因为阴影不能设置父窗口对象.
   * @example MessageDisplayWidget::showMessage;
   *
   * @author BiXiaoxia
