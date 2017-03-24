@@ -12,7 +12,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include "resfilesdb.h"
-
+#define FTP_USE
 void FileTransfer::slotError(QNetworkReply::NetworkError code)
 {
     //    --Arg::sDownLoadFileCount;
@@ -194,6 +194,8 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
         //        }
         //        else
         //        {
+
+
         qDebug()<<"create file for a course in specific folder"<<endl;
         file->open(QIODevice::WriteOnly);//只读方式打开文件
         file->write(reply->readAll());
@@ -211,7 +213,7 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
         qDebug()<<"handle errors here";
         QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
         qDebug( "found error ....code: %d %d\n", statusCodeV.toInt(), (int)reply->error());
-        //        qDebug();
+        qDebug()<<"-------------httpErrorString:"<<reply->errorString();
 
         emit ftpDownloadError(qPrintable(reply->errorString()));
     }
@@ -227,9 +229,11 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 void FileTransfer::ftpDownload()
 {
     qDebug()<<"ftpDownload"<<endl;
+
+ #ifndef FTP_USE
     QUrl url;
 
-    url.setScheme("ftp");
+    url.setScheme("http");
     //        url.setHost(arguments["host"]);//设置主机地址
     //        url.setPath(arguments["path"]);//设置URL路径
     //        url.setPort(2121);//设置URL的端口。
@@ -256,6 +260,20 @@ void FileTransfer::ftpDownload()
 
     qDebug()<< "upload file args:" << filearguments["detailID"]<<","<<filearguments["fileName"]<<endl;
 
+    qDebug()<<"---downLoad url："<<url.toString();
+#else
+    //http://101.200.176.87:8080/Desktop/clientDownloadFile&token=111111&username=lilu&fileName162872017-3-22test.txt
+    QString filename = QString::number(Arg::userId) + filearguments["detailID"] + filearguments["date"]
+            + filearguments["fileName"];
+    QString uPath ="\/Desktop\/clientDownloadFile";
+    QString uQuery =QString("\?token=111111")+
+            QString("\&username=") + Arg::username+
+            QString("\&fileName=") + filename;
+    QString address =QString("http\:\/\/\%1:8080\%2\%3").arg(Arg::IP).arg(uPath).arg(uQuery);
+    qDebug()<<"--------url:"<<address;
+    QUrl url(address);
+
+#endif
     QNetworkRequest request(url);
     //    request.setUrl(m_url);
     //    QNetworkAccessManager* manager = new QNetworkAccessManager;
@@ -523,7 +541,7 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
             //        resfile->add();
         }
         //        QByteArray data = file.readAll();
-#define FTP_USE
+
 
 #ifndef FTP_USE
         QUrl url;
@@ -543,7 +561,7 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
                 QString("\&token=111111")+
                 QString("\&username=") + Arg::username+
                 QString("\&fileName=") + arguments["path"];
-        QString address =QString("http\:\/\/\%1:8080\%2\%3\%4").arg("101.200.176.87").arg(uPath).arg(uFilePath).arg(uQuery);
+        QString address =QString("http\:\/\/\%1:8080\%2\%3\%4").arg(Arg::IP).arg(uPath).arg(uFilePath).arg(uQuery);
         QUrl url(address);
          qDebug()<<"--------url:"<<address;
 
