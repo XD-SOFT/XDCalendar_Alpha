@@ -331,9 +331,9 @@ void FileListWidget::spreadList(QTreeWidgetItem* treeItem,int num)
     }
 }
 
-void FileListWidget::updateContent(Folder* root)
+void FileListWidget::updateContent(Folder* root, bool bMust)
 {
-    if(root == mLinkedFolder) {
+    if((root == mLinkedFolder) && (!bMust)) {
         return;
     }
 

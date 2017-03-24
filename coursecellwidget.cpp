@@ -104,6 +104,9 @@ CourseCellWidget::~CourseCellWidget()
     if(pNoteWgt != Q_NULLPTR) {
          pNoteWgt->cleanInstance();
     }
+
+    delete upload;
+    upload = Q_NULLPTR;
 }
 
 bool CourseCellWidget::isEditStatus() const
@@ -783,7 +786,10 @@ void CourseCellWidget::fileUploadFinished(const QString &fileName)
     if(m_bCreateNewFile) {
         QString sFilePathName = fileName;
         sFilePathName.replace("/","\\");
-        QProcess::startDetached("explorer " + sFilePathName);
+        bool bStatus = QProcess::startDetached("explorer " + sFilePathName);
+        if(bStatus) {
+
+        }
 
         qDebug() << "the opend file is:" << fileName;
 
@@ -934,9 +940,21 @@ bool CourseCellWidget::copyFileToPath(QString sourceDir ,QString toDir, QString 
     QString store = CopyHelper::store(sourceDir, toDir);
     qDebug()<<store<<endl;
 
+    ///Mark,暂时这么处理，同名的覆盖，这里删除,Beta版本再做处理.
+    QString disFileName = fileName.split("/").last();
+       if(mLinkedLesson->name2File.contains(disFileName)) {
+        File *pFile = mLinkedLesson->name2File.value(disFileName);
+//        delete pFile;
+//        pFile = Q_NULLPTR;
+        mLinkedLesson->rootFolder()->remove(pFile);
+        mLinkedLesson->name2File.remove(fileName);
+    }
+    ///End.
+
     fileMap.insert(fileName, toDir);
 
     //-------------------------ftp upload-----------------------------//
+    sourcefileMap.clear();
     sourcefileMap.insert("fileName", fileName);
     sourcefileMap.insert("localFilePath", sourceDir);
     sourcefileMap.insert("detailID", QString::number(mLinkedLesson->getLessonDetailId()));
@@ -953,6 +971,7 @@ bool CourseCellWidget::copyFileToPath(QString sourceDir ,QString toDir, QString 
     fileNumWidget->update();
 
     qDebug() << "add dddd: "<<endl;
+
     mLinkedLesson->name2File.insert(file->name(), file);
     qDebug() << "add map: "<<endl;
 
@@ -1043,6 +1062,8 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
     if(urls.isEmpty())
         return;
 
+    bool bExist = false;
+
     foreach(QUrl url, urls) {
        QFileInfo fileInfo(url.toLocalFile());
        qDebug()<<"path type: "<<fileInfo.isFile()<<endl;
@@ -1083,7 +1104,7 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
        {
 //           QMessageBox::information(this, tr("文件同名"), tr("改路径下存在同名文件，是否删除原文件？"));
            QFile::remove(NewPath);
-
+           bExist = true;
 //           continue;
        }
 
@@ -1160,7 +1181,7 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
 
         if(fileNumWidget->getFileNum() != 0) {
             emit requestShowLessons();
-            Arg::fileListWidget->updateContent(mLinkedLesson->rootFolder());
+            Arg::fileListWidget->updateContent(mLinkedLesson->rootFolder(), bExist);
             Arg::fileListWidget->showUpdateProgress(true);
         }
     }

@@ -176,9 +176,9 @@ void CCU::close()
             ///Mark Todo,做相关文件方面处理.
             return;
         }
-        else {
-            ///Mark Todo，文件取消操作处理.
-        }
+
+//        emit transferFileAbort();
+        ///Mark Todo，文件取消操作处理.
     }
 
 //    qDebug()<<"close the MainScreen"<<endl;
@@ -188,7 +188,9 @@ void CCU::close()
     delete MainScreen::mainScreen;
     MainScreen::mainScreen = Q_NULLPTR;
 
-    qApp->quit();
+    ///因为http传输牵涉多线程，所以用qApp->exit或者quit都不能终止.
+    exit(0);
+//    qApp->quit();
 }
 
 void CCU::logOff()
@@ -202,6 +204,8 @@ void CCU::logOff()
 
             return;
         }
+
+//        emit transferFileAbort();
     }
 
 //    qDebug()<<"close the MainScreen"<<endl;

@@ -7,6 +7,12 @@
 #include "config.h"
 
 using namespace std;
+downloadFile::downloadFile():
+    QObject()
+{
+
+}
+
 void downloadFile::handleDownloadFiles(Lesson *pLesson)
 {
     transfer->handleDwonloadFiles(pLesson);
@@ -52,7 +58,7 @@ void downloadFile::download(const QMap<QString, QString> &filePath, Lesson *pLes
     //从ftp服务器下载文件
     qDebug()<<"go to ftp"<<endl;
     if(transfer == Q_NULLPTR) {
-        transfer = new FileTransfer(filePath);
+        transfer = new FileTransfer(filePath, this);
         connect(transfer, SIGNAL(downloadFinished()), this, SIGNAL(dowLoadComplete()));
         connect(transfer, SIGNAL(ftpDownloadError(const QString&)), this, SLOT(downLoadError(const QString&)));
         //            connect(this, SIGNAL(start()), transfer, SLOT( ftpDownload() ));

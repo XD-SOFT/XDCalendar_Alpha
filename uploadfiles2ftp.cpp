@@ -12,7 +12,7 @@
 using namespace std;
 UploadFiles2Ftp::UploadFiles2Ftp()
 {
-    transfer = new FileTransfer();
+    transfer = new FileTransfer(this);
     connect(transfer, SIGNAL(uploadFileFinished()), this, SIGNAL(uploadFinished()));
     connect(transfer, &FileTransfer::fileUploadFinished, this, &UploadFiles2Ftp::fileUploadFinished);
     connect(transfer, &FileTransfer::uploadFileError, this, &UploadFiles2Ftp::uploadError);

@@ -62,5 +62,7 @@ signals:
     void changeToStandardMode();
 
     void logOffFinished();
+
+    void transferFileAbort();
 };
 #endif // CCU_H

@@ -21,7 +21,7 @@ void FileNumWidget::paintEvent(QPaintEvent*)
         }
         else
         {
-            if (fileNum > 10)
+            if (fileNum >= 10)
             {
                 paint.drawText (QRect(1, -3, 15, 15), Qt::AlignCenter, "...");
             }

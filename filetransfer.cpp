@@ -12,7 +12,12 @@
 #include <QTimer>
 #include <QMessageBox>
 #include "resfilesdb.h"
+
 #define FTP_USE
+
+#include "ccu.h"
+
+
 void FileTransfer::slotError(QNetworkReply::NetworkError code)
 {
     //    --Arg::sDownLoadFileCount;
@@ -21,10 +26,17 @@ void FileTransfer::slotError(QNetworkReply::NetworkError code)
 
 void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
 {
+    --Arg::sUpLoadFileCount;
+
     qDebug()<<"ftp upload reply"<<endl;
     QByteArray bytes = reply->readAll();  //获取字节
     QString result(bytes);  //转化为字符串
     qDebug()<<result;
+
+//    if(m_uploadReplyFileMap.isEmpty()) {
+//        ///Mark,一般执行到这里，用户关闭程序，取消上传，结果上传完了，这时候不再继续做处理.
+//        return;
+//    }
 
     QFile *pFile = m_uploadReplyFileMap.value(reply);
     QString sFilePathName;
@@ -92,21 +104,27 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
     }
     else
     {
-        //处理错误
-        qDebug()<<"handle errors here";
-        QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-        qDebug( "found error ....code: %d %d\n", statusCodeV.toInt(), (int)reply->error());
-        qDebug(qPrintable(reply->errorString()));
+        if(!m_bAbort) {
+            //处理错误
+            qDebug()<<"handle errors here";
+            QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+            qDebug( "found error ....code: %d %d\n", statusCodeV.toInt(), (int)reply->error());
+            qDebug(qPrintable(reply->errorString()));
 
-        emit uploadFileError(sFilePathName, qPrintable(reply->errorString()));
+            emit uploadFileError(sFilePathName, qPrintable(reply->errorString()));
+        }
     }
 
-
+    emit uploadFileFinished();
 
     m_replyArgsHash.remove(reply);
     //    replyList.removeAll(reply);
 
     reply->deleteLater();
+
+    if(Arg::sUpLoadFileCount == 0){
+        manager->deleteLater();
+    }
 }
 
 void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
@@ -214,8 +232,14 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
         QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
         qDebug( "found error ....code: %d %d\n", statusCodeV.toInt(), (int)reply->error());
         qDebug()<<"-------------httpErrorString:"<<reply->errorString();
+        if(!m_bAbort) {
+            qDebug()<<"handle errors here";
+            QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+            qDebug( "found error ....code: %d %d\n", statusCodeV.toInt(), (int)reply->error());
+            //        qDebug();
 
-        emit ftpDownloadError(qPrintable(reply->errorString()));
+            emit ftpDownloadError(qPrintable(reply->errorString()));
+        }
     }
 
 
@@ -224,6 +248,11 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
     m_replyArgsHash.remove(reply);
 
     reply->deleteLater();
+
+    if(Arg::sDownLoadFileCount == 0) {
+        delete accessManager;
+        accessManager = Q_NULLPTR;
+    }
 }
 
 void FileTransfer::ftpDownload()
@@ -455,6 +484,17 @@ void FileTransfer::handleUploadFiles(Lesson *pLesson)
     }
 }
 
+void FileTransfer::abortTransfer()
+{
+//    if(!m_replyArgsHash.isEmpty()) {
+//        QList<QNetworkReply*> replyList = m_replyArgsHash.keys();
+
+//        for(auto itor = replyList.begin(); itor != replyList.end(); ++itor) {
+//            (*itor)->abort();
+//        }
+//    }
+}
+
 FileTransfer::finished()
 {
     QNetworkReply *pReply = qobject_cast<QNetworkReply *>(sender());
@@ -464,16 +504,60 @@ FileTransfer::finished()
     pReply->deleteLater();
 }
 
-FileTransfer::FileTransfer() :
-    QObject()
+FileTransfer::FileTransfer(QObject *parent) :
+    QObject(parent)
 {
+//    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
+}
+
+FileTransfer::~FileTransfer()
+{
+//    m_upOrDownloadFileHash.clear();
+//    m_replyArgsHash.clear();
+//    m_replyResDBMap.clear();
+
+//    QList<QTimer*> timerList = m_timerReplyHash.keys();
+//    qDeleteAll(timerList);
+//    m_timerReplyHash.clear();
+
+    if(!m_replyArgsHash.isEmpty()) {
+        QList<QNetworkReply*> replyList = m_replyArgsHash.keys();
+        m_replyArgsHash.clear();
+        for(int index = 0; index < replyList.size(); ++index) {
+            QNetworkReply *pReply = replyList.at(index);
+            pReply->abort();
+
+            m_bAbort = true;
+        }
+    }
+
+
+//    if(accessManager != Q_NULLPTR) {
+//        delete accessManager;
+//        accessManager = Q_NULLPTR;
+//    }
+
+//    if(manager != Q_NULLPTR) {
+//        delete manager;
+//        manager = Q_NULLPTR;
+//    }
 
 }
 
-FileTransfer::FileTransfer(const QMap<QString, QString> &arguments, QDialog *dialog)
+FileTransfer::FileTransfer(const QMap<QString, QString> &arguments, QDialog *dialog):
+    QObject()
 {
     this->filearguments = arguments;
     this->dialog = dialog;
+
+//    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
+}
+
+FileTransfer::FileTransfer(const QMap<QString, QString> &arguments, QObject *parent):
+    QObject(parent)
+{
+    this->filearguments = arguments;
+//    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
 }
 
 //高峰修改  2016/12/1
@@ -612,14 +696,13 @@ void FileTransfer::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
     //    qreal fValue = static_cast<qreal>(bytesSent) / static_cast<qreal>(bytesTotal);
     if(bytesSent == bytesTotal) {
 
-        //       --Arg::sUpLoadFileCount;
+//        emit uploadFileFinished();
+        ///TODO,进度显示相关.
+#ifndef FTP_USE //FTP是单线程传输，跟http不一样，http可能多次进入这个函数.
 
+#else
 
-        //        m_uploadFile->close();
-        //        delete m_uploadFile;
-        //        m_uploadFile = Q_NULLPTR;
-
-        emit uploadFileFinished();
+#endif
 
         qDebug() << "upload complete";
     }
