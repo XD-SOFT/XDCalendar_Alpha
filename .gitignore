@@ -78,4 +78,9 @@ Thumbs.db
 UserConfig/config1
 UserConfig/config
 MoonCalendar.pro.user
+<<<<<<< HEAD
+MoonCalendar.pro.user
+=======
 login.json
+>>>>>>> origin/master
+MoonCalendar.pro.user
