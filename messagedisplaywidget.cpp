@@ -14,7 +14,7 @@ MessageDisplayWidget::~MessageDisplayWidget()
     delete ui;
 }
 
-void MessageDisplayWidget::showMessage(QWidget *parent, const QString &sTitle, const QString &sInfo,
+void MessageDisplayWidget::showMessage(const QString &sTitle, const QString &sInfo,
                                        MessageDisplayButtonType okBtn,
                                        MessageDisplayButtonType btn)
 {

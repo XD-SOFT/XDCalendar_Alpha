@@ -28,11 +28,14 @@ class MessageDisplayWidget : public FramelessModalMovableShadowWidget
     Q_OBJECT
 
 public:
-    explicit MessageDisplayWidget(QWidget *parent = 0);
     ~MessageDisplayWidget();
 
-    static void showMessage(QWidget *parent, const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
+    static void showMessage(const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
                        MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
+
+private:
+    explicit MessageDisplayWidget(QWidget *parent = 0);
+
 private:
     Ui::MessageDisplayWidget *ui;
 };

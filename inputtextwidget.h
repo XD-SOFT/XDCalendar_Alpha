@@ -25,8 +25,6 @@ class InputTextWidget : public FramelessModalMovableShadowWidget
     Q_OBJECT
 
 public:
-    explicit InputTextWidget(QWidget *parent = Q_NULLPTR);
-    InputTextWidget(const QString &sTitle, const QString &sDefaultText, QWidget *parent = Q_NULLPTR);
     ~InputTextWidget();
 
     /*!
@@ -45,6 +43,10 @@ private slots:
     void on_pOKBtn_clicked();
 
     void on_pCancelBtn_clicked();
+
+private:
+    explicit InputTextWidget(QWidget *parent = Q_NULLPTR);
+    InputTextWidget(const QString &sTitle, const QString &sDefaultText, QWidget *parent = Q_NULLPTR);
 
 private:
     Ui::InputTextWidget *ui;
