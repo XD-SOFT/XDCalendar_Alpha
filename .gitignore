@@ -84,3 +84,5 @@ MoonCalendar.pro.user
 login.json
 >>>>>>> origin/master
 MoonCalendar.pro.user
+*.user
+*.exe
