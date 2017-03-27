@@ -178,7 +178,7 @@ void CCU::close()
             return;
         }
 #else
-       int btn= MessageDisplayWidget::information(MainScreen::mainScreen, tr("教师客户端"), tr("存在上传或者下载的文件，确定关闭？"), MessageDisplayButtonType::Ok, MessageDisplayButtonType::Cancel);
+       int btn= MessageDisplayWidget::showMessage(tr("教师客户端"), tr("存在上传或者下载的文件，确定关闭？"), MessageDisplayButtonType::Ok, MessageDisplayButtonType::Cancel);
        if(btn == -1) {
            ///Mark Todo,做相关文件方面处理.
            return;
@@ -217,9 +217,11 @@ void CCU::logOff()
             return;
         }
 #else
-    int btn = MessageDisplayWidget::information(MainScreen::mainScreen, tr("教师客户端"),
-                                                                        tr("存在上传或者下载的文件，确定注销？"),
-                                                                       MessageDisplayButtonType::Ok, MessageDisplayButtonType::Cancel);
+    int btn = MessageDisplayWidget::showMessage(tr("教师客户端"),
+                                                tr("存在上传或者下载的文件，确定注销？"),
+
+                                                MessageDisplayButtonType::Ok,
+                                                MessageDisplayButtonType::Cancel);
     if(btn == -1) {
         ///Mark Todo, 取消上传做相关处理....
 

@@ -935,7 +935,7 @@ void MainScreen::saveAll(QString s)
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::warning(0, tr("教师客户端"), tr("无法打开文件:%1").arg(s));
 #else
-       MessageDisplayWidget::showMessage(0, tr("教师客户端"), tr("无法打开文件:%1").arg(s));
+       MessageDisplayWidget::showMessage(tr("教师客户端"), tr("无法打开文件:%1").arg(s));
 #endif
     }
 
@@ -962,7 +962,7 @@ void MainScreen::loadAll(QString s)
 #ifdef USER_QT_MESSAGEBOX
        QMessageBox::warning(0,"教师客户端","文件不存在或数据格式错误！");
 #else
-        MessageDisplayWidget::showMessage(0,"教师客户端","文件不存在或数据格式错误！");
+        MessageDisplayWidget::showMessage("教师客户端","文件不存在或数据格式错误！");
 #endif
 
 

@@ -227,7 +227,7 @@ void IconSelectWidget::on_pUploadBtn_clicked()
 #ifdef USER_QT_MESSAGEBOX
             QMessageBox::warning(this, tr("Error"), tr("Cannot load image file"));
 #else
-            MessageDisplayWidget::showMessage(this, tr("Error"), tr("Cannot load image file"));
+            MessageDisplayWidget::showMessage(tr("Error"), tr("Cannot load image file"));
 #endif
             return;
         }

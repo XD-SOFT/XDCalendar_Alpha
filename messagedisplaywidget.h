@@ -22,15 +22,9 @@ class QEventLoop;
 enum class MessageDisplayButtonType : quint8 {
     Ok = 0,
     Cancel = 1,
-    About,
     NoButton = 255
 };
-//上面每添加一个新的按键,必须添加对应的名称 ；按键的值=对应当前数据组的下标索引
-static QString MessageDisplayButtonName[]={
-    "Ok",
-    "Cancel",
-    "About"
-};
+
 class MessageDisplayWidget : public FramelessModalMovableShadowWidget
 {
     Q_OBJECT
@@ -38,24 +32,26 @@ class MessageDisplayWidget : public FramelessModalMovableShadowWidget
 public:
     ~MessageDisplayWidget();
 
-    static int showMessage(QWidget *parent ,const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
-                       MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
-    static int information(QWidget *parent ,const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
-                       MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
-    static int about(QWidget *parent ,const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
-                       MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
+    /*!
+     * \brief sTitle 窗口标题.
+     * \param sInfo  消息框信息.
+     * \param okBtn  确定按钮.
+     * \param parent 文本输入部件父窗口.
+     * \return btn   取消按钮.
+     * \example MessageDisplayWidget::showMessage（"education", "确认提交信息！", MessageDisplayButtonType::Ok, MessageDisplayButtonType::Cancel）
+     */
 
+    static int showMessage(const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
+                       MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
 
 private slots:
-    void on_pOkBtn_clicked();
-    void on_pBtn_clicked();
+    void on_OkButton_clicked();
+    void on_CandelButton_clicked();
 
 private:
     explicit MessageDisplayWidget(QWidget *parent = 0);
     MessageDisplayWidget(const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn,
-                           MessageDisplayButtonType btn, int type,QWidget *parent = Q_NULLPTR );
-    static int creatMessage(QWidget *parent ,const QString &sTitle, const QString &sInfo, int type, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
-                            MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
+                           MessageDisplayButtonType btn, QWidget *parent = 0);
 
 private:
     Ui::MessageDisplayWidget *ui;

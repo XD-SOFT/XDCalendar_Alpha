@@ -185,7 +185,7 @@ void dlgConfig::uploadImage() {
 #ifdef USER_QT_MESSAGEBOX
             QMessageBox::warning(this, tr("教师客户端"), tr("加载文件失败！"));
 #else
-            MessageDisplayWidget::showMessage(this, tr("教师客户端"), tr("加载文件失败！"));
+            MessageDisplayWidget::showMessage(tr("教师客户端"), tr("加载文件失败！"));
 #endif
             return;
         }

@@ -266,7 +266,7 @@ void EditWindow::sureButtonClicked()
 #ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("请重新选择日期"));
 #else
-               MessageDisplayWidget::information(this, tr("教师客户端"), tr("请重新选择日期"));
+               MessageDisplayWidget::showMessage(tr("教师客户端"), tr("请重新选择日期"));
 #endif
 
                 return;
@@ -277,7 +277,7 @@ void EditWindow::sureButtonClicked()
 #ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("结束日期不能早于开始日期！"));
 #else
-            MessageDisplayWidget::information(this, tr("教师客户端"), tr("结束日期不能早于开始日期！")) ;
+            MessageDisplayWidget::showMessage(tr("教师客户端"), tr("结束日期不能早于开始日期！")) ;
 #endif
 
                 return;
@@ -344,7 +344,7 @@ void EditWindow::sureButtonClicked()
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("课程参数不能为空"));
 #else
-        MessageDisplayWidget::information(this, tr("教师客户端"), tr("课程参数不能为空"));
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("课程参数不能为空"));
 #endif
     }
 

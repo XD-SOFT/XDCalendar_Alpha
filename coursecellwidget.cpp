@@ -781,7 +781,7 @@ void CourseCellWidget::uploadFileError(const QString &sFilePathName, const QStri
 #ifdef USER_QT_MESSAGEBOX
     QMessageBox::information(this, tr("上传失败"), tr("上传文件失败:%1，请手动再次尝试上传！").arg(sError));
 #else
-    MessageDisplayWidget::information(this, tr("上传失败"), tr("上传文件失败:%1，请手动再次尝试上传！").arg(sError));
+    MessageDisplayWidget::showMessage(tr("上传失败"), tr("上传文件失败:%1，请手动再次尝试上传！").arg(sError));
 #endif
 }
 
@@ -872,7 +872,7 @@ void CourseCellWidget::dragEnterEvent(QDragEnterEvent *event)
  #ifdef USER_QT_MESSAGEBOX
             QMessageBox::information(this, tr("教师客户端"), tr("编辑模式不能拖入资源,请切换模式!"));
 #else
-            MessageDisplayWidget::information(this, tr("教师客户端"), tr("编辑模式不能拖入资源,请切换模式!"));
+            MessageDisplayWidget::showMessage(tr("教师客户端"), tr("编辑模式不能拖入资源,请切换模式!"));
 #endif
         }
 

@@ -45,7 +45,7 @@ void Dialog::uiState(QJsonObject jo)
 #ifdef USER_QT_MESSAGEBOX
      QMessageBox::information(this, tr("教师客户端"), QString(QJsonDocument(jo).toJson()));
 #else
-    MessageDisplayWidget::information(this, tr("教师客户端"), QString(QJsonDocument(jo).toJson()));
+    MessageDisplayWidget::showMessage(tr("教师客户端"), QString(QJsonDocument(jo).toJson()));
 #endif
 }
 
