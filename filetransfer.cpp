@@ -1,4 +1,5 @@
 #include "filetransfer.h"
+#include "messagedisplaywidget.h"
 #include<QtDebug>
 #include <QTextCodec>
 #include <QAuthenticator>
@@ -440,7 +441,11 @@ void FileTransfer::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 bool FileTransfer::setArguments(const QMap<QString, QString> &arg, Lesson *pLesson)
 {
     if(m_upOrDownloadFileHash.count(pLesson, arg) > 0) {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(0, tr("教师客户端"), tr("该文件已在下载队列中."));
+#else
+        MessageDisplayWidget::information(0, tr("教师客户端"), tr("该文件已在下载队列中."));
+#endif
 
         return false;
     }
@@ -566,7 +571,11 @@ FileTransfer::FileTransfer(const QMap<QString, QString> &arguments, QObject *par
 void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLesson, bool bCreateUpload)
 {
     if(m_upOrDownloadFileHash.count(pLesson, filePath) > 0) {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(0, tr("教师客户端"), tr("该文件已在上传队列中."));
+#else
+        MessageDisplayWidget::information(0, tr("教师客户端"), tr("该文件已在上传队列中."));
+#endif
         return;
     }
 

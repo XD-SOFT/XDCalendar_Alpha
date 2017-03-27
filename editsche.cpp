@@ -4,6 +4,7 @@
 #include "scheduledb.h"
 #include "semester.h"
 #include "editsectime.h"
+#include "messagedisplaywidget.h"
 #include <QVBoxLayout>
 #include <QDebug>
 #include <QMessageBox>
@@ -257,15 +258,23 @@ void EditSche::sureButtonClicked()
             connect(schedb, SIGNAL(updateFinish(QJsonObject)), this, SLOT(editState(QJsonObject)) );
             schedb->updateUserSche();
         }
-
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("修改成功"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("修改成功"));
+#endif
         emit updateParent(schedule, add);
         this->close();
         //对于服务器端数据库，需要构造scheduleDB并且调用该类中相应的API
     }
     else
     {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("输入不合法"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("输入不合法"));
+#endif
+
     }
 
 }

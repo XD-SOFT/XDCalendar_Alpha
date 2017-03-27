@@ -12,6 +12,7 @@
 #include "termdb.h"
 //#include "loginstatuswidget.h"
 #include "resfilesdb.h"
+#include "messagedisplaywidget.h"
 #include "lessonremarkdb.h"
 #include <stdexcept>
 #include <QPainter>
@@ -807,7 +808,11 @@ void CourseGrid::changeToEdit()
     int nTermWeekNum = pCurTerm->getDateWeekNumber(m_curDisplayDate);
 
     if(0 == nTermWeekNum) {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("日期不处于学期中，请先选择处于学期中的日期再进行编辑。"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("日期不处于学期中，请先选择处于学期中的日期再进行编辑。"));
+#endif
         CCU::ccu->changeViewMode(ViewMode::Standard);
 
         return;

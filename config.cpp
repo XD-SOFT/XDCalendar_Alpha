@@ -4,6 +4,7 @@
 #include "term.h"
 #include "semester.h"
 #include "getdatanw.h"
+#include "messagedisplaywidget.h"
 #include <QStandardPaths>
 #include <stdexcept>
 #ifdef TEST
@@ -437,7 +438,11 @@ bool Arg::getNetReusetHostUrl(QString &sNetRequestUrl)
         IP =  configSettings.value("ServerIP", QString()).toString();
 
         if(IP.isEmpty()) {
+#ifdef USER_QT_MESSAGEBOX
             QMessageBox::warning(0, tr("教师客户端"), tr("请配置服务器"));
+#else
+           MessageDisplayWidget::showMessage(0, tr("教师客户端"), tr("请配置服务器")) ;
+#endif
 
             return false;
         }

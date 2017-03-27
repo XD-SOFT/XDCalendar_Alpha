@@ -4,6 +4,7 @@
 #include "inputtextwidget.h"
 #include "dataclassinstancemanage.h"
 #include "lessonremarkdb.h"
+#include "messagedisplaywidget.h"
 #include <QTextEdit>
 #include <QPushButton>
 #include <QPoint>
@@ -519,7 +520,11 @@ void NoteWidget::createPPT()
                bool bExist = pEditLesson->rootFolder()->checkName(sFileName);
 
                if(bExist) {
+#ifdef USER_QT_MESSAGEBOX
                   QMessageBox::StandardButton btn = QMessageBox::information(this, tr("文件同名"), tr("存在同名文件，请重命名文件."));
+#else
+                   int btn = MessageDisplayWidget::information(this, tr("文件同名"), tr("存在同名文件，请重命名文件."));
+#endif
 
                   return;
                }
@@ -543,7 +548,11 @@ void NoteWidget::createPPT()
                 emit lessonResourceAddComplete(pEditLesson, sDateFileName, sFilePathName);
             }
             else {
+#ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("创建PPT文件失败!"));
+#else
+                MessageDisplayWidget::information(this, tr("教师客户端"), tr("创建PPT文件失败!"));
+#endif
             }
         }
 
@@ -627,7 +636,11 @@ void NoteWidget::createDoc()
             bool bExist = pEditLesson->rootFolder()->checkName(sFileName);
 
             if(bExist) {
+#ifdef USER_QT_MESSAGEBOX
                QMessageBox::StandardButton btn = QMessageBox::information(this, tr("教师客户端"), tr("存在同名文件，请重命名文件."));
+#else
+             int btn =   MessageDisplayWidget::information(this, tr("教师客户端"), tr("存在同名文件，请重命名文件."));
+#endif
 
                return;
             }
@@ -646,7 +659,11 @@ void NoteWidget::createDoc()
             emit lessonResourceAddComplete(pEditLesson, sDateFileName, sFilePathName);
         }
         else {
+#ifdef USER_QT_MESSAGEBOX
             QMessageBox::information(this, tr("教师客户端"), tr("创建Doc文件失败!"));
+#else
+            MessageDisplayWidget::information(this, tr("教师客户端"), tr("创建Doc文件失败!"));
+#endif
         }
     }
 

@@ -7,6 +7,7 @@
 #include "term.h"
 #include "lesson.h"
 #include "filenumwidget.h"
+#include "messagedisplaywidget.h"
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QTextEdit>
@@ -304,7 +305,12 @@ void FileListWidget::openFile(QTreeWidgetItem* treeItem, int num)
 
     QFile file(sFile);
     if(!file.exists()) {
+
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("请先下载该文件"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("请先下载该文件"));
+#endif
 
         return;
     }
@@ -602,7 +608,11 @@ void FileListWidget::uploadFile(int nRow)
 
     QFile upLoadFile(sFilePathName);
     if(!upLoadFile.exists()) {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("本地文件不存在，请先下载该文件！"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("本地文件不存在，请先下载该文件！"));
+#endif
 
         return;
     }
@@ -681,8 +691,11 @@ void FileListWidget::downLoadComplete(const QString &sError)
         if(sError.contains(":")) {
             sText= sError.split(":").last();
         }
-
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("下载错误：%1").arg(sText));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("下载错误：%1").arg(sText));
+#endif
     }
 }
 

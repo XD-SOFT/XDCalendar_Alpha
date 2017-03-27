@@ -6,6 +6,7 @@
 #include "term.h"
 #include "coursecellwidget.h"
 #include "dataclassinstancemanage.h"
+#include "messagedisplaywidget.h"
 #include <QVBoxLayout>
 #include <QComboBox>
 #include <QLabel>
@@ -262,13 +263,22 @@ void EditWindow::sureButtonClicked()
             QDate endDate = m_pEndDateEdit->date();
 
             if(!((startDate > semsterStartDate) && (endDate < semesterEndDate))) {
+#ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("请重新选择日期"));
+#else
+               MessageDisplayWidget::information(this, tr("教师客户端"), tr("请重新选择日期"));
+#endif
 
                 return;
             }
 
             if(startDate > endDate) {
+
+#ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("结束日期不能早于开始日期！"));
+#else
+            MessageDisplayWidget::information(this, tr("教师客户端"), tr("结束日期不能早于开始日期！")) ;
+#endif
 
                 return;
             }
@@ -331,7 +341,11 @@ void EditWindow::sureButtonClicked()
     }
     else
     {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("课程参数不能为空"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("课程参数不能为空"));
+#endif
     }
 
 }

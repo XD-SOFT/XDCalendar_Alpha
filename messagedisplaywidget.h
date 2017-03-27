@@ -21,13 +21,15 @@ class MessageDisplayWidget;
 class QEventLoop;
 enum class MessageDisplayButtonType : quint8 {
     Ok = 0,
-    Cacel = 1,
+    Cancel = 1,
+    About,
     NoButton = 255
 };
-//上面每添加一个新的按键,必须添加对应的名称和图标 ；按键的值=对应当前数据组的下标索引
-static QString MessageDisplayButtonName[][2]={
-    "Ok",   ":/image/start-up.jpg",
-    "Cacel", ":/image/start-up.jpg"
+//上面每添加一个新的按键,必须添加对应的名称 ；按键的值=对应当前数据组的下标索引
+static QString MessageDisplayButtonName[]={
+    "Ok",
+    "Cancel",
+    "About"
 };
 class MessageDisplayWidget : public FramelessModalMovableShadowWidget
 {
@@ -38,6 +40,11 @@ public:
 
     static int showMessage(QWidget *parent ,const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
                        MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
+    static int information(QWidget *parent ,const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
+                       MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
+    static int about(QWidget *parent ,const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
+                       MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
+
 
 private slots:
     void on_pOkBtn_clicked();
@@ -46,7 +53,9 @@ private slots:
 private:
     explicit MessageDisplayWidget(QWidget *parent = 0);
     MessageDisplayWidget(const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn,
-                           MessageDisplayButtonType btn, QWidget *parent = Q_NULLPTR );
+                           MessageDisplayButtonType btn, int type,QWidget *parent = Q_NULLPTR );
+    static int creatMessage(QWidget *parent ,const QString &sTitle, const QString &sInfo, int type, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
+                            MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
 
 private:
     Ui::MessageDisplayWidget *ui;

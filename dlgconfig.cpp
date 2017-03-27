@@ -4,6 +4,7 @@
 #include "appconfig.h"
 #include "titlebar.h"
 #include "modifypassworddialog.h"
+#include "messagedisplaywidget.h"
 
 #include <QStatusBar>
 #include <QToolBar>
@@ -181,7 +182,11 @@ void dlgConfig::uploadImage() {
         QString filename = dialog.selectedFiles()[0];
         QImage img (filename);
         if(img.isNull()) {
+#ifdef USER_QT_MESSAGEBOX
             QMessageBox::warning(this, tr("教师客户端"), tr("加载文件失败！"));
+#else
+            MessageDisplayWidget::showMessage(this, tr("教师客户端"), tr("加载文件失败！"));
+#endif
             return;
         }
         QPixmap pixmap = QPixmap::fromImage(img);

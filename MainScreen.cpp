@@ -35,6 +35,7 @@
 #include "filelistwidget.h"
 #include "termwidget.h"
 #include "settingswidget.h"
+#include "messagedisplaywidget.h"
 
 MainScreen* MainScreen::mainScreen = Q_NULLPTR;
 int MainScreen::window_long = 0;
@@ -929,8 +930,17 @@ void MainScreen::saveAll(QString s)
         out<<(*DataBase::getDataBase());
 
         file.close();
+    } else
+    {
+#ifdef USER_QT_MESSAGEBOX
+        QMessageBox::warning(0, tr("教师客户端"), tr("无法打开文件:%1").arg(s));
+#else
+       MessageDisplayWidget::showMessage(0, tr("教师客户端"), tr("无法打开文件:%1").arg(s));
+#endif
     }
-    else QMessageBox::warning(0, tr("教师客户端"), tr("无法打开文件:%1").arg(s));
+
+
+
 }
 void MainScreen::loadAll(QString s)
 {
@@ -947,8 +957,16 @@ void MainScreen::loadAll(QString s)
         in>>(*DataBase::getDataBase());
 
         file.close();
+    }else
+    {
+#ifdef USER_QT_MESSAGEBOX
+       QMessageBox::warning(0,"教师客户端","文件不存在或数据格式错误！");
+#else
+        MessageDisplayWidget::showMessage(0,"教师客户端","文件不存在或数据格式错误！");
+#endif
+
+
     }
-    else QMessageBox::warning(0,"教师客户端","文件不存在或数据格式错误！");
 
 }
 

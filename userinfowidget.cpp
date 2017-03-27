@@ -2,6 +2,7 @@
 #include "ui_userinfowidget.h"
 #include "teacher.h"
 #include "config.h"
+#include "messagedisplaywidget.h"
 #include <QPainter>
 #include <QResizeEvent>
 #include <QSignalMapper>
@@ -223,7 +224,11 @@ void IconSelectWidget::on_pUploadBtn_clicked()
         QString filename = dialog.selectedFiles()[0];
         QImage img (filename);
         if(img.isNull()) {
+#ifdef USER_QT_MESSAGEBOX
             QMessageBox::warning(this, tr("Error"), tr("Cannot load image file"));
+#else
+            MessageDisplayWidget::showMessage(this, tr("Error"), tr("Cannot load image file"));
+#endif
             return;
         }
 

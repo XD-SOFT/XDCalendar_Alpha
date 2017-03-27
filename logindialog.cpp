@@ -10,6 +10,7 @@
 #include "masklabel.h"
 #include "accountitem.h"
 #include "loginstatuswidget.h"
+#include "messagedisplaywidget.h"
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QKeyEvent>
@@ -506,13 +507,21 @@ void loginDialog::loginState(const QJsonObject &jo)
         }
         else {
             //qDebug() << status <<endl;
+#ifdef USER_QT_MESSAGEBOX
             QMessageBox::information(this, tr("教师客户端"), tr("登录失败，请检查用户名跟密码！"));
+#else
+            MessageDisplayWidget::information(this, tr("教师客户端"), tr("登录失败，请检查用户名跟密码！"));
+#endif
         }
 //        writeLocalUserJsonFile("login.json");
     }
     else {
         //qDebug() << status <<endl;
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("登录失败,请检查网络设置！"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("登录失败,请检查网络设置！"));
+#endif
     }
 
     loginButton->setEnabled(true);
@@ -561,7 +570,11 @@ void loginDialog::on_loginButton_clicked()
             connect(userdb, SIGNAL(updateLoginUI(const QJsonObject&)), this, SLOT(loginState(const QJsonObject&)) );
             connect(userdb, &UserDB::modifiedPasswordByUserNameFinished, this, &loginDialog::modifiedPasswordFinished);
             connect(userdb, &UserDB::loginRequestError, [this](const QString &sError){loginButton->setEnabled(true);
-            QMessageBox::information(this, tr("教师客户端"), tr("登录错误：%1").arg(sError));});
+#ifdef USER_QT_MESSAGEBOX
+                QMessageBox::information(this, tr("教师客户端"), tr("登录错误：%1").arg(sError));});
+#else
+                MessageDisplayWidget::information(this, tr("教师客户端"), tr("登录错误：%1").arg(sError));});
+#endif
         }
 
         userdb->setUsername(pLoginAccountComboBox->lineEdit()->text());
@@ -570,7 +583,11 @@ void loginDialog::on_loginButton_clicked()
     }
     else
     {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::about(NULL, "教师客户端", "用户名密码不能为空");
+#else
+        MessageDisplayWidget::about(NULL, "教师客户端", "用户名密码不能为空", MessageDisplayButtonType::About);
+#endif
 
         if(pLoginAccountComboBox->currentText().isEmpty()) {
             pLoginAccountComboBox->setFocus();

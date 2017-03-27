@@ -9,6 +9,7 @@
 #include "handler.h"
 #include "userdb.h"
 #include "dataclassinstancemanage.h"
+#include "messagedisplaywidget.h"
 #include <QSettings>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -193,12 +194,20 @@ void SettingsWidget::on_pOkBtn_clicked()
                 m_bServerTestPassed = false;
             }
             else {
+#ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("服务器配置未测试通过!"));
+#else
+                MessageDisplayWidget::information(this, tr("教师客户端"), tr("服务器配置未测试通过!")) ;
+#endif
             }
         }
     }
     else {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("服务器地址不能为空！"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("服务器地址不能为空！"));
+#endif
 
         return;
     }
@@ -233,15 +242,22 @@ void SettingsWidget::on_pTestNetWorkBtn_clicked()
 void SettingsWidget::testReplyArrived(QNetworkReply *reply)
 {
     if(reply->error() == QNetworkReply::NoError) {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("测试通过，服务器设置可用"));
+#else
+        MessageDisplayWidget::information(this, tr("教师客户端"), tr("测试通过，服务器设置可用"));
+#endif
         m_bServerTestPassed = true;
 //        Arg *pArg = Arg::getInstance();
 //        pArg->setServerIpAndAddress(ui->pIPAddressLineEdit->text(), ui->pPortSpinBox->value());
 
         return;
     }
-
+#ifdef USER_QT_MESSAGEBOX
     QMessageBox::information(this, tr("教师客户端"), tr("测试未通过，服务器设置不可用"));
+#else
+    MessageDisplayWidget::information(this, tr("教师客户端"), tr("测试未通过，服务器设置不可用"));
+#endif
     m_bServerTestPassed = false;
 }
 

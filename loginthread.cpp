@@ -1,4 +1,5 @@
 #include "loginthread.h"
+#include "messagedisplaywidget.h"
 #include <QDebug>
 #include <QJsonParseError>
 #include <QMessageBox>
@@ -60,7 +61,11 @@ void loginThread::LoginFinish(QNetworkReply *reply)
              {
                  QJsonObject account = jsonOb.take("account").toObject();
                  if(account.isEmpty()){
+#ifdef USER_QT_MESSAGEBOX
                     QMessageBox::information(NULL,"Information","Login error: return Json data is Empty ",QMessageBox::Ok);
+#else
+      MessageDisplayWidget::information(NULL,"Information","Login error: return Json data is Empty ") ;
+#endif
                     return;
                  }
                  // get userID
@@ -72,11 +77,19 @@ void loginThread::LoginFinish(QNetworkReply *reply)
              }
              else
              {
+#ifdef USER_QT_MESSAGEBOX
                  QMessageBox::information(NULL,"Information","Login error: return data isn't JsonObject",QMessageBox::Ok);
+#else
+                 MessageDisplayWidget::information(NULL,"Information","Login error: return data isn't JsonObject");
+#endif
              }
         }
         else {
+ #ifdef USER_QT_MESSAGEBOX
             QMessageBox::information(NULL,"Information","Login error: Request is fail",QMessageBox::Ok);
+#else
+            MessageDisplayWidget::information(NULL,"Information","Login error: Request is fail");
+#endif
             // 出现错误，打印出来，方便调试解决
             //QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
             //statusCodeV是HTTP服务器的相应码，reply->error()是Qt定义的错误码，可以参考QT的文档

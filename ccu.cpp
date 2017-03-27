@@ -2,7 +2,7 @@
 #include "minimainscreen.h"
 #include <QSettings>
 #include "handler.h"
-
+#include "messagedisplaywidget.h"
 CCU* CCU::ccu = nullptr;
 
 void CCU::startWork()
@@ -171,11 +171,20 @@ void CCU::changeViewMode (ViewMode target)
 void CCU::close()
 {
     if((Arg::sUpLoadFileCount > 0) || (Arg::sDownLoadFileCount > 0)) {
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::StandardButton btn = QMessageBox::information(MainScreen::mainScreen, tr("教师客户端"), tr("存在上传或者下载的文件，确定关闭？"), QMessageBox::Ok, QMessageBox::Cancel);
         if(btn == QMessageBox::Cancel) {
             ///Mark Todo,做相关文件方面处理.
             return;
         }
+#else
+       int btn= MessageDisplayWidget::information(MainScreen::mainScreen, tr("教师客户端"), tr("存在上传或者下载的文件，确定关闭？"), MessageDisplayButtonType::Ok, MessageDisplayButtonType::Cancel);
+       if(btn == -1) {
+           ///Mark Todo,做相关文件方面处理.
+           return;
+       }
+#endif
+
 
 //        emit transferFileAbort();
         ///Mark Todo，文件取消操作处理.
@@ -196,17 +205,30 @@ void CCU::close()
 void CCU::logOff()
 {
     if((Arg::sUpLoadFileCount > 0) || (Arg::sDownLoadFileCount > 0)) {
+
+    }
+#ifdef USER_QT_MESSAGEBOX
         QMessageBox::StandardButton btn = QMessageBox::information(MainScreen::mainScreen, tr("教师客户端"),
                                                                    tr("存在上传或者下载的文件，确定注销？"),
-                                                                   QMessageBox::Ok, QMessageBox::Cancel);
+                                                                  QMessageBox::Ok, QMessageBox::Cancel);
         if(btn == QMessageBox::Cancel) {
             ///Mark Todo, 取消上传做相关处理....
 
             return;
         }
+#else
+    int btn = MessageDisplayWidget::information(MainScreen::mainScreen, tr("教师客户端"),
+                                                                        tr("存在上传或者下载的文件，确定注销？"),
+                                                                       MessageDisplayButtonType::Ok, MessageDisplayButtonType::Cancel);
+    if(btn == -1) {
+        ///Mark Todo, 取消上传做相关处理....
+
+        return;
+    }
+#endif
 
 //        emit transferFileAbort();
-    }
+//    }
 
 //    qDebug()<<"close the MainScreen"<<endl;
     Arg::dumpUserData();

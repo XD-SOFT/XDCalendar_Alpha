@@ -1,4 +1,5 @@
 #include "dialog.h"
+#include "messagedisplaywidget.h"
 #include<QtDebug>
 #include <QTextCodec>
 #include <QMap>
@@ -41,7 +42,11 @@ void Dialog::startOp()
 void Dialog::uiState(QJsonObject jo)
 {
      this->close();
+#ifdef USER_QT_MESSAGEBOX
      QMessageBox::information(this, tr("教师客户端"), QString(QJsonDocument(jo).toJson()));
+#else
+    MessageDisplayWidget::information(this, tr("教师客户端"), QString(QJsonDocument(jo).toJson()));
+#endif
 }
 
 Dialog::~Dialog()
