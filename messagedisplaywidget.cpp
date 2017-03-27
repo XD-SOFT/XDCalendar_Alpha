@@ -76,7 +76,8 @@ int MessageDisplayWidget::showMessage(const QString &sTitle, const QString &sInf
     int nResult = m_pEvLoop->exec();
 
     delete pMessageDisplayWgt;
-    //delete m_pEvLoop;
+    delete m_pEvLoop;
+
 
     return nResult;
 }
