@@ -523,7 +523,7 @@ void NoteWidget::createPPT()
 #ifdef USER_QT_MESSAGEBOX
                   QMessageBox::StandardButton btn = QMessageBox::information(this, tr("文件同名"), tr("存在同名文件，请重命名文件."));
 #else
-                   int btn = MessageDisplayWidget::information(this, tr("文件同名"), tr("存在同名文件，请重命名文件."));
+                   int btn = MessageDisplayWidget::showMessage(tr("文件同名"), tr("存在同名文件，请重命名文件."));
 #endif
 
                   return;
@@ -551,7 +551,7 @@ void NoteWidget::createPPT()
 #ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("创建PPT文件失败!"));
 #else
-                MessageDisplayWidget::information(this, tr("教师客户端"), tr("创建PPT文件失败!"));
+                MessageDisplayWidget::showMessage(tr("教师客户端"), tr("创建PPT文件失败!"));
 #endif
             }
         }
@@ -639,7 +639,7 @@ void NoteWidget::createDoc()
 #ifdef USER_QT_MESSAGEBOX
                QMessageBox::StandardButton btn = QMessageBox::information(this, tr("教师客户端"), tr("存在同名文件，请重命名文件."));
 #else
-             int btn =   MessageDisplayWidget::information(this, tr("教师客户端"), tr("存在同名文件，请重命名文件."));
+             int btn =   MessageDisplayWidget::showMessage(tr("教师客户端"), tr("存在同名文件，请重命名文件."));
 #endif
 
                return;
@@ -662,7 +662,7 @@ void NoteWidget::createDoc()
 #ifdef USER_QT_MESSAGEBOX
             QMessageBox::information(this, tr("教师客户端"), tr("创建Doc文件失败!"));
 #else
-            MessageDisplayWidget::information(this, tr("教师客户端"), tr("创建Doc文件失败!"));
+            MessageDisplayWidget::showMessage(tr("教师客户端"), tr("创建Doc文件失败!"));
 #endif
         }
     }

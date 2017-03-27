@@ -64,7 +64,7 @@ void loginThread::LoginFinish(QNetworkReply *reply)
 #ifdef USER_QT_MESSAGEBOX
                     QMessageBox::information(NULL,"Information","Login error: return Json data is Empty ",QMessageBox::Ok);
 #else
-      MessageDisplayWidget::information(NULL,"Information","Login error: return Json data is Empty ") ;
+      MessageDisplayWidget::showMessage("Information","Login error: return Json data is Empty ") ;
 #endif
                     return;
                  }
@@ -80,7 +80,7 @@ void loginThread::LoginFinish(QNetworkReply *reply)
 #ifdef USER_QT_MESSAGEBOX
                  QMessageBox::information(NULL,"Information","Login error: return data isn't JsonObject",QMessageBox::Ok);
 #else
-                 MessageDisplayWidget::information(NULL,"Information","Login error: return data isn't JsonObject");
+                 MessageDisplayWidget::showMessage("Information","Login error: return data isn't JsonObject");
 #endif
              }
         }
@@ -88,7 +88,7 @@ void loginThread::LoginFinish(QNetworkReply *reply)
  #ifdef USER_QT_MESSAGEBOX
             QMessageBox::information(NULL,"Information","Login error: Request is fail",QMessageBox::Ok);
 #else
-            MessageDisplayWidget::information(NULL,"Information","Login error: Request is fail");
+            MessageDisplayWidget::showMessage("Information","Login error: Request is fail");
 #endif
             // 出现错误，打印出来，方便调试解决
             //QVariant statusCodeV = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);

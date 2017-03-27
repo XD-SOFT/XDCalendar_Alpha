@@ -510,7 +510,7 @@ void loginDialog::loginState(const QJsonObject &jo)
 #ifdef USER_QT_MESSAGEBOX
             QMessageBox::information(this, tr("教师客户端"), tr("登录失败，请检查用户名跟密码！"));
 #else
-            MessageDisplayWidget::information(this, tr("教师客户端"), tr("登录失败，请检查用户名跟密码！"));
+            MessageDisplayWidget::showMessage(tr("教师客户端"), tr("登录失败，请检查用户名跟密码！"));
 #endif
         }
 //        writeLocalUserJsonFile("login.json");
@@ -520,7 +520,7 @@ void loginDialog::loginState(const QJsonObject &jo)
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("登录失败,请检查网络设置！"));
 #else
-        MessageDisplayWidget::information(this, tr("教师客户端"), tr("登录失败,请检查网络设置！"));
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("登录失败,请检查网络设置！"));
 #endif
     }
 
@@ -573,7 +573,7 @@ void loginDialog::on_loginButton_clicked()
 #ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("登录错误：%1").arg(sError));});
 #else
-                MessageDisplayWidget::information(this, tr("教师客户端"), tr("登录错误：%1").arg(sError));});
+                MessageDisplayWidget::showMessage(tr("教师客户端"), tr("登录错误：%1").arg(sError));});
 #endif
         }
 
@@ -586,7 +586,7 @@ void loginDialog::on_loginButton_clicked()
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::about(NULL, "教师客户端", "用户名密码不能为空");
 #else
-        MessageDisplayWidget::about(NULL, "教师客户端", "用户名密码不能为空", MessageDisplayButtonType::About);
+        MessageDisplayWidget::showMessage("教师客户端", "用户名密码不能为空", MessageDisplayButtonType::Ok);
 #endif
 
         if(pLoginAccountComboBox->currentText().isEmpty()) {

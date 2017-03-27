@@ -462,7 +462,7 @@ bool FileTransfer::setArguments(const QMap<QString, QString> &arg, Lesson *pLess
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(0, tr("教师客户端"), tr("该文件已在下载队列中."));
 #else
-        MessageDisplayWidget::information(0, tr("教师客户端"), tr("该文件已在下载队列中."));
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("该文件已在下载队列中."));
 #endif
 
         return false;
@@ -592,7 +592,7 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(0, tr("教师客户端"), tr("该文件已在上传队列中."));
 #else
-        MessageDisplayWidget::information(0, tr("教师客户端"), tr("该文件已在上传队列中."));
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("该文件已在上传队列中."));
 #endif
         return;
     }

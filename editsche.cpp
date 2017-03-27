@@ -261,7 +261,7 @@ void EditSche::sureButtonClicked()
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("修改成功"));
 #else
-        MessageDisplayWidget::information(this, tr("教师客户端"), tr("修改成功"));
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("修改成功"));
 #endif
         emit updateParent(schedule, add);
         this->close();
@@ -272,7 +272,7 @@ void EditSche::sureButtonClicked()
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("输入不合法"));
 #else
-        MessageDisplayWidget::information(this, tr("教师客户端"), tr("输入不合法"));
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("输入不合法"));
 #endif
 
     }
