@@ -12,8 +12,10 @@
 #include <QFile>
 #include <QTimer>
 #include <QMessageBox>
+#include <QJsonObject>
 #include "resfilesdb.h"
 #include "lesson.h"
+#include "handler.h"
 
 //#define FTP_USE
 
@@ -294,18 +296,33 @@ void FileTransfer::ftpDownload()
 
     qDebug()<<"---downLoad url："<<url.toString();
 #else
-    //http://101.200.176.87:8080/Desktop/clientDownloadFile&token=111111&username=lilu&fileName162872017-3-22test.txt
+//    //http://101.200.176.87:8080/Desktop/clientDownloadFile&token=111111&username=lilu&fileName162872017-3-22test.txt
     QString filename = QString::number(Arg::userId) + filearguments["detailID"] + filearguments["date"]
             + filearguments["fileName"];
-    QString uPath ="\/Desktop\/clientDownloadFile";
-    QString uQuery =QString("\?token=111111")+
-            QString("\&username=") + Arg::username+
-            QString("\&fileName=") + filename;
-    QString address =QString("http\:\/\/\%1:8080\%2\%3").arg(Arg::IP).arg(uPath).arg(uQuery);
-    qDebug()<<"--------url:"<<address;
-    QUrl url(address);
+//    QString uPath ="\/Desktop\/clientDownloadFile";
+//    QString uQuery =QString("\?token=111111")+
+//            QString("\&username=") + Arg::username+
+//            QString("\&fileName=") + filename;
+//    QString address =QString("http\:\/\/\%1:8080\%2\%3").arg(Arg::IP).arg(uPath).arg(uQuery);
+//    qDebug()<<"--------url:"<<address;
+//    QUrl url(address);
+
+    QString sServerConfig;
+    Arg *pArg = Arg::getInstance();
+    pArg->getNetReusetHostUrl(sServerConfig);
+
+//    Desktop/clientDownloadFile?fileName=jdk-7u79-windows-x64.exe&username=admin&token=111111
+
+
+    QString sUrl = QString("%1/Desktop/clientDownloadFile?fileName=%2&username=%3&token=%4").arg(sServerConfig).arg(filename)
+            .arg(Arg::username).arg(Arg::tokenStr);
+    Handler *pHandler = Handler::getInstance();
+    connect(pHandler, &Handler::downloadUrlRequestFinished, this, &FileTransfer::downloadFileByHttp, Qt::UniqueConnection);
+    pHandler->requestByUrlAndType(sUrl, Handler::DownloadUrlRequest);
 
 #endif
+
+#ifdef FTP_USE
     QNetworkRequest request(url);
     //    request.setUrl(m_url);
     //    QNetworkAccessManager* manager = new QNetworkAccessManager;
@@ -336,6 +353,7 @@ void FileTransfer::ftpDownload()
 
     pTimer->start(300000);
     //    replyList.append(reply);
+#endif
 }
 
 void FileTransfer::downloadTimeOut()
@@ -725,6 +743,45 @@ void FileTransfer::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
 #endif
 
         qDebug() << "upload complete";
+    }
+}
+
+void FileTransfer::downloadFileByHttp(const QJsonObject &jsonObj)
+{
+    QVariantMap jsonArg = jsonObj.toVariantMap();
+
+    if(jsonArg.contains("Downloadurl")) {
+        QString sUrl = jsonArg.value("Downloadurl").toString();
+
+        QUrl url(sUrl);
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
+        if(accessManager == Q_NULLPTR) {
+            accessManager = new QNetworkAccessManager;
+            connect(accessManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator*)),
+                    this, SLOT(slotAuthenticationRequired(QNetworkReply*, QAuthenticator*)));
+            connect(accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(ftpDownloadReplyFinished(QNetworkReply*)));
+        }
+
+        ++Arg::sDownLoadFileCount;
+
+        QTimer *pTimer = new QTimer(this);
+        connect(pTimer, &QTimer::timeout, this, &FileTransfer::downloadTimeOut);
+
+        reply = accessManager->get(request);
+        m_replyArgsHash.insert(reply, filearguments);
+        m_timerReplyHash.insert(pTimer, reply);
+        connect(reply, SIGNAL(finished()), this, SLOT(finished()), Qt::UniqueConnection);
+        //    qDebug()<<"***adsdsd"<<endl;
+        connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(onDownloadProgress(qint64, qint64)));
+        //    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::UniqueConnection);
+        //    connect(reply, SIGNAL(readyRead()), this, SLOT(readyRead()));
+
+        pTimer->start(300000);
+
+    }
+    else {
+        qDebug() << "this return do not contains http down load url";
     }
 }
 

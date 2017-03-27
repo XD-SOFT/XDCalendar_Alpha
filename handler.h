@@ -36,10 +36,12 @@ public:
       * \var ScheDetDB,这个是什么？？.
       * \var UserInfomation,
       * \var ModifiedPassword,这个跟UserInfomation是UserDB里面用到的，现在暂时放进这里，重构再考虑.
+      * \var DownloadUrlRequest，http文件下载获取url请求.
     */
     Q_ENUMS(RequestType)
     enum RequestType {Login, TermDB, Schedule, ScheduleDetailDB, LessonDB, LessonDetailDB, LessonRemarkDB, ResFileDB, SubjectInfoDB,
-                     GradeInfoDB, ClientConfigDB, KeywordDB, FileKeywordDB, DataNW, ScheDetDB, UserInfomation, ModifiedPassword, Default = 10000};
+                     GradeInfoDB, ClientConfigDB, KeywordDB, FileKeywordDB, DataNW, ScheDetDB, UserInfomation, ModifiedPassword,
+                     DownloadUrlRequest, Default = 10000};
     /*!
      * \brief getInstance, 获取request handler单一实例对象.
      * \return Handler*;
@@ -163,6 +165,9 @@ signals:
 
     ///@\brief 登录错误信息信号.
     void loginRequestError(const QString &sError);
+
+    ///@brief 下载文件url请求完成信号.
+    void downloadUrlRequestFinished(const QJsonObject &jsonObj);
 
 public slots:
     void Finished(QNetworkReply *reply);

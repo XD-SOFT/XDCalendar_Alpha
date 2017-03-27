@@ -237,6 +237,11 @@ void Handler::Finished(QNetworkReply *reply)
             }
                 break;
 
+            case RequestType::DownloadUrlRequest: {
+                emit downloadUrlRequestFinished(jo);
+            }
+                break;
+
             default: {
 //                emit updateUi(jo);
             }

@@ -71,6 +71,9 @@ protected slots:
 
     void uploadProgress(qint64 bytesSent, qint64 bytesTotal);
 
+    ///@brief 下载http格式的文件.
+    void downloadFileByHttp(const QJsonObject &jsonObj);
+
 private:
     QFile *file;
 //    QFileInfo fileInfo;
