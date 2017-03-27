@@ -15,7 +15,7 @@
 #include "resfilesdb.h"
 #include "lesson.h"
 
-#define FTP_USE
+//#define FTP_USE
 
 #include "ccu.h"
 
@@ -262,10 +262,10 @@ void FileTransfer::ftpDownload()
 {
     qDebug()<<"ftpDownload"<<endl;
 
- #ifndef FTP_USE
+ #ifdef FTP_USE
     QUrl url;
 
-    url.setScheme("http");
+    url.setScheme("ftp");
     //        url.setHost(arguments["host"]);//设置主机地址
     //        url.setPath(arguments["path"]);//设置URL路径
     //        url.setPort(2121);//设置URL的端口。
@@ -639,7 +639,7 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
         //        QByteArray data = file.readAll();
 
 
-#ifndef FTP_USE
+#ifdef FTP_USE
         QUrl url;
         url.setScheme("ftp");
         url.setPath(arguments["path"]);
