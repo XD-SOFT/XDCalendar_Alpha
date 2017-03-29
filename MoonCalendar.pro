@@ -133,7 +133,8 @@ SOURCES += main.cpp \
     settingswidget.cpp \
     mynode.cpp \
     mainwindow.cpp \
-    messagedisplaywidget.cpp
+    messagedisplaywidget.cpp \
+    filetransferwnd.cpp
 
 HEADERS  += MainScreen.h daywidget.h mybutton.h date.h dragbox.h database.h \
     setupdialog.h \
@@ -234,7 +235,8 @@ HEADERS  += MainScreen.h daywidget.h mybutton.h date.h dragbox.h database.h \
     settingswidget.h \
     mynode.h \
     mainwindow.h \
-    messagedisplaywidget.h
+    messagedisplaywidget.h \
+    filetransferwnd.h
 
 RESOURCES += \
     resource.qrc
@@ -254,7 +256,8 @@ FORMS += \
     iconselectwidget.ui \
     settingswidget.ui \
     mainwindow.ui \
-    messagedisplaywidget.ui
+    messagedisplaywidget.ui \
+    filetransferwnd.ui
 
 TRANSLATIONS += english.ts \
 settings_zh_CN.ts
