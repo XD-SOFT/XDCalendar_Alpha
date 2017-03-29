@@ -23,6 +23,7 @@ signals:
     void send_arguments(QMap<QString, QString>);
 
     void dowLoadComplete(const QString &sError = QString());
+    void transferPercent(int id, QString percent, QMap<QString, QString> fileInfo);
 
 public slots:
     ///pLesson == Q_NULLPTR的时候为启动时候下载.

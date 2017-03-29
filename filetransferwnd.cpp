@@ -7,14 +7,14 @@
 #include <QLabel>
 itemWidget::itemWidget(QWidget *parent ):QWidget(parent)
 {
-    QLabel *fileName = new QLabel(fileName);
+    QLabel *fileName = new QLabel(this);
     fileName->setFixedWidth(60);
     fileName->setAlignment(Qt::AlignCenter);
     fileName->setObjectName("fileName");
-    QProgressBar * prograss= new QProgressBar();
+    QProgressBar * prograss = new QProgressBar(this);
     prograss->setObjectName("prograss");
     prograss->setRange(0, 1000);
-    QHBoxLayout *itemHLayout= new QHBoxLayout;
+    QHBoxLayout *itemHLayout = new QHBoxLayout;
     itemHLayout->addSpacing(10);
     itemHLayout->addWidget(fileName);
     itemHLayout->addSpacing(15);

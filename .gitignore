@@ -89,3 +89,8 @@ MoonCalendar.pro.user
 MoonCalendar.pro.user
 *.exe
 runlog/MoonCalendar.log
+UserConfig/config.bak
+*.Release
+object_script.MoonCalendar.Debug
+*.Debug
+object_script.MoonCalendar.Release

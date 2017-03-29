@@ -1,6 +1,6 @@
 [General]
-ServerIP=101.200.176.87
+ServerIP=192.168.2.119
 liluautostart=false
 ServerPort=8080
 liludisplayMode=0
-lilusavefilepath=C:/Users/Administrator/AppData/Local/MoonCalendar/XDcalendar
+lilusavefilepath=F:/

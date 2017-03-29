@@ -22,6 +22,8 @@ class Lesson;
 class downloadFile;
 class MyFileIconProvider;
 class UploadFiles2Ftp;
+class fileTransferWnd;
+class QPushButton;
 
 class FileListWidget : public QWidget
 {
@@ -83,6 +85,8 @@ private slots:
 
     void uploadFinished();
 
+    void on_ProgressButton_clicked();
+
 private:
     SearchBox* searchBox = nullptr;
     QTreeWidget* fileTreeWidget = nullptr;
@@ -105,6 +109,8 @@ private:
     downloadFile* dtTool = Q_NULLPTR;
 
     UploadFiles2Ftp *upLoad = Q_NULLPTR;
+
+    fileTransferWnd *m_transferBar = Q_NULLPTR;
 //    MyPushButton *upload_button;
 //    MyPushButton *delete_button;
 //    ///Mark由于disconnet总崩溃，暂时这么处理，不牵涉disconnect,重构考虑改变folder与fileListWidget的方式.
@@ -123,6 +129,8 @@ private:
     MyFileIconProvider *m_provider = Q_NULLPTR;
 
     QProgressBar *m_pProgressBar = Q_NULLPTR;
+
+    QPushButton *m_progressButton;
 
     ///Mark，由于所有的file改变都会发出changed信号，但是有的不需要重重置,所以做这个限制.
     bool m_bUsedReset = true;

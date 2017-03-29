@@ -62,6 +62,8 @@ void downloadFile::download(const QMap<QString, QString> &filePath, Lesson *pLes
         connect(transfer, SIGNAL(downloadFinished()), this, SIGNAL(dowLoadComplete()));
         connect(transfer, SIGNAL(ftpDownloadError(const QString&)), this, SLOT(downLoadError(const QString&)));
         //            connect(this, SIGNAL(start()), transfer, SLOT( ftpDownload() ));
+        connect(transfer, SIGNAL(transferPercent(int,QString,QMap<QString,QString>)),
+                this, SIGNAL(transferPercent(int,QString,QMap<QString,QString>)));
     }
 
     qDebug() << "the filePath is:" << filePath;

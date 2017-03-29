@@ -37,7 +37,7 @@
 #include "dataclassinstancemanage.h"
 #include "folder.h"
 #include "uploadfiles2ftp.h"
-
+#include "filetransferwnd.h"
 //#pragma execution_character_set("utf-8")
 
 const int RESOURCE_ABSOLUTELY_PATH_ROLE = Qt::UserRole + 1000;
@@ -46,6 +46,10 @@ const int RESOURCE_ABSOLUTELY_PATH_ROLE = Qt::UserRole + 1000;
 FileListWidget::FileListWidget(QWidget *parent) : QWidget(parent)
 {
     setup ();
+
+    //创建上传和下载显示窗口
+    m_transferBar = new fileTransferWnd;
+    m_transferBar->hide();
 
     QVBoxLayout *mainLayout = new QVBoxLayout (this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -169,6 +173,13 @@ FileListWidget::FileListWidget(QWidget *parent) : QWidget(parent)
     m_pProgressBar->hide();
     mainLayout->addWidget(m_pProgressBar);
     mainLayout->addSpacing(5);
+    m_pProgressBar->hide();
+
+    m_progressButton = new QPushButton(this);
+    m_progressButton->setFixedHeight(30);
+    mainLayout->addWidget(m_progressButton);
+    connect(m_progressButton, SIGNAL(clicked(bool)), this, SLOT(on_ProgressButton_clicked()));
+
 
     QHBoxLayout *pUpLayout = new QHBoxLayout;
     pUpLayout->setContentsMargins(5, 0, 0, 0);
@@ -633,6 +644,14 @@ void FileListWidget::uploadFinished()
     showUpdateProgress(false);
 }
 
+void FileListWidget::on_ProgressButton_clicked()
+{
+    if(Q_NULLPTR != m_transferBar)
+    {
+        m_transferBar->show();
+    }
+}
+
 void FileListWidget::GF_downloadFile(int nRow)
 {
 //   if(m_pProgressBar == Q_NULLPTR) {
@@ -658,6 +677,8 @@ void FileListWidget::GF_downloadFile(int nRow)
    if(dtTool == Q_NULLPTR) {
        dtTool = new downloadFile();
        connect(dtTool, SIGNAL(dowLoadComplete(const QString&)), this, SLOT(downLoadComplete(const QString&)));
+       connect(dtTool, SIGNAL(transferPercent(int,QString,QMap<QString,QString>)),
+               m_transferBar, SLOT(transferPercent(int,QString,QMap<QString,QString>)));
    }
 
    QMap<QString, QString> args;

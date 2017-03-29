@@ -46,6 +46,7 @@ public:
 
 signals:
     void ftpDownloadError(const QString &sError);
+    void transferPercent(int id, QString percent, QMap<QString, QString> fileInfo );
 
 protected slots:
 
