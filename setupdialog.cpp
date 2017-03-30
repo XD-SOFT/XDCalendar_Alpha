@@ -161,7 +161,9 @@ void SetupDialog::setupUserSettings ()
         Arg *pArg = Arg::getInstance();
         QDir dir;
         pArg->getSaveDir(dir);
-        auto newPath = dir.absolutePath () + '/' + QFileInfo (name).fileName ();
+        QString newPath = dir.absolutePath () + '/' + QFileInfo (name).fileName ();
+        newPath.replace("//", "/");
+        newPath.replace("/", "\\");
         file.copy (newPath);
 
         QPixmap openedIcon = QPixmap::fromImage (QImage (newPath));

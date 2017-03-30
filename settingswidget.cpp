@@ -214,9 +214,10 @@ void SettingsWidget::on_pOkBtn_clicked()
 
     ///TODO.下面保存路径.
     sKey = Arg::username + "savefilepath";
-    configSettings.setValue(sKey, ui->pSaveFilePathLineEdit->text());
+    QString sSavePath = ui->pSaveFilePathLineEdit->text();
+    configSettings.setValue(sKey, sSavePath);
     Arg *pArg = Arg::getInstance();
-    pArg->configDir = QDir(ui->pSaveFilePathLineEdit->text());
+    pArg->configDir = QDir(sSavePath);
 
     QString sPassword = ui->pPasswordLineEdit->text().trimmed();
     if(!sPassword.isEmpty()) {

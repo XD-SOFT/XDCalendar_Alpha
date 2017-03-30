@@ -310,8 +310,8 @@ void FileListWidget::openFile(QTreeWidgetItem* treeItem, int num)
         sFile = dir.absolutePath() + "/SaveFile/" + courseFolder + "/" + path.split("/").last();
     }
 
-
-    sFile.replace("/","\\");
+    sFile.replace("//", "/");
+    sFile.replace("/", "\\");
 //    qDebug() << "file path: " << sFile << endl;
 
     QFile file(sFile);
@@ -524,6 +524,8 @@ void FileListWidget::update ()
     QDir dir;
     pArg->getSaveDir(dir);
     m_curResPath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + folder->name();
+    m_curResPath.replace("//", "/");
+    m_curResPath.replace("/", "\\");
 //    nodeMap.insert(ret, folderPath);
 //    m_curResPath.clear();
 //    m_curResPath.append(folderPath);
@@ -742,7 +744,7 @@ void FileListWidget::deleteFile(int nRow)
     QDir dir;
     pArg->getSaveDir(dir);
     QString file = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + courseFolder + "/" + path.split("/").last();
-    file.replace("/","\\");
+    file.replace("//","/");
     qDebug()<<"del file: "<<file<<endl;
 
     QFile::remove(file);
@@ -956,8 +958,7 @@ bool FileListWidget::eventFilter(QObject *watched, QEvent *event)
                 pArg->getSaveDir(dir);
                 QString file = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + courseFolder;
 
-                file.replace("/","\\");
-                file.replace("/", "//");
+                file.replace("//","/");
                 qDebug() << "file path: " << file << endl;
 
                 QDir folderDir(file);
