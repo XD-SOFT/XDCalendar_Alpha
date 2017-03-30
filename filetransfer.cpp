@@ -635,21 +635,29 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
 
     //拼装ftp上存储文件的新名字
     QString fileNewName = "";
-    QFileInfo fileinfo = QFileInfo(filePath["localFilePath"]);
-    QList<QString> filenameList=strlist.takeAt(1).split(".");
-    fileNewName = QString::number(Arg::userId) + detailID + date;
-    fileNewName.append(filenameList.takeAt(0));
-    fileNewName.append(".");
-    fileNewName.append(fileinfo.suffix());
 
-    qDebug()<<fileNewName<<endl;
+//    QFileInfo fileinfo = QFileInfo(filePath["localFilePath"]);
+//    QList<QString> filenameList=strlist.takeAt(1).split(".");
+//    fileNewName = QString::number(Arg::userId) + detailID + date;
+//    fileNewName.append(filenameList.takeAt(0));
+//    fileNewName.append(".");
+//    fileNewName.append(fileinfo.suffix());
 
+     //修改了上方的拆分方式，直接拿去
+     fileNewName = QString::number(Arg::userId) + detailID + date;
+     if(strlist.size() ==2)
+     fileNewName.append(strlist[1]);
+
+     qDebug()<<fileNewName<<endl;
+
+         //162112017-3-27fiddler4_4.exe
     //***********2016/12/8 修改  等待接口
     arguments.insert("username", "user3");
     arguments.insert("password", "123456");
     arguments.insert("host", Arg::IP);
     arguments.insert("path",fileNewName);
     arguments.insert("filePath",filePath["localFilePath"]);
+
 
     if(manager == Q_NULLPTR) {
         manager = new QNetworkAccessManager(this);

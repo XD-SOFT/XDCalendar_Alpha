@@ -26,6 +26,8 @@ MessageDisplayWidget::MessageDisplayWidget(const QString &sTitle,
 {
     ui->setupUi(this);
 
+    //Qt::WindowStaysOnTopHint使弹出窗口呆在最顶层，Qt::FramelessWindowHint设置无边框，不加这个会显示边框
+    this->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
     ui->pTitleBarWgt->setTitle(sTitle);
     ui->lText->setText(sInfo);
 
@@ -54,6 +56,7 @@ MessageDisplayWidget::MessageDisplayWidget(const QString &sTitle,
             close();
         }
     });
+
 }
 
 MessageDisplayWidget::~MessageDisplayWidget()
@@ -65,6 +68,11 @@ int MessageDisplayWidget::showMessage(const QString &sTitle, const QString &sInf
                                       MessageDisplayButtonType okBtn,
                                       MessageDisplayButtonType btn)
 {
+    int nResult  = 0;
+
+    //安全处理，当有一个执行时，再次调用崩溃
+    if(m_pEvLoop != NULL) return nResult;
+
     ///Mark,使用QEventLoop.参照InputTextWidget ==》"inputtextwidget.h"实现.
     MessageDisplayWidget *pMessageDisplayWgt = new MessageDisplayWidget(sTitle, sInfo, okBtn, btn);
     pMessageDisplayWgt->show();
@@ -73,11 +81,11 @@ int MessageDisplayWidget::showMessage(const QString &sTitle, const QString &sInf
         m_pEvLoop = new QEventLoop();
     }
 
-    int nResult = m_pEvLoop->exec();
+    nResult = m_pEvLoop->exec();
 
     delete pMessageDisplayWgt;
     delete m_pEvLoop;
-
+    m_pEvLoop = Q_NULLPTR;
 
     return nResult;
 }
