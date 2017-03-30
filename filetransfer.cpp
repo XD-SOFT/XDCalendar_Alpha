@@ -159,7 +159,7 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
         QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + filearguments["folderName"]+"/"+filearguments["fileName"];
 
         filePath.replace("//", "/");
-        filepath.replace("/", "\\");
+        filePath.replace("/", "\\");
         qDebug()<<"ftp download file is:" << filePath;
 
         ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.

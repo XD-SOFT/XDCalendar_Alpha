@@ -959,6 +959,7 @@ bool FileListWidget::eventFilter(QObject *watched, QEvent *event)
                 QString file = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + courseFolder;
 
                 file.replace("//","/");
+                file.replace("/", "\\");
                 qDebug() << "file path: " << file << endl;
 
                 QDir folderDir(file);
