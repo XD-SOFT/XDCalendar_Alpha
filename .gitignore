@@ -105,3 +105,5 @@ UserConfig/config
 >>>>>>> origin/master
 object_script.MoonCalendar.Debug
 *.Release
+object_script.MoonCalendar.Debug
+*.Release
