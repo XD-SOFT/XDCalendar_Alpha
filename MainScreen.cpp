@@ -25,6 +25,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <thread>
+#include <QEventLoop>
 #include "editrightwidget.h"
 #include "userinfowidget.h"
 #include "daywidget.h"
@@ -36,6 +37,7 @@
 #include "termwidget.h"
 #include "settingswidget.h"
 #include "messagedisplaywidget.h"
+#include "aboutwlg.h"
 
 MainScreen* MainScreen::mainScreen = Q_NULLPTR;
 int MainScreen::window_long = 0;
@@ -775,7 +777,7 @@ void MainScreen::showMainMenu()
     menu->addSeparator ();
     QAction *aboutAction = menu->addAction (tr("关于MoonCalendar..."));
     aboutAction->setIcon (QIcon(":/Icon/Standard/01_66.png"));
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(showAboutWindow));
+    connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutWindow()));
 
     menu->addSeparator ();
     QAction *pLogOffAct = menu->addAction (tr("注销"));
@@ -838,6 +840,13 @@ void MainScreen::logOff()
 void MainScreen::showAboutWindow()
 {
 
+    QString fileName = qApp->applicationDirPath() +"/../MoonCalendarHelp.txt";
+    qDebug()<<"---"<<fileName;
+    QEventLoop e;
+    aboutWlg a(fileName);
+    connect(&a, SIGNAL(closeWnd()), &e, SLOT(quit()));
+    a.show();
+    e.exec();
 }
 
 void MainScreen::unlockAndStayTop()
