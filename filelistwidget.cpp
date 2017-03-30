@@ -48,8 +48,8 @@ FileListWidget::FileListWidget(QWidget *parent) : QWidget(parent)
     setup ();
 
     //创建上传和下载显示窗口
-    m_transferBar = new fileTransferWnd;
-    m_transferBar->hide();
+//    m_transferBar = new fileTransferWnd;
+//    m_transferBar->hide();
 
     QVBoxLayout *mainLayout = new QVBoxLayout (this);
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -175,10 +175,10 @@ FileListWidget::FileListWidget(QWidget *parent) : QWidget(parent)
     mainLayout->addSpacing(5);
     m_pProgressBar->hide();
 
-    m_progressButton = new QPushButton(this);
-    m_progressButton->setFixedHeight(30);
-    mainLayout->addWidget(m_progressButton);
-    connect(m_progressButton, SIGNAL(clicked(bool)), this, SLOT(on_ProgressButton_clicked()));
+//    m_progressButton = new QPushButton(this);
+//    m_progressButton->setFixedHeight(30);
+//    mainLayout->addWidget(m_progressButton);
+//    connect(m_progressButton, SIGNAL(clicked(bool)), this, SLOT(on_ProgressButton_clicked()));
 
 
     QHBoxLayout *pUpLayout = new QHBoxLayout;
@@ -677,8 +677,8 @@ void FileListWidget::GF_downloadFile(int nRow)
    if(dtTool == Q_NULLPTR) {
        dtTool = new downloadFile();
        connect(dtTool, SIGNAL(dowLoadComplete(const QString&)), this, SLOT(downLoadComplete(const QString&)));
-       connect(dtTool, SIGNAL(transferPercent(int,QString,QMap<QString,QString>)),
-               m_transferBar, SLOT(transferPercent(int,QString,QMap<QString,QString>)));
+//       connect(dtTool, SIGNAL(transferPercent(int,QString,QMap<QString,QString>)),
+//               m_transferBar, SLOT(transferPercent(int,QString,QMap<QString,QString>)));
    }
 
    QMap<QString, QString> args;

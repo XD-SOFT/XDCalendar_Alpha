@@ -134,7 +134,8 @@ SOURCES += main.cpp \
     mynode.cpp \
     mainwindow.cpp \
     messagedisplaywidget.cpp \
-    filetransferwnd.cpp
+    filetransferwnd.cpp \
+    aboutwlg.cpp
 
 HEADERS  += MainScreen.h daywidget.h mybutton.h date.h dragbox.h database.h \
     setupdialog.h \
@@ -236,7 +237,8 @@ HEADERS  += MainScreen.h daywidget.h mybutton.h date.h dragbox.h database.h \
     mynode.h \
     mainwindow.h \
     messagedisplaywidget.h \
-    filetransferwnd.h
+    filetransferwnd.h \
+    aboutwlg.h
 
 RESOURCES += \
     resource.qrc
@@ -257,7 +259,8 @@ FORMS += \
     settingswidget.ui \
     mainwindow.ui \
     messagedisplaywidget.ui \
-    filetransferwnd.ui
+    filetransferwnd.ui \
+    aboutwlg.ui
 
 TRANSLATIONS += english.ts \
 settings_zh_CN.ts

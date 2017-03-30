@@ -230,7 +230,9 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 
 
         qDebug()<<"create file for a course in specific folder"<<endl;
+        qDebug()<<"-----reply="<< (reply != Q_NULLPTR);
         file->open(QIODevice::WriteOnly);//只读方式打开文件
+
         file->write(reply->readAll());
         file->close();
         //        }
@@ -266,10 +268,10 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 
     reply->deleteLater();
 
-    if(Arg::sDownLoadFileCount == 0) {
-        delete accessManager;
-        accessManager = Q_NULLPTR;
-    }
+//    if(Arg::sDownLoadFileCount == 0) {
+//        delete accessManager;
+//        accessManager = Q_NULLPTR;
+//    }
 }
 
 void FileTransfer::ftpDownload()
@@ -461,15 +463,15 @@ void FileTransfer::uploadTimeOut()
 void FileTransfer::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
-
+#if 0
     QString percent =QString::number((double)bytesReceived*1000/(double)bytesTotal, 'f', 2);
-    qDebug()<<bytesReceived<<"------"<<bytesTotal<<"-------"<< percent;
 
     QMap<QString, QString> fileInfo;
     fileInfo.insert("fileName",m_replyArgsHash.value(reply).value("fileName"));
     fileInfo.insert("isUpload", "false");
 
    emit transferPercent((int)reply, percent, m_replyArgsHash.value(reply));
+#endif
 
     QTimer *pTimer = qobject_cast<QTimer*>(m_timerReplyHash.key(reply));
 

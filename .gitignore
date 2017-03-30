@@ -96,3 +96,5 @@ object_script.MoonCalendar.Debug
 object_script.MoonCalendar.Release
 *.Debug
 *.Release
+*.Release
+MoonCalendar.pro
