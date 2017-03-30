@@ -272,6 +272,7 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 //        delete accessManager;
 //        accessManager = Q_NULLPTR;
 //    }
+
 }
 
 void FileTransfer::ftpDownload()
@@ -463,6 +464,7 @@ void FileTransfer::uploadTimeOut()
 void FileTransfer::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+
 #if 0
     QString percent =QString::number((double)bytesReceived*1000/(double)bytesTotal, 'f', 2);
 
