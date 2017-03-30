@@ -94,3 +94,5 @@ UserConfig/config.bak
 object_script.MoonCalendar.Debug
 *.Debug
 object_script.MoonCalendar.Release
+*.Debug
+*.Release

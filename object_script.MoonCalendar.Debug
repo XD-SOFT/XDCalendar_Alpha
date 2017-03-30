@@ -103,6 +103,7 @@ INPUT(
 ./debug\mynode.o
 ./debug\mainwindow.o
 ./debug\messagedisplaywidget.o
+./debug\filetransferwnd.o
 ./debug\qrc_resource.o
 ./debug\moc_MainScreen.o
 ./debug\moc_daywidget.o
@@ -191,4 +192,5 @@ INPUT(
 ./debug\moc_mynode.o
 ./debug\moc_mainwindow.o
 ./debug\moc_messagedisplaywidget.o
+./debug\moc_filetransferwnd.o
 );

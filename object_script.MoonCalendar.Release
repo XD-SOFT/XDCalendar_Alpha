@@ -103,6 +103,7 @@ INPUT(
 ./release\mynode.o
 ./release\mainwindow.o
 ./release\messagedisplaywidget.o
+./release\filetransferwnd.o
 ./release\qrc_resource.o
 ./release\moc_MainScreen.o
 ./release\moc_daywidget.o
@@ -191,4 +192,5 @@ INPUT(
 ./release\moc_mynode.o
 ./release\moc_mainwindow.o
 ./release\moc_messagedisplaywidget.o
+./release\moc_filetransferwnd.o
 );
