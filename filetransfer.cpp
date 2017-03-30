@@ -466,9 +466,9 @@ void FileTransfer::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     fileInfo.insert("isUpload", "false");
 
    emit transferPercent((int)reply, percent, m_replyArgsHash.value(reply));
+#endif
 
     QTimer *pTimer = qobject_cast<QTimer*>(m_timerReplyHash.key(reply));
-#endif
 
     if(pTimer != Q_NULLPTR) {
         m_timerReplyHash.remove(pTimer);

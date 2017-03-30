@@ -215,7 +215,6 @@ void SettingsWidget::on_pOkBtn_clicked()
     ///TODO.下面保存路径.
     sKey = Arg::username + "savefilepath";
     configSettings.setValue(sKey, ui->pSaveFilePathLineEdit->text());
-
     Arg *pArg = Arg::getInstance();
     pArg->configDir = QDir(ui->pSaveFilePathLineEdit->text());
 
