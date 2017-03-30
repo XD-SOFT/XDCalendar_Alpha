@@ -337,7 +337,7 @@ void FileTransfer::ftpDownload()
     connect(pHandler, &Handler::downloadUrlRequestFinished, this, &FileTransfer::downloadFileByHttp, Qt::UniqueConnection);
     pHandler->requestByUrlAndType(sUrl, Handler::DownloadUrlRequest);
 
-   // ++Arg::sDownLoadFileCount;
+    ++Arg::sDownLoadFileCount;
 
 #endif
 
@@ -817,7 +817,7 @@ void FileTransfer::downloadFileByHttp(const QJsonObject &jsonObj)
             connect(accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(ftpDownloadReplyFinished(QNetworkReply*)));
         }
 
-        ++Arg::sDownLoadFileCount;
+//        ++Arg::sDownLoadFileCount;
 
         QTimer *pTimer = new QTimer(this);
         connect(pTimer, &QTimer::timeout, this, &FileTransfer::downloadTimeOut);
