@@ -153,20 +153,22 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 
     if (reply->error() == QNetworkReply::NoError)
     {
-        Arg *pArg = Arg::getInstance();
-        QDir dir;
-        pArg->getSaveDir(dir);
-        QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + filearguments["folderName"]+"/"+filearguments["fileName"];
+        ///Mark Delete 2017.03.30 BiXiaoxia,http不再适应这种.
+//        Arg *pArg = Arg::getInstance();
+//        QDir dir;
+//        pArg->getSaveDir(dir);
+//        QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + filearguments["folderName"]+"/"+filearguments["fileName"];
 
-        filePath.replace("//", "/");
-        filePath.replace("/", "\\");
-        qDebug()<<"ftp download file is:" << filePath;
+//        filePath.replace("//", "/");
+//        filePath.replace("/", "\\");
+//        qDebug()<<"ftp download file is:" << filePath;
 
-        ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
-        if(QFile(filePath).exists()){
-            bool bRemoveStatus = QFile::remove(filePath);
-            qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
-        }
+//        ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
+//        if(QFile(filePath).exists()){
+//            bool bRemoveStatus = QFile::remove(filePath);
+//            qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
+//        }
+        /// End.
 
         //        // 重命名临时文件
         //        QFileInfo fileInfo(filePath);
@@ -191,6 +193,48 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 */
         if(m_replyArgsHash.contains(reply)) {
             QMap<QString, QString> replyArgs = m_replyArgsHash.value(reply);
+
+            Arg *pArg = Arg::getInstance();
+            QDir dir;
+            pArg->getSaveDir(dir);
+            QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + replyArgs["folderName"]+"/"+ replyArgs["fileName"];
+
+            filePath.replace("//", "/");
+            filePath.replace("/", "\\");
+            qDebug()<<"ftp download file is:" << filePath;
+
+            ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
+            if(QFile(filePath).exists()){
+                bool bRemoveStatus = QFile::remove(filePath);
+                qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
+            }
+
+            QFile* file = new QFile(filePath);
+
+            //        if(file->exists())
+            //        {
+            //            qDebug()<<"file exists when ftp download"<<endl;
+
+            //            return;
+            //        }
+            //        else
+            //        {
+
+
+            qDebug()<<"create file for a course in specific folder"<<endl;
+            qDebug()<<"-----reply="<< (reply != Q_NULLPTR);
+            file->open(QIODevice::WriteOnly);//只读方式打开文件
+
+            file->write(reply->readAll());
+            file->close();
+            //        }
+
+
+//            QJsonObject jo;
+//            qDebug() << "jo size: " <<jo.length()<<endl;
+            //        emit updateUi(jo);
+//            emit downloadFinished();
+
             QList<Lesson*> lessKeyList = m_upOrDownloadFileHash.keys();
 
             for(auto itor = lessKeyList.begin(); itor != lessKeyList.end(); ++itor) {
@@ -219,30 +263,32 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
             }
         }
 
-        QFile* file = new QFile(filePath);
+        ///Mark delete 2017.03.30 by BiXiaoxia.
+//        QFile* file = new QFile(filePath);
 
-        //        if(file->exists())
-        //        {
-        //            qDebug()<<"file exists when ftp download"<<endl;
+//        //        if(file->exists())
+//        //        {
+//        //            qDebug()<<"file exists when ftp download"<<endl;
 
-        //            return;
-        //        }
-        //        else
-        //        {
-
-
-        qDebug()<<"create file for a course in specific folder"<<endl;
-        qDebug()<<"-----reply="<< (reply != Q_NULLPTR);
-        file->open(QIODevice::WriteOnly);//只读方式打开文件
-
-        file->write(reply->readAll());
-        file->close();
-        //        }
+//        //            return;
+//        //        }
+//        //        else
+//        //        {
 
 
-        QJsonObject jo;
-        qDebug() << "jo size: " <<jo.length()<<endl;
-        //        emit updateUi(jo);
+//        qDebug()<<"create file for a course in specific folder"<<endl;
+//        qDebug()<<"-----reply="<< (reply != Q_NULLPTR);
+//        file->open(QIODevice::WriteOnly);//只读方式打开文件
+
+//        file->write(reply->readAll());
+//        file->close();
+//        //        }
+
+
+//        QJsonObject jo;
+//        qDebug() << "jo size: " <<jo.length()<<endl;
+//        //        emit updateUi(jo);
+        ///End.
         emit downloadFinished();
     }
     else
