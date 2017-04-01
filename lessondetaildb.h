@@ -6,6 +6,7 @@
 #include <QDate>
 #include <QJsonObject>
 #include "handler.h"
+#include <QQUeue>
 
 ///Mark 2017.02.13，这些数据管理类都应该设置为只能一个实例,这里名字也不适合.
 /// 这个类设计有问题，即能给所有的Lesson访问数据库，又等是课程细节，以后分成两个类，一个专门管理课程对接数据库，一个课程细节.
@@ -101,6 +102,9 @@ signals:
 //    void findAllState(QJsonObject);
 //    void delState(QJsonObject);
 //    void updateState(QJsonObject);
+
+private:
+    QQueue<int> requestIDQUeue;
 
 };
 

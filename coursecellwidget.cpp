@@ -94,7 +94,7 @@ CourseCellWidget::CourseCellWidget(QWidget *parent) :
     m_bKeepSameRadius = true;
 
     LessonDetailDB* lesDB = DataClassInstanceManage::getInstance()->getLessonDetailDBPtr();
-    connect(lesDB, &LessonDetailDB::delFinish, this, &CourseCellWidget::deleteLessonFinished);
+    connect(lesDB, &LessonDetailDB::delFinish, this, &CourseCellWidget::deleteLessonFinished, Qt::UniqueConnection);
 
     createWeekDay();
 }
@@ -169,18 +169,11 @@ void CourseCellWidget::delCourse()
         lesDB->setId(mLinkedLesson->getLessonDetailId());
         QDate delDate = mLinkedLesson->getDate();
         lesDB->setEndDate(delDate.addDays(-7));
+//        m_bDelCourseStatus = true;
+        setCursor(Qt::WaitCursor);
         lesDB->del();
 
-        if(m_pDelEvLoop == Q_NULLPTR) {
-            m_pDelEvLoop = new QEventLoop;
-        }
-
-        //避免网络访问快速返回.
-        if(m_pDelEvLoop != Q_NULLPTR) {
-            m_pDelEvLoop->exec();
-        }
-
-//        mLinkedLesson = nullptr;
+        //        mLinkedLesson = nullptr;
         //delButton->setVisible(false);
 //        reset();
     }
@@ -743,13 +736,13 @@ void CourseCellWidget::deleteLessonFinished(int nDetailID, const QJsonObject &js
 //    qDebug()<<"delete course result: "<<json<<endl;
     if(jsonObj["status"] == "false") return;
 
-    if(m_pDelEvLoop != Q_NULLPTR) {
-         m_pDelEvLoop->exit();
+//    if(!m_bDelCourseStatus) {
+//        return;
+//    }
 
-         delete m_pDelEvLoop;
-         m_pDelEvLoop = Q_NULLPTR;
-    }
+//    m_bDelCourseStatus = false;
 
+    unsetCursor();
 
     if(mLinkedLesson != Q_NULLPTR) {
         int nLinkedDetailID = mLinkedLesson->getLessonDetailId();

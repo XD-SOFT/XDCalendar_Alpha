@@ -60,6 +60,8 @@ void LessonDetailDB::del()
         return;
     }
 
+    requestIDQUeue.enqueue(id);
+
     QString url = sBaseUrl + "delTeaLessonDetailJSON?TLDid=" + QString::number(id) + "&time="
             + endDate.toString("yyyy-MM-dd") + Arg::tokenStr;
     qDebug()<<"url: "<<url<< endl;
@@ -133,7 +135,8 @@ void LessonDetailDB::replyArrived(const QJsonObject &jsonObj)
         break;
 
     case Delete:{
-        emit delFinish(id, jsonObj);
+        int nId = requestIDQUeue.dequeue();
+        emit delFinish(nId, jsonObj);
     }
         break;
 
