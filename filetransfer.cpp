@@ -149,7 +149,7 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
     if(Arg::sDownLoadFileCount < 0) {
         Arg::sDownLoadFileCount = 0;
     }
-    qDebug()<<"ftp download reply end"<<endl;
+    qDebug()<<"ftp download reply end"<< reply;
 
     if (reply->error() == QNetworkReply::NoError)
     {

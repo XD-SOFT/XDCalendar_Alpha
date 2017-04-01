@@ -18,6 +18,7 @@ class EditWindow : public FramelessModalMovableShadowWidget
     Q_OBJECT
 public:
     EditWindow(QWidget *parent = 0);
+    ~EditWindow();
 
     void reset();
 
@@ -33,6 +34,8 @@ private:
     QDateEdit *m_pEndDateEdit;
 
     Lesson* m_pCurEditLesson;
+
+    bool m_bEditStatus;
 
 private slots:
     void addLessonFinished(const QJsonObject &json);
