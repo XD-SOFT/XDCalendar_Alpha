@@ -117,8 +117,6 @@ void Handler::Finished(QNetworkReply *reply)
     RequestType type = requestUrlTypeHash.value(sRequestUrl, Default);
     qDebug() << "the reply url is:" << sRequestUrl;
 
-
-
     ///Mark 2017.02.13,重构时候这里设计时候考虑修改为表驱动.
     //qDebug()<<"handler Finished"<<endl;
     if (reply->error() == QNetworkReply::NoError)

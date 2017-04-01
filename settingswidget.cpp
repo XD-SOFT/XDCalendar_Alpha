@@ -199,6 +199,7 @@ void SettingsWidget::on_pOkBtn_clicked()
 #else
                 MessageDisplayWidget::showMessage(tr("教师客户端"), tr("服务器配置未测试通过!")) ;
 #endif
+                return;
             }
         }
     }

@@ -31,6 +31,10 @@ public:
 
     int getTermID() const;
 
+    /// @brief 检查是否存在课程冲突.
+    bool checkConflictLessons(const QDate &startDate, const QDate &endDate, int nWeekDay, int nSection,
+                              int nLoop, QMap<QString, QList<int> > &conflictMap);
+
     /*!
      * \brief getTermWeeksNumber,获取学期所含的周数.
      * \return int, 为0学期无效，大于0，学期周数.
@@ -140,6 +144,11 @@ signals:
     void sectionChanged (const QMap<int, QMap<int, Section> > &);
     void lessonChanged ();
     void changed ();
+
+private:
+    /// @brief 获取一节课在一个学期中所有上课周数.
+    QList<int> getLessonOnClassWeeks(const QDate &startDate, const QDate &endDate, int loop);
+
 public slots:
 private:
     int m_nSemsID; //学期数据库对应ID.

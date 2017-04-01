@@ -32,6 +32,8 @@ class UploadFiles2Ftp;
 class DailyData;
 class QGraphicsDropShadowEffect;
 class CourseColorPickerWidget;
+class QMenu;
+class QEventLoop;
 
 //日期单元格中显示事件的部分
 class TextShowWindowXD : public QFrame
@@ -195,6 +197,9 @@ private:
     EditButton* editButton;
     //EditButton* delButton;
 
+    QEventLoop *m_pDelEvLoop = Q_NULLPTR;
+
+    QMenu *pMenu = Q_NULLPTR;
     QAction *delAction;
     QLabel *courseLabel, *locationLabel, *classLabel;
     EditWindow *editWindow;

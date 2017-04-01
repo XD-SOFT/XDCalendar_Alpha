@@ -18,6 +18,8 @@
 EditWindow::EditWindow(QWidget *parent) :
     FramelessModalMovableShadowWidget(parent)
 {
+    m_bEditStatus = false;
+
     auto titleBar = new TitleBar (tr("课程编辑"), this);
     titleBar->setFixedHeight(35);
     connect (titleBar, &TitleBar::tbClose, [this] ()
@@ -178,15 +180,21 @@ EditWindow::EditWindow(QWidget *parent) :
 
     //setLayout(mainLayout);
     LessonDetailDB *pLessonDetailDBPtr = DataClassInstanceManage::getInstance()->getLessonDetailDBPtr();
-    connect(pLessonDetailDBPtr, &LessonDetailDB::addFinish, this, &EditWindow::addLessonFinished);
+    connect(pLessonDetailDBPtr, &LessonDetailDB::addFinish, this, &EditWindow::addLessonFinished, Qt::UniqueConnection);
     ///Mark,信号暂时这么处理.
 //    Arg *pArg = Arg::getInstance();
 //    connect(pLessonDetailDBPtr, &LessonDetailDB::addFinish, this, &Arg::addLessonFinished);
-    connect(pLessonDetailDBPtr, &LessonDetailDB::updateFinish, this, &EditWindow::updateLessonFinished);
+    connect(pLessonDetailDBPtr, &LessonDetailDB::updateFinish, this, &EditWindow::updateLessonFinished, Qt::UniqueConnection);
+}
+
+EditWindow::~EditWindow()
+{
+
 }
 
 void EditWindow::reset()
 {
+    m_bEditStatus = false;
     Lesson *pLesson = cell->getLesson();
 
     if(pLesson != Q_NULLPTR) {
@@ -238,7 +246,6 @@ void EditWindow::sureButtonClicked()
             pLesson->setStartDate(m_pStartDateEdit->date());
             pLesson->setEndDate(m_pEndDateEdit->date());
            //            pLesson->
-            m_pCurEditLesson = pLesson;
 
             //for network use, update a lessonDetail
             LessonDetailDB *pLessonDetailDB = DataClassInstanceManage::getInstance()->getLessonDetailDBPtr();
@@ -258,13 +265,17 @@ void EditWindow::sureButtonClicked()
 //            qDebug()<<"cell detail id: "<<lessonDB->getId()<<endl;
 //            qDebug()<<"lesson detail id: "<<lessonDB->getId()<<endl;
 //            connect(lessonDB, SIGNAL(updateFinish(QJsonObject)), this, SLOT(getDBState(QJsonObject)));
-            pLessonDetailDB->update();
 
+            m_pCurEditLesson = pLesson;
+            m_bEditStatus = true;
+
+            pLessonDetailDB->update();
         }
         else
         {
-            QDate semsterStartDate = Arg::currentSemester()->getStartTime();
-            QDate semesterEndDate  = Arg::currentSemester()->getEndTime();
+            Arg *pArg = Arg::getInstance();
+            QDate semsterStartDate = pArg->currentSemester()->getStartTime();
+            QDate semesterEndDate  =pArg->currentSemester()->getEndTime();
             QDate startDate = m_pStartDateEdit->date();
             QDate endDate = m_pEndDateEdit->date();
 
@@ -289,21 +300,46 @@ void EditWindow::sureButtonClicked()
                 return;
             }
 
+            int secIndex = cell->getSecIndex();
+            int dayIndex = cell->getDayIndex();
+            int weekDay = cell->getDayIndex();
+            int nRepeat = loopEdit->currentData().toInt();
+
+            QMap<QString, QList<int> > conflictMap;
+            Term *pCurTerm = pArg->currentTerm();
+            bool bConflict = pCurTerm->checkConflictLessons(startDate, endDate, weekDay, secIndex, nRepeat, conflictMap);
+            if(bConflict) {
+                QString sText("存在冲突课程：");
+                for(auto itor = conflictMap.begin(); itor != conflictMap.end(); ++itor) {
+                    sText.append(itor.key());
+                    sText.append(":");
+                    QList<int> weekList = conflictMap.value(itor.key());
+
+                    for(int index = 0; index < weekList.size(); ++index) {
+                        sText.append(QString::number(weekList.at(index)));
+                        sText.append(" ");
+                    }
+
+                    sText.append("\n");
+                }
+
+                MessageDisplayWidget::showMessage(tr("教师客户端"), sText);
+
+                return;
+            }
+
             qDebug()<<"current lesson is null"<<endl;
             pLesson = new Lesson();
             Folder* folder = new Folder(tr("文件列表"), pLesson);
 
             //这个sectionIndex怎么可能从cell->getSecIndex里加入？.
-            int secIndex = cell->getSecIndex();
-            int dayIndex = cell->getDayIndex();
-            int weekDay = cell->getDayIndex();
+
 //            QDate startDate = m_pStartDateEdit->date()/*Arg::currentTerm()->getStart()*/;
             int currentWeekIndex = Arg::currentWeekIndex();
             QDate date = semsterStartDate.addDays(currentWeekIndex * 7 + dayIndex);
             //QDate date(1997,7,17);
 
             ///Mark,这是base课程，所以设置date并没有多大意义.
-            int nRepeat = loopEdit->currentData().toInt();
             pLesson->setLessonId(Arg::lessonId);
             pLesson->setRootFolder(folder);
             pLesson->setSubject(courseEdit->currentText());
@@ -320,8 +356,6 @@ void EditWindow::sureButtonClicked()
 //            qDebug()<<"lesson: "<< "tartDate:" << semsterStartDate << "endDate:"<< endDate <<pLesson->location()<<endl;
             cell->link(pLesson);
 
-            m_pCurEditLesson = pLesson;
-
             //for network use, add a new lessonDetail
             LessonDetailDB *pLessonDetailDB = DataClassInstanceManage::getInstance()->getLessonDetailDBPtr();
             pLessonDetailDB->setStartDate(startDate);
@@ -335,12 +369,17 @@ void EditWindow::sureButtonClicked()
             pLessonDetailDB->setRepeat(nRepeat);
             pLessonDetailDB->setLessonId(Arg::lessonId);
 
+            m_pCurEditLesson = pLesson;
+            m_bEditStatus = true;
+
 //            connect(lessonDB, SIGNAL(addFinish(const QJsonObject&)), this, SLOT(addState(const QJsonObject&)));
             pLessonDetailDB->add();
 
-            qDebug()<<"secIndex: "<<secIndex<<" dayIndex: "<<dayIndex<<" startDate: "<<startDate<<endl;
-            qDebug()<<"date: "<<date;
+//            if(m_pEditEvLoop == Q_NULLPTR) {
+//                m_pEditEvLoop = new QEventLoop;
+//            }
 
+//            m_pEditEvLoop->exec();
         }
 
         this->close();
@@ -362,6 +401,13 @@ void EditWindow::addLessonFinished(const QJsonObject &json)
     if(json["status"] == "false")return;
     //    else
     //    {
+    //不是该窗口编辑.
+    if(!m_bEditStatus) {
+        return;
+    }
+
+    m_bEditStatus = false;
+
     int lessonDetId = json["TLDid"].toInt();
     qDebug()<<"lessonDetId: "<<lessonDetId<<endl;
     if(m_pCurEditLesson != Q_NULLPTR) {
@@ -382,6 +428,13 @@ void EditWindow::updateLessonFinished(const QJsonObject &json)
 {
     qDebug()<<"update course result: "<<json<<endl;
     if(json["status"] == "false")return;
+
+    //不是该窗口编辑.
+    if(!m_bEditStatus) {
+        return;
+    }
+
+    m_bEditStatus = false;
 
     if(m_pCurEditLesson != Q_NULLPTR) {
         Arg *pArg = Arg::getInstance();

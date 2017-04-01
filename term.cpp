@@ -44,6 +44,67 @@ int Term::getTermID() const
     return m_nSemsID;
 }
 
+bool Term::checkConflictLessons(const QDate &startDate, const QDate &endDate, int nWeekDay, int nSection, int nLoop,
+                                QMap<QString, QList<int>> &conflictMap)
+{
+    conflictMap.clear();
+
+    //待判断课程上课周数.
+    QList<int> checkLesWeekList = getLessonOnClassWeeks(startDate, endDate, nLoop);
+
+    QMultiMap<int, Lesson*> weekLessonMap = mBaseLessonsMap.value(nWeekDay);
+    QList<Lesson*> secLessonList = weekLessonMap.values(nSection);
+
+
+    for(int index = 0; index < secLessonList.size(); ++index) {
+        Lesson *pLesson = secLessonList.at(index);
+        QDate lesStartDate = pLesson->getStartDate();
+        QDate lesEndDate = pLesson->getEndDate();
+        int nLesLoop = pLesson->getRepeat();
+
+        QList<int> lesWeekList = getLessonOnClassWeeks(lesStartDate, lesEndDate, nLesLoop);
+        QList<int> conflictList;
+
+        for(auto itor = lesWeekList.begin(); itor != lesWeekList.end(); ++itor) {
+            if(checkLesWeekList.contains(*itor)) {
+                conflictList.append(*itor);
+            }
+        }
+
+        if(!conflictList.isEmpty()) {
+            conflictMap.insert(pLesson->subject(), conflictList);
+        }
+    }
+
+    if(!conflictMap.isEmpty()) {
+        return true;
+    }
+
+    return false;
+}
+
+QList<int> Term::getLessonOnClassWeeks(const QDate &startDate, const QDate &endDate, int loop)
+{
+    //获取weekDate在学期中的周数.
+    int nStartWeekNum = getDateWeekNumber(startDate);
+    int nEndWeekNum = getDateWeekNumber(endDate);
+
+    QList<int> lessonWeekList;
+    int week = nStartWeekNum;
+    int nLoopCtrl = 0;
+    while(week <= nEndWeekNum) {
+        week += loop * nLoopCtrl;
+
+        if(week <= nEndWeekNum) {
+            lessonWeekList.append(week);
+        }
+
+       ++nLoopCtrl;
+    }
+
+    return lessonWeekList;
+}
+
 Term::~Term () = default;
 
 int Term::getTermWeeksNumber() const
@@ -348,7 +409,8 @@ bool Term::getWeekLessonsByDate(QVector<QMap<int, Lesson*>> &weekLessons, const 
     //请求课程的周的第一天日期.
     QDate weekStartDate = weekDate.addDays(-nAdjustNum);
 
-    int lessonStartWeekNum = getDateWeekNumber(mStart);
+//    int lessonStartWeekNum = getDateWeekNumber(mStart);
+    int nStartWeekNum = getDateWeekNumber(mStart);
     //将数组一维尺寸置为一周天数.
 //    weekLessons.resize(7);
     QList<int> weekDayKeyList = mBaseLessonsMap.keys();
@@ -387,7 +449,7 @@ bool Term::getWeekLessonsByDate(QVector<QMap<int, Lesson*>> &weekLessons, const 
 
                 //如果课程添加周数比提供的晚，则课程不在本周显示.
                 QDate startDate = pBaseLesson->getStartDate();
-                int nStartWeekNum = getDateWeekNumber(startDate);
+                nStartWeekNum = getDateWeekNumber(startDate);
 
                 if(nStartWeekNum > nTermWeekNum) {
                     qDebug() << "the start week and request week is:" << nStartWeekNum << nTermWeekNum;
@@ -407,7 +469,7 @@ bool Term::getWeekLessonsByDate(QVector<QMap<int, Lesson*>> &weekLessons, const 
                 }
                 else
                 {
-                    int weekDiff = nTermWeekNum - lessonStartWeekNum;
+                    int weekDiff = nTermWeekNum - nStartWeekNum;
 
                     if(weekDiff >= repeat && weekDiff % repeat == 0)
                     {

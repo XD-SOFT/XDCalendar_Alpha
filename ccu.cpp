@@ -205,29 +205,29 @@ void CCU::close()
 void CCU::logOff()
 {
     if((Arg::sUpLoadFileCount > 0) || (Arg::sDownLoadFileCount > 0)) {
-
-    }
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::StandardButton btn = QMessageBox::information(MainScreen::mainScreen, tr("教师客户端"),
                                                                    tr("存在上传或者下载的文件，确定注销？"),
-                                                                  QMessageBox::Ok, QMessageBox::Cancel);
+                                                                   QMessageBox::Ok, QMessageBox::Cancel);
         if(btn == QMessageBox::Cancel) {
             ///Mark Todo, 取消上传做相关处理....
 
             return;
         }
 #else
-    int btn = MessageDisplayWidget::showMessage(tr("教师客户端"),
-                                                tr("存在上传或者下载的文件，确定注销？"),
+        int btn = MessageDisplayWidget::showMessage(tr("教师客户端"),
+                                                    tr("存在上传或者下载的文件，确定注销？"),
 
-                                                MessageDisplayButtonType::Ok,
-                                                MessageDisplayButtonType::Cancel);
-    if(btn == -1) {
-        ///Mark Todo, 取消上传做相关处理....
+                                                    MessageDisplayButtonType::Ok,
+                                                    MessageDisplayButtonType::Cancel);
+        if(btn == -1) {
+            ///Mark Todo, 取消上传做相关处理....
 
-        return;
-    }
+            return;
+        }
 #endif
+    }
+
 
 //        emit transferFileAbort();
 //    }
