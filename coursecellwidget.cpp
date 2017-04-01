@@ -73,11 +73,11 @@ CourseCellWidget::CourseCellWidget(QWidget *parent) :
 
     ///Mark，为了好控制日期，一到上一层去CourseGrid类里.
 //    connect(CCU::ccu, SIGNAL(changeEdit()), this, SLOT(setEdit()));
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 //    adjustSize ();
 //    setFixedSize(sizeHint());
 //    setFixedSize(sizeHint());
-    resize(sizeHint());
+    setFixedSize(sizeHint());
     setLayout(mainLayout);
 
     ///Mark，这个应该提取出来一个就行.
