@@ -28,11 +28,18 @@ MessageDisplayWidget::MessageDisplayWidget(const QString &sTitle,
 
     //Qt::WindowStaysOnTopHint使弹出窗口呆在最顶层，Qt::FramelessWindowHint设置无边框，不加这个会显示边框
     this->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+
+    //设置消息框为模态窗口
+    this->setAttribute(Qt::WA_ShowModal, true);
+
     ui->pTitleBarWgt->setTitle(sTitle);
     ui->lText->setText(sInfo);
 
     setShadowWidth(30);
 
+    //防止弹出框太长，分行显示
+    ui->lText->setWordWrap(true);
+    ui->lText->setContentsMargins(20,0,20,0);
 
     //显示或隐藏按键
     (okBtn == MessageDisplayButtonType::NoButton) ? ui->pOkBtn->hide() : ui->pOkBtn->show();
@@ -41,7 +48,6 @@ MessageDisplayWidget::MessageDisplayWidget(const QString &sTitle,
     //当有一个按键居中
     if(btn == MessageDisplayButtonType::NoButton)
     {
-
         ui->horizontalSpacer->changeSize(0,20);
     }
 

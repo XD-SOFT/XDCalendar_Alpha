@@ -776,7 +776,7 @@ void MainScreen::showMainMenu()
     */
     menu->addSeparator ();
     QAction *aboutAction = menu->addAction (tr("关于MoonCalendar..."));
-    aboutAction->setIcon (QIcon(":/Icon/Standard/01_66.png"));
+    aboutAction->setIcon (QIcon(":/Icon/Standard/01_65.png"));
     connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(showAboutWindow()));
 
     menu->addSeparator ();
@@ -840,7 +840,7 @@ void MainScreen::logOff()
 void MainScreen::showAboutWindow()
 {
 
-    QString fileName = qApp->applicationDirPath() +"/../MoonCalendarHelp.txt";
+    QString fileName = qApp->applicationDirPath() +"/MoonCalendarHelp.txt";
     qDebug()<<"---"<<fileName;
     QEventLoop e;
     aboutWlg a(fileName);
