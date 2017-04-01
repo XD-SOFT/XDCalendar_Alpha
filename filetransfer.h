@@ -59,6 +59,7 @@ protected slots:
     void slotError(QNetworkReply::NetworkError code);
     void ftpUploadReplyFinished(QNetworkReply *reply);
     void ftpDownloadReplyFinished(QNetworkReply *reply);
+    void donwLoadError(QNetworkReply::NetworkError code);
 
 
     void httpReplyFinished(QNetworkReply*reply);
@@ -109,6 +110,8 @@ private:
     QHash<QNetworkReply*, QMap<QString, QString> > m_replyArgsHash;
 
     QHash<QTimer*, QNetworkReply*> m_timerReplyHash;
+
+    QMap<QNetworkReply*, QString > m_downloadReplayMap;
 
     bool m_bAbort = false;
 

@@ -26,7 +26,7 @@ void FileTransfer::slotError(QNetworkReply::NetworkError code)
 {
     //    --Arg::sDownLoadFileCount;
     //    emit uploadFileError("code.errorString()");
-//    QNetworkReply::errorString();
+    //    QNetworkReply::errorString();
     QNetworkReply *replay =(QNetworkReply *)sender();
     if(replay)
     {
@@ -150,24 +150,25 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
         Arg::sDownLoadFileCount = 0;
     }
     qDebug()<<"ftp download reply end"<<endl;
+    m_downloadReplayMap.remove(reply);
 
     if (reply->error() == QNetworkReply::NoError)
     {
         ///Mark Delete 2017.03.30 BiXiaoxia,http不再适应这种.
-//        Arg *pArg = Arg::getInstance();
-//        QDir dir;
-//        pArg->getSaveDir(dir);
-//        QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + filearguments["folderName"]+"/"+filearguments["fileName"];
+        //        Arg *pArg = Arg::getInstance();
+        //        QDir dir;
+        //        pArg->getSaveDir(dir);
+        //        QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + filearguments["folderName"]+"/"+filearguments["fileName"];
 
-//        filePath.replace("//", "/");
-//        filePath.replace("/", "\\");
-//        qDebug()<<"ftp download file is:" << filePath;
+        //        filePath.replace("//", "/");
+        //        filePath.replace("/", "\\");
+        //        qDebug()<<"ftp download file is:" << filePath;
 
-//        ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
-//        if(QFile(filePath).exists()){
-//            bool bRemoveStatus = QFile::remove(filePath);
-//            qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
-//        }
+        //        ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
+        //        if(QFile(filePath).exists()){
+        //            bool bRemoveStatus = QFile::remove(filePath);
+        //            qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
+        //        }
         /// End.
 
         //        // 重命名临时文件
@@ -191,9 +192,13 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 
         }
 */
+
+
         if(m_replyArgsHash.contains(reply)) {
             QMap<QString, QString> replyArgs = m_replyArgsHash.value(reply);
 
+         ////mark 2017.04.1,更改到进度加载槽中
+#if 0
             Arg *pArg = Arg::getInstance();
             QDir dir;
             pArg->getSaveDir(dir);
@@ -227,13 +232,15 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 
             file->write(reply->readAll());
             file->close();
+
+#endif
             //        }
 
 
-//            QJsonObject jo;
-//            qDebug() << "jo size: " <<jo.length()<<endl;
+            //            QJsonObject jo;
+            //            qDebug() << "jo size: " <<jo.length()<<endl;
             //        emit updateUi(jo);
-//            emit downloadFinished();
+            //            emit downloadFinished();
 
             QList<Lesson*> lessKeyList = m_upOrDownloadFileHash.keys();
 
@@ -264,30 +271,30 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
         }
 
         ///Mark delete 2017.03.30 by BiXiaoxia.
-//        QFile* file = new QFile(filePath);
+        //        QFile* file = new QFile(filePath);
 
-//        //        if(file->exists())
-//        //        {
-//        //            qDebug()<<"file exists when ftp download"<<endl;
+        //        //        if(file->exists())
+        //        //        {
+        //        //            qDebug()<<"file exists when ftp download"<<endl;
 
-//        //            return;
-//        //        }
-//        //        else
-//        //        {
-
-
-//        qDebug()<<"create file for a course in specific folder"<<endl;
-//        qDebug()<<"-----reply="<< (reply != Q_NULLPTR);
-//        file->open(QIODevice::WriteOnly);//只读方式打开文件
-
-//        file->write(reply->readAll());
-//        file->close();
-//        //        }
+        //        //            return;
+        //        //        }
+        //        //        else
+        //        //        {
 
 
-//        QJsonObject jo;
-//        qDebug() << "jo size: " <<jo.length()<<endl;
-//        //        emit updateUi(jo);
+        //        qDebug()<<"create file for a course in specific folder"<<endl;
+        //        qDebug()<<"-----reply="<< (reply != Q_NULLPTR);
+        //        file->open(QIODevice::WriteOnly);//只读方式打开文件
+
+        //        file->write(reply->readAll());
+        //        file->close();
+        //        //        }
+
+
+        //        QJsonObject jo;
+        //        qDebug() << "jo size: " <<jo.length()<<endl;
+        //        //        emit updateUi(jo);
         ///End.
         emit downloadFinished();
     }
@@ -316,11 +323,17 @@ void FileTransfer::ftpDownloadReplyFinished(QNetworkReply *reply)
 
     reply->deleteLater();
 
-//    if(Arg::sDownLoadFileCount == 0) {
-//        delete accessManager;
-//        accessManager = Q_NULLPTR;
-//    }
+    //    if(Arg::sDownLoadFileCount == 0) {
+    //        delete accessManager;
+    //        accessManager = Q_NULLPTR;
+    //    }
 
+}
+
+void FileTransfer::donwLoadError(QNetworkReply::NetworkError code)
+{
+    QNetworkReply *replay = (QNetworkReply *)this->sender();
+    m_downloadReplayMap.remove(replay);
 }
 
 void FileTransfer::ftpDownload()
@@ -513,6 +526,48 @@ void FileTransfer::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
+    //获取保存的文件文件路径
+    QDir dir;
+    Arg *pArg = Arg::getInstance();
+    pArg->getSaveDir(dir);
+    QMap<QString, QString> replyArgs ;
+    if(m_replyArgsHash.contains(reply))
+     replyArgs = m_replyArgsHash.value(reply);
+    QString filePath = dir.absolutePath() + "/SaveFile/" + replyArgs["folderName"]+"/"+ replyArgs["fileName"];
+    filePath.replace("//", "/");
+    filePath.replace("/", "\\");
+
+    //包含请求，追加信息, 下载文件完或失败的时，必须删除
+    if(m_downloadReplayMap.keys().contains(reply))
+    {
+        QFile file(filePath);
+        if( file.open(QFile::WriteOnly| QFile::Append))
+        {
+            file.write(reply->readAll());
+            file.close();
+        }else{
+            qDebug()<<"------open old error:"<<filePath;
+        }
+
+    }else{ ///新建请求， 则重新创建文件
+
+        m_downloadReplayMap.insert(reply, filePath);
+        if(QFile(filePath).exists()){
+            bool bRemoveStatus = QFile::remove(filePath);
+            qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
+        }
+
+        QFile file(filePath);
+        if( file.open(QFile::WriteOnly))
+        {
+            file.write(reply->readAll());
+            file.close();
+        }else{
+            qDebug()<<"------new open error:"<<filePath;
+        }
+    }
+
+
 #if 0
     QString percent =QString::number((double)bytesReceived*1000/(double)bytesTotal, 'f', 2);
 
@@ -520,7 +575,7 @@ void FileTransfer::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     fileInfo.insert("fileName",m_replyArgsHash.value(reply).value("fileName"));
     fileInfo.insert("isUpload", "false");
 
-   emit transferPercent((int)reply, percent, m_replyArgsHash.value(reply));
+    emit transferPercent((int)reply, percent, m_replyArgsHash.value(reply));
 #endif
 
     QTimer *pTimer = qobject_cast<QTimer*>(m_timerReplyHash.key(reply));
@@ -688,21 +743,21 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
     //拼装ftp上存储文件的新名字
     QString fileNewName = "";
 
-//    QFileInfo fileinfo = QFileInfo(filePath["localFilePath"]);
-//    QList<QString> filenameList=strlist.takeAt(1).split(".");
-//    fileNewName = QString::number(Arg::userId) + detailID + date;
-//    fileNewName.append(filenameList.takeAt(0));
-//    fileNewName.append(".");
-//    fileNewName.append(fileinfo.suffix());
+    //    QFileInfo fileinfo = QFileInfo(filePath["localFilePath"]);
+    //    QList<QString> filenameList=strlist.takeAt(1).split(".");
+    //    fileNewName = QString::number(Arg::userId) + detailID + date;
+    //    fileNewName.append(filenameList.takeAt(0));
+    //    fileNewName.append(".");
+    //    fileNewName.append(fileinfo.suffix());
 
-     //修改了上方的拆分方式，直接拿去
-     fileNewName = QString::number(Arg::userId) + detailID + date;
-     if(strlist.size() ==2)
-     fileNewName.append(strlist[1]);
+    //修改了上方的拆分方式，直接拿去
+    fileNewName = QString::number(Arg::userId) + detailID + date;
+    if(strlist.size() ==2)
+        fileNewName.append(strlist[1]);
 
-     qDebug()<<fileNewName<<endl;
+    qDebug()<<fileNewName<<endl;
 
-         //162112017-3-27fiddler4_4.exe
+    //162112017-3-27fiddler4_4.exe
     //***********2016/12/8 修改  等待接口
     arguments.insert("username", "user3");
     arguments.insert("password", "123456");
@@ -869,7 +924,7 @@ void FileTransfer::downloadFileByHttp(const QJsonObject &jsonObj)
             connect(accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(ftpDownloadReplyFinished(QNetworkReply*)));
         }
 
-//        ++Arg::sDownLoadFileCount;
+        //        ++Arg::sDownLoadFileCount;
 
         QTimer *pTimer = new QTimer(this);
         connect(pTimer, &QTimer::timeout, this, &FileTransfer::downloadTimeOut);
@@ -880,7 +935,8 @@ void FileTransfer::downloadFileByHttp(const QJsonObject &jsonObj)
         connect(reply, SIGNAL(finished()), this, SLOT(finished()), Qt::UniqueConnection);
         //    qDebug()<<"***adsdsd"<<endl;
         connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(onDownloadProgress(qint64, qint64)));
-        connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::UniqueConnection);
+       // connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::UniqueConnection);
+          connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(donwLoadError(QNetworkReply::NetworkError)), Qt::UniqueConnection);
         //    connect(reply, SIGNAL(readyRead()), this, SLOT(readyRead()));
 
         pTimer->start(300000);
@@ -888,7 +944,7 @@ void FileTransfer::downloadFileByHttp(const QJsonObject &jsonObj)
     }
     else {
         qDebug() << "this return do not contains http down load url";
-            --Arg::sDownLoadFileCount;
+        --Arg::sDownLoadFileCount;
     }
 }
 

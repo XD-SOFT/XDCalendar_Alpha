@@ -16,7 +16,6 @@ aboutWlg::aboutWlg(QString fileName, QWidget *parent) :
     connect(ui->pOkBtn, SIGNAL(clicked(bool)), this, SLOT(close()));
     connect(ui->pOkBtn, SIGNAL(clicked(bool)), this, SIGNAL(closeWnd()));
     QFile file(fileName);
-    if(file.open(QFile::ReadOnly))
     {
         QTextStream out(&file);
         ui->lText->setText(out.readAll());
