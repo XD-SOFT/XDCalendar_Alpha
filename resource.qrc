@@ -154,5 +154,6 @@
         <file>Icon/SecurityAndMaintenance_Alert.png</file>
         <file>Icon/SecurityAndMaintenance.png</file>
         <file>Icon/SecurityAndMaintenance_Error.png</file>
+        <file>Icon/Standard/01_65.png</file>
     </qresource>
 </RCC>

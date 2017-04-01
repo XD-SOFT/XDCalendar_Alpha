@@ -8,6 +8,8 @@ aboutWlg::aboutWlg(QString fileName, QWidget *parent) :
 {
     ui->setupUi(this);
     setShadowWidth(30);
+    //设置消息框为模态窗口
+    this->setAttribute(Qt::WA_ShowModal, true);
     connect (ui->pTitleBarWgt, SIGNAL(tbClose()), this, SLOT(close()));
     ui->pTitleBarWgt->setTitle(tr("关于MoonCalendar"));
     ui->lIcon->setStyleSheet("QLabel#lIcon{border-image:url(:/Icon/MoonCalendar.ico)}");
