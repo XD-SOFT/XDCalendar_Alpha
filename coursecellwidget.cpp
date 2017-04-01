@@ -38,6 +38,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QProgressBar>
+#include <QEventLoop>
 
 CourseCellWidget::CourseCellWidget(QWidget *parent) :
     QWidget(parent),
@@ -169,6 +170,16 @@ void CourseCellWidget::delCourse()
         QDate delDate = mLinkedLesson->getDate();
         lesDB->setEndDate(delDate.addDays(-7));
         lesDB->del();
+
+        if(m_pDelEvLoop == Q_NULLPTR) {
+            m_pDelEvLoop = new QEventLoop;
+        }
+
+        //避免网络访问快速返回.
+        if(m_pDelEvLoop != Q_NULLPTR) {
+            m_pDelEvLoop->exec();
+        }
+
 //        mLinkedLesson = nullptr;
         //delButton->setVisible(false);
 //        reset();
@@ -178,8 +189,9 @@ void CourseCellWidget::delCourse()
 
 void CourseCellWidget::setup ()
 {
-    delAction = new QAction(tr("删除"), this);
-    addAction(delAction);
+    pMenu = new QMenu(this);
+    delAction = pMenu->addAction(tr("删除"));
+//    addAction(delAction);
     connect(delAction, SIGNAL(triggered(bool)), SLOT(delCourse()));
 
 
@@ -474,6 +486,14 @@ void CourseCellWidget::mousePressEvent(QMouseEvent *event)
     if(Arg::GetFocusMode==0)setFocus();
     if(mLinkedLesson != nullptr && mLinkedLesson->rootFolder() !=nullptr)
     {
+        if(event->button() == Qt::RightButton) {
+            if(pMenu != Q_NULLPTR) {
+                pMenu->exec(event->globalPos());
+
+                return;
+            }
+        }
+
         qDebug()<<"prese course: "<<mLinkedLesson->unit()<<endl;
         ///Delete Mark 2017.02.24,猜测性去掉.
 //        Arg::fileListWidget->updateContent(mLinkedLesson->rootFolder());
@@ -520,7 +540,7 @@ void CourseCellWidget::mousePressEvent(QMouseEvent *event)
     }
 
 
-    QWidget::mousePressEvent(event);
+//    QWidget::mousePressEvent(event);
 }
 void CourseCellWidget::keyPressEvent(QKeyEvent *event)
 {
@@ -722,6 +742,14 @@ void CourseCellWidget::deleteLessonFinished(int nDetailID, const QJsonObject &js
 {
 //    qDebug()<<"delete course result: "<<json<<endl;
     if(jsonObj["status"] == "false") return;
+
+    if(m_pDelEvLoop != Q_NULLPTR) {
+         m_pDelEvLoop->exit();
+
+         delete m_pDelEvLoop;
+         m_pDelEvLoop = Q_NULLPTR;
+    }
+
 
     if(mLinkedLesson != Q_NULLPTR) {
         int nLinkedDetailID = mLinkedLesson->getLessonDetailId();
