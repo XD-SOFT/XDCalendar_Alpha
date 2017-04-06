@@ -11,6 +11,7 @@
 #include <QMap>
 #include <QJsonObject>
 #include <QRunnable>
+#include <QQueue>
 
 class ResFilesDB;
 class QDialog;
@@ -177,6 +178,8 @@ private:
 
     QMap<QNetworkReply*, QString > m_downloadReplayMap;
 
+    //下载文件参数队列.
+    QQueue<QMap<QString, QString> > m_downloadArgsQueue;
 
     bool m_bAbort = false;
 

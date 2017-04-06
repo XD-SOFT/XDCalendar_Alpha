@@ -697,7 +697,7 @@ void FileListWidget::GF_downloadFile(int nRow)
    if(bEnterDownload) {
          m_pProgressBar->show();
    }
-   else {
+   else if(Arg::sDownLoadFileCount == 0) {
        m_pProgressBar->hide();
    }
 

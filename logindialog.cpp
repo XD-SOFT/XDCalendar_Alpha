@@ -607,6 +607,8 @@ void loginDialog::on_loginButton_clicked()
 
 void loginDialog::currentAccountChanged(const QString &sText)
 {
+    loginButton->setEnabled(true);
+
     ///Mark，暂时这么简单处理.整个处理逻辑暂时存在问题，侧面暂时添加.
     Arg::username = sText;
     Arg *pArg = Arg::getInstance();
@@ -640,6 +642,8 @@ void loginDialog::modifiedPasswordFinished(const QString &sUserName, const QStri
 
 void loginDialog::accountChanged(int nIndex)
 {
+    loginButton->setEnabled(true);
+
     if(m_nAutoLoginTimerID != -1) {
         killTimer(m_nAutoLoginTimerID);
         m_nAutoLoginTimerID = -1;

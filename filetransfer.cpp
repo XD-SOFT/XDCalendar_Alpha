@@ -390,6 +390,8 @@ void FileTransfer::ftpDownload()
     //    qDebug()<<"--------url:"<<address;
     //    QUrl url(address);
 
+    m_downloadArgsQueue.enqueue(filearguments);
+
     QString sServerConfig;
     Arg *pArg = Arg::getInstance();
     pArg->getNetReusetHostUrl(sServerConfig);
@@ -408,7 +410,12 @@ void FileTransfer::ftpDownload()
     connect(pHandler, &Handler::downloadUrlRequestFinished, this, &FileTransfer::downloadFileByHttp, Qt::UniqueConnection);
     pHandler->requestByUrlAndType(sUrl, Handler::DownloadUrlRequest);
 
+
+    QMutex mutex;
+    mutex.lock();
     ++Arg::sDownLoadFileCount;
+
+    mutex.unlock();
 
 #endif
 
@@ -611,8 +618,15 @@ bool FileTransfer::setArguments(const QMap<QString, QString> &arg, Lesson *pLess
         return false;
     }
 
+
     filearguments = arg;
+
+    QMutex mutex;
+    mutex.lock();
+
     m_downloadFileHash.insertMulti(pLesson, arg);
+
+    mutex.unlock();
 
     qDebug() << "the file argments is:" << filearguments;
 
@@ -663,6 +677,11 @@ void FileTransfer::httpDownloadError(const InvokableQMap &arguments, const QStri
     m_downloadFileHash.remove(pLesson, arguments);
 //    m_dwonloadArgList.removeOne(arguments);
 
+    if(Arg::sDownLoadFileCount == 0) {
+        m_downloadFileHash.clear();
+    }
+
+
     emit ftpDownloadError(sError);
 
     mutex.unlock();
@@ -686,8 +705,6 @@ void FileTransfer::httpDownLoadFinished(const InvokableQMap &arguments)
     if(Arg::sDownLoadFileCount == 0) {
         m_downloadFileHash.clear();
     }
-
-//    m_dwonloadArgList.removeOne(arguments);
 
     emit downloadFinished();
 
@@ -961,11 +978,13 @@ void FileTransfer::downloadFileByHttp(const QJsonObject &jsonObj)
     if(jsonArg.contains("Downloadurl")) {
         QString sUrl = jsonArg.value("Downloadurl").toString();
 
-        qDebug()<<"------------downloadFileByHttp--url:"<<sUrl;
+        //        m_dwonloadArgList.append(filearguments);
 
-//        m_dwonloadArgList.append(filearguments);
+        QMap<QString, QString> args = m_downloadArgsQueue.dequeue();
 
-        HttpDownloadRunnable *pRunnable = new HttpDownloadRunnable(filearguments, this);
+        qDebug() << "downloadFileByHttp--url:" << sUrl << "args is:" << args;
+
+        HttpDownloadRunnable *pRunnable = new HttpDownloadRunnable(args, this);
         pRunnable->setAutoDelete(true);
         pRunnable->setDownloadUrl(sUrl);
 
@@ -1197,22 +1216,20 @@ void HttpDownloadRunnable::run()
             connect(m_pNetworkAccessMgr, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)), Qt::BlockingQueuedConnection );
         }
 
-
-
         QUrl url(m_sDownloadUrl);
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
 
         m_pTimer = new QTimer;
-        connect(m_pTimer, &QTimer::timeout, this, &HttpDownloadRunnable::downloadTimeOut, Qt::BlockingQueuedConnection );
+        connect(m_pTimer, &QTimer::timeout, this, &HttpDownloadRunnable::downloadTimeOut, Qt::BlockingQueuedConnection);
 
         QNetworkReply *pReply = m_pNetworkAccessMgr->get(request);
 //        m_replyArgsHash.insert(reply, filearguments);
 //        m_timerReplyHash.insert(pTimer, reply);
 //        connect(pReply, SIGNAL(finished()), this, SLOT(finished()));
         //    qDebug()<<"***adsdsd"<<endl;
-        connect(pReply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(processDownloadProgress(qint64, qint64)), Qt::BlockingQueuedConnection );
-        connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection );
+        connect(pReply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(processDownloadProgress(qint64, qint64)), Qt::BlockingQueuedConnection);
+        connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection);
         //    connect(reply, SIGNAL(readyRead()), this, SLOT(readyRead()));
 
         m_pTimer->start(300000);

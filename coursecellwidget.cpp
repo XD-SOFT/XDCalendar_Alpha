@@ -424,7 +424,7 @@ void CourseCellWidget::leaveEvent (QEvent* ev)
         int nCursorY = globalCursorPos.y();
 
         if((nCursorX < 0) || (nCursorX > width()) || nCursorY < 0) {
-            qDebug() << "the cursor pos is:" << nCursorX << nCursorY;
+//            qDebug() << "the cursor pos is:" << nCursorX << nCursorY;
             pNoteWgt->handleLessonRemarkDB();
             pNoteWgt->hide();
         }
