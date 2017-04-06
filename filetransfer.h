@@ -116,6 +116,7 @@ protected slots:
     void slotError(QNetworkReply::NetworkError code);
     void ftpUploadReplyFinished(QNetworkReply *reply);
     void ftpDownloadReplyFinished(QNetworkReply *reply);
+    void donwLoadError(QNetworkReply::NetworkError code);
 
 
     void httpReplyFinished(QNetworkReply*reply);
@@ -173,6 +174,9 @@ private:
 //    ///http下载参数list,http下载改为多线程，暂时这么处理.
 //    /// 上传的暂时不改变.
 //    QList<QMap<QString, QString> > m_dwonloadArgList;
+
+    QMap<QNetworkReply*, QString > m_downloadReplayMap;
+
 
     bool m_bAbort = false;
 

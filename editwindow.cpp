@@ -21,6 +21,7 @@ EditWindow::EditWindow(QWidget *parent) :
     m_bEditStatus = false;
 
     auto titleBar = new TitleBar (tr("课程编辑"), this);
+    titleBar->setFixedHeight(35);
     connect (titleBar, &TitleBar::tbClose, [this] ()
     {
         this->close ();
@@ -32,7 +33,7 @@ EditWindow::EditWindow(QWidget *parent) :
     ///Modified by BiXiaoxia 2016.12.22.
     int nShadowWidth = getShadowMargin();
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(nShadowWidth, nShadowWidth, nShadowWidth, nShadowWidth + 9);
+    mainLayout->setContentsMargins(nShadowWidth, nShadowWidth-10, nShadowWidth, nShadowWidth );
     ///
 //    mainLayout->setSpacing (0);
     QHBoxLayout* courseLayout = new QHBoxLayout;
@@ -62,6 +63,7 @@ EditWindow::EditWindow(QWidget *parent) :
     pStartDateLb->setText(tr("起始时间*"));
     pStartDateLb->setFixedWidth(60);
     m_pStartDateEdit = new QDateEdit(QDate::currentDate());
+    m_pStartDateEdit->setStyleSheet("QDateEdit{border-width:2px;}");
     QHBoxLayout *pStartDateLayout = new QHBoxLayout;
     pStartDateLayout->setContentsMargins(30, 0, 30, 0);
     pStartDateLayout->addWidget(pStartDateLb);
@@ -71,6 +73,7 @@ EditWindow::EditWindow(QWidget *parent) :
     pEndDateLb->setText(tr("结束时间*"));
     pEndDateLb->setFixedWidth(60);
     m_pEndDateEdit = new QDateEdit(QDate::currentDate());
+    m_pEndDateEdit->setStyleSheet("QDateEdit{border-width:2px;}");
     QHBoxLayout *pEndDateLayout = new QHBoxLayout;
     pEndDateLayout->setContentsMargins(30, 0, 30, 0);
     pEndDateLayout->addWidget(pEndDateLb);
@@ -88,9 +91,12 @@ EditWindow::EditWindow(QWidget *parent) :
     sureButton = new QPushButton(tr("确定"), this);
     sureButton->setMinimumWidth(20);
     sureButton->setFixedWidth(80);
+    sureButton->setFixedHeight(24);
+
     resetButton = new QPushButton(tr("重置"), this);
     resetButton->setMinimumWidth(20);
     resetButton->setFixedWidth(80);
+    resetButton->setFixedHeight(24);
     connect(sureButton, SIGNAL(clicked(bool)), this, SLOT(sureButtonClicked()));
     connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(resetButtonClicked()));
 
@@ -140,30 +146,30 @@ EditWindow::EditWindow(QWidget *parent) :
     setLayout->addWidget(sureButton);
     setLayout->addStretch(1);
     setLayout->addWidget(resetButton);
-    setLayout->addStretch(1);
+    //setLayout->addStretch(1);
 
     mainLayout->setSpacing(6);
 
     mainLayout->addWidget (titleBar);
-    mainLayout->addStretch(1);
+   // mainLayout->addStretch(1);
     mainLayout->addLayout(courseLayout);
-    mainLayout->addStretch(1);
+   // mainLayout->addStretch(1);
     mainLayout->addLayout(locationLayout);
-    mainLayout->addStretch(1);
+   // mainLayout->addStretch(1);
     mainLayout->addLayout(classLayout);
-    mainLayout->addStretch(1);
+   // mainLayout->addStretch(1);
     mainLayout->addLayout(loopLayout);
 
-    mainLayout->addStrut(1);
+   // mainLayout->addStrut(1);
     mainLayout->addLayout(pStartDateLayout);
-    mainLayout->addStretch(1);
+   // mainLayout->addStretch(1);
     mainLayout->addLayout(pEndDateLayout);
-    mainLayout->addSpacing(20);
+  //  mainLayout->addSpacing(20);
     mainLayout->addLayout(setLayout);
-//    mainLayout->addSpacing(10);
+    mainLayout->addSpacing(10);
 
     ///Mark，暂时这么处理, 保持代码稳定先.
-    setFixedSize (400, 300);
+    setFixedSize (400, 350);
     //courseLayout->setMargin(0);
     //mainLayout->setMargin (5);
 

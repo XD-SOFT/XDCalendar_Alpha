@@ -133,7 +133,8 @@ BaseShadowWidget()
                                                        "subcontrol-origin: margin;"
                                                    "}"
 
-                                                  ".QPushButton{background:#1250b5; \
+//mark2017.4.1,只修改userinfowidget.ui 中button
+                                                  ".QPushButton#pNameBtn{background:#1250b5; \
                                                             border:1px solid #1250b5;\
                                                             color:white;}");
 
