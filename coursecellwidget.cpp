@@ -479,7 +479,7 @@ void CourseCellWidget::mousePressEvent(QMouseEvent *event)
     if(Arg::GetFocusMode==0)setFocus();
     if(mLinkedLesson != nullptr && mLinkedLesson->rootFolder() !=nullptr)
     {
-        if(event->button() == Qt::RightButton) {
+        if((Arg::viewMode == ViewMode::Edit) && (event->button() == Qt::RightButton)) {
             if(pMenu != Q_NULLPTR) {
                 pMenu->exec(event->globalPos());
 

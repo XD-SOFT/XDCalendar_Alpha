@@ -1423,6 +1423,10 @@ bool MainScreen::eventFilter(QObject *watched, QEvent *event)
 
     case QEvent::MouseButtonDblClick: {
         if(watched == TopLine) {
+            if(Arg::viewMode == ViewMode::Edit) {
+                return true;
+            }
+
             static int loopControl = 0;
             int loopIndex = loopControl % 2;
             ViewMode vwMode;

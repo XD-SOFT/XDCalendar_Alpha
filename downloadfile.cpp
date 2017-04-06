@@ -18,7 +18,7 @@ void downloadFile::handleDownloadFiles(Lesson *pLesson)
     transfer->handleDwonloadFiles(pLesson);
 }
 
-void downloadFile::download(const QMap<QString, QString> &filePath, Lesson *pLesson)
+bool downloadFile::download(const QMap<QString, QString> &filePath, Lesson *pLesson)
 {
     qDebug()<<"come in downloadFile"<<endl;
 
@@ -72,6 +72,8 @@ void downloadFile::download(const QMap<QString, QString> &filePath, Lesson *pLes
     if(bStatus) {
         transfer->ftpDownload();
     }
+
+    return bStatus;
     //        emit start();
 //        disconnect(this, SIGNAL(start()), transfer, SLOT( ftpDownload() ));
 //    }

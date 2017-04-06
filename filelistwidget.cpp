@@ -668,7 +668,7 @@ void FileListWidget::GF_downloadFile(int nRow)
 //   QRect rect = fileTreeWidget->visualItemRect(pItem);
 //   m_pProgressBar->resize(rect.width(), rect.height());
 //   m_pProgressBar->move(fileTreeWidget->pos() + rect.topLeft());
-   m_pProgressBar->show();
+//   m_pProgressBar->show();
 
    qDebug()<<nRow<<endl;
 
@@ -692,10 +692,16 @@ void FileListWidget::GF_downloadFile(int nRow)
    args["fileName"] = path.split("/").last();
 
 //   ++Arg::sDownLoadFileCount;
-   dtTool->download(args, pLesson);
+   bool bEnterDownload = dtTool->download(args, pLesson);
+
+   if(bEnterDownload) {
+         m_pProgressBar->show();
+   }
+   else {
+       m_pProgressBar->hide();
+   }
 
    m_pDownCountLb->setText(QString::number(Arg::sDownLoadFileCount));
-
    qDebug() << "the download args is:" << args;
 }
 

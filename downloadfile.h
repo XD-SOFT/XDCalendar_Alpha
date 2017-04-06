@@ -27,7 +27,7 @@ signals:
 
 public slots:
     ///pLesson == Q_NULLPTR的时候为启动时候下载.
-    void download(const QMap<QString, QString> &, Lesson *pLesson);
+    bool download(const QMap<QString, QString> &, Lesson *pLesson);
     void uiState(QJsonObject jo);
 
 private slots:

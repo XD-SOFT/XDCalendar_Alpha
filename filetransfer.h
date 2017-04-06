@@ -10,6 +10,7 @@
 //#include <QFileInfo>
 #include <QMap>
 #include <QJsonObject>
+#include <QRunnable>
 
 class ResFilesDB;
 class QDialog;
@@ -18,6 +19,55 @@ class QFile;
 class Lesson;
 class QTimer;
 class QNetworkReply;
+class QEventLoop;
+
+typedef QMap<QString, QString> InvokableQMap;
+Q_DECLARE_METATYPE(InvokableQMap)
+
+class HttpDownloadRunnable : public QObject, public QRunnable
+{
+    Q_OBJECT
+
+public:
+    /*!
+     *\brief 设置反射对象,用这个通过Q_INVOKABLE来反射得到转换后的资源参数.
+     *\param pInvokableObjPtr.
+    */
+    HttpDownloadRunnable(const QMap<QString, QString> &arguments, QObject *pInvokableObj, QObject *parent = Q_NULLPTR);
+    ~HttpDownloadRunnable();
+
+    void setDownloadUrl(const QString &url);
+
+protected:
+    /*!
+     *\brief 在实现类中实现对不同类型的资源的转换.
+    */
+    void run() final;
+
+private slots:
+    void authenticationNetworkAcessManager(QNetworkReply *reply1, QAuthenticator *authenticator);
+
+    void downloadFinished(QNetworkReply *reply);
+
+    void processDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+
+    void downloadTimeOut();
+
+    void slotError(QNetworkReply::NetworkError error);
+
+private:
+    QObject *m_pInvokableObj;
+    QString m_sDownloadUrl;
+    QNetworkAccessManager *m_pNetworkAccessMgr;
+    QMap<QString, QString> m_arguments;
+
+    ///上一次收到的所有bytes.
+    qint64 m_nLastTotalReceivedBytes;
+
+    QTimer *m_pTimer;
+
+    QEventLoop *m_pEvLoop;
+};
 
 class FileTransfer : public QObject
 {
@@ -43,6 +93,13 @@ public:
     void handleDwonloadFiles(Lesson *pLesson);
 
     void handleUploadFiles(Lesson *pLesson);
+
+    Q_INVOKABLE void httpDownloadError(const InvokableQMap &arguments, const QString &sError);
+
+    ///Todo,这个有待确定.
+    Q_INVOKABLE void httpDownloadProgress(const InvokableQMap &arguments, qint64 bytesReceived, qint64 bytesTotal);
+
+    Q_INVOKABLE void httpDownLoadFinished(const InvokableQMap &arguments);
 
 signals:
     void ftpDownloadError(const QString &sError);
@@ -103,12 +160,19 @@ private:
 
     QMap<QNetworkReply*, QFile*> m_uploadReplyFileMap;
 
-    //课程上传或者下载文件哈希表.
-    QMultiHash<Lesson*, QMap<QString, QString> > m_upOrDownloadFileHash;
+    //课程上传文件哈希表.
+    QMultiHash<Lesson*, QMap<QString, QString> > m_uploadFileHash;
+
+    //课程下载课程与文件哈希表.
+    QMultiHash<Lesson*, QMap<QString, QString> > m_downloadFileHash;
 
     QHash<QNetworkReply*, QMap<QString, QString> > m_replyArgsHash;
 
     QHash<QTimer*, QNetworkReply*> m_timerReplyHash;
+
+//    ///http下载参数list,http下载改为多线程，暂时这么处理.
+//    /// 上传的暂时不改变.
+//    QList<QMap<QString, QString> > m_dwonloadArgList;
 
     bool m_bAbort = false;
 

@@ -392,7 +392,15 @@ void EditWindow::sureButtonClicked()
 void EditWindow::addLessonFinished(const QJsonObject &json)
 {
     qDebug()<<"add course result: "<<json<<endl;
-    if(json["status"] == "false")return;
+    if(json["status"] == "false") {
+#ifdef USER_QT_MESSAGEBOX
+        QMessageBox::information(this, tr("教师客户端"), tr("添加课程失败"));
+#else
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("添加课程失败"));
+#endif
+
+        return;
+    }
     //    else
     //    {
     //不是该窗口编辑.
@@ -421,7 +429,14 @@ void EditWindow::addLessonFinished(const QJsonObject &json)
 void EditWindow::updateLessonFinished(const QJsonObject &json)
 {
     qDebug()<<"update course result: "<<json<<endl;
-    if(json["status"] == "false")return;
+    if(json["status"] == "false"){
+#ifdef USER_QT_MESSAGEBOX
+        QMessageBox::information(this, tr("教师客户端"), tr("更新课程失败"));
+#else
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("更新课程失败"));
+#endif
+        return;
+    }
 
     //不是该窗口编辑.
     if(!m_bEditStatus) {
