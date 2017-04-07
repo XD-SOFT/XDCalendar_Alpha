@@ -203,7 +203,15 @@ void CourseCellWidget::setup ()
 #else
 
     //mark form changmanyi 取消了自绘按钮构造，使用样式表对按钮进行贴图
+    editButton = new EditButton(this);
     editButton->hide();
+    editButton->setFixedHeight(20);
+    editButton->setFixedWidth(20);
+//    editButton->setObjectName("CourseEditButton");
+//    editButton->setStyleSheet("QPushButton#CourseEditButton{border-image:url(:/Icon/05.png);}"
+//                              "QPushButton#CourseEditButton:hover{border-image:url(:/Icon/06.png);}"
+//                              "QPushButton#CourseEditButton:pressed{border-image:url(:/Icon/06.png);}"
+//                              );
 
     connect(editButton, SIGNAL(clicked(bool)), this, SLOT(showEditWindow()));
 
