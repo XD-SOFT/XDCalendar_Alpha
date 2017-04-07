@@ -841,7 +841,7 @@ void MainScreen::logOff()
 void MainScreen::showAboutWindow()
 {
 
-    QString fileName = qApp->applicationDirPath() +"/MoonCalendarHelp.txt";
+    QString fileName = qApp->applicationDirPath() +"/MoonCalendarHelp";
     qDebug()<<"---"<<fileName;
     QEventLoop e;
     aboutWlg a(fileName);
