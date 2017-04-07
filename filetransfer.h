@@ -56,6 +56,8 @@ private slots:
 
     void slotError(QNetworkReply::NetworkError error);
 
+    void writeData();
+
 private:
     QObject *m_pInvokableObj;
     QString m_sDownloadUrl;
@@ -68,6 +70,8 @@ private:
     QTimer *m_pTimer;
 
     QEventLoop *m_pEvLoop;
+
+    QFile *m_pDownloadFile;
 };
 
 class FileTransfer : public QObject
