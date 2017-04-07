@@ -193,7 +193,7 @@ private:
 
     FileNumWidget* fileNumWidget;
     ColorButton* colorButton;
-    EditButton* editButton;
+    QPushButton* editButton;
     //EditButton* delButton;
 
     bool m_bDelCourseStatus = false;

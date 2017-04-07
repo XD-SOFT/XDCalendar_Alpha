@@ -36,10 +36,12 @@ LookAndFeelConfigDialog::LookAndFeelConfigDialog(double bo, double fo, QWidget *
     opacityLayout->setContentsMargins(10, 0, 10, 6);
     opacityLayout->addSpacing(20);
     opacityLayout->addWidget (boLabel);
+    opacityLayout->addSpacing(5);
     opacityLayout->addWidget (mBackgroundOpacitySlider);
     opacityLayout->addSpacing(20);
 
     opacityLayout->addWidget (foreboLabel);
+    opacityLayout->addSpacing(5);
     opacityLayout->addWidget (mForegroundOpacitySlider);
     opacityLayout->addSpacing(40);
     auto titleBar = new TitleBar ("皮肤", this);
