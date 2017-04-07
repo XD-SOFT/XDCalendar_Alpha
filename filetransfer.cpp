@@ -85,7 +85,11 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
     //            }
     //        }
     //    }
+    ResFilesDB *pResFilesDB = Q_NULLPTR;
 
+    if(m_replyResDBMap.contains(reply)) {
+        pResFilesDB = m_replyResDBMap.value(reply);
+    }
 
     //无错误返回
     if(reply->error() == QNetworkReply::NoError)
@@ -94,14 +98,10 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
         QString result(bytes);  //转化为字符串
         qDebug()<<result;
 
-        if(m_replyResDBMap.contains(reply)) {
-            ResFilesDB *pResFilesDB = m_replyResDBMap.value(reply);
-            if(pResFilesDB != Q_NULLPTR) {
-                pResFilesDB->add();
-            }
-
-            //            m_replyResDBMap.remove(reply);
+        if(pResFilesDB != Q_NULLPTR) {
+            pResFilesDB->add();
         }
+
 
         //        if(bCreatUpload) {
         //            //向数据库资源表内插入记录
@@ -134,6 +134,18 @@ void FileTransfer::ftpUploadReplyFinished(QNetworkReply *reply)
 
             reply->deleteLater();
         }
+
+
+    }
+
+    if(pResFilesDB != Q_NULLPTR) {
+        Lesson *pLesson = m_resDBAndLessonMap.value(pResFilesDB);
+        QMap<QString, QString> replyArgs = m_replyArgsHash.value(reply);
+        m_replyResDBMap.remove(reply);
+        m_uploadFileHash.remove(pLesson, replyArgs);
+
+        delete pResFilesDB;
+        pResFilesDB = Q_NULLPTR;
     }
 
     emit uploadFileFinished();
@@ -671,18 +683,21 @@ void FileTransfer::httpDownloadError(const InvokableQMap &arguments, const QStri
     QMutex mutex;
     mutex.lock();
 
-    --Arg::sDownLoadFileCount;
-
     Lesson *pLesson = m_downloadFileHash.key(arguments);
-    m_downloadFileHash.remove(pLesson, arguments);
-//    m_dwonloadArgList.removeOne(arguments);
 
-    if(Arg::sDownLoadFileCount == 0) {
-        m_downloadFileHash.clear();
+    if(pLesson != Q_NULLPTR) {
+        --Arg::sDownLoadFileCount;
+        m_downloadFileHash.remove(pLesson, arguments);
+
+        if(Arg::sDownLoadFileCount == 0) {
+            m_downloadFileHash.clear();
+        }
+
     }
 
-
     emit ftpDownloadError(sError);
+
+//    m_dwonloadArgList.removeOne(arguments);
 
     mutex.unlock();
 }
@@ -697,13 +712,15 @@ void FileTransfer::httpDownLoadFinished(const InvokableQMap &arguments)
     QMutex mutex;
     mutex.lock();
 
-    --Arg::sDownLoadFileCount;
-
     Lesson *pLesson = m_downloadFileHash.key(arguments);
-    m_downloadFileHash.remove(pLesson, arguments);
 
-    if(Arg::sDownLoadFileCount == 0) {
-        m_downloadFileHash.clear();
+    if(pLesson != Q_NULLPTR) {
+        --Arg::sDownLoadFileCount;
+        m_downloadFileHash.remove(pLesson, arguments);
+
+        if(Arg::sDownLoadFileCount == 0) {
+            m_downloadFileHash.clear();
+        }
     }
 
     emit downloadFinished();
@@ -1068,6 +1085,7 @@ void FileTransfer::addFinished(const QJsonObject &jo)
         pFile->setFileID(fileid);
     }
 
+#if 0
     QNetworkReply *reply = m_replyResDBMap.key(pSender);
     if(m_replyArgsHash.contains(reply)) {
         QMap<QString, QString> replyArgs = m_replyArgsHash.value(reply);
@@ -1090,6 +1108,7 @@ void FileTransfer::addFinished(const QJsonObject &jo)
 
     m_replyResDBMap.remove(reply);
     m_replyArgsHash.remove(reply);
+
     //    reply->deleteLater();
 
     //        qDebug()<<"first: "<<course.first<<" second: "<<course.second<<endl;
@@ -1103,6 +1122,7 @@ void FileTransfer::addFinished(const QJsonObject &jo)
 
     //删除resfiledb.
     pSender->deleteLater();
+#endif
 }
 
 
@@ -1178,7 +1198,8 @@ HttpDownloadRunnable::HttpDownloadRunnable(const QMap<QString, QString> &argumen
     m_pNetworkAccessMgr(Q_NULLPTR),
     m_nLastTotalReceivedBytes(0),
     m_pTimer(Q_NULLPTR),
-    m_pEvLoop(Q_NULLPTR)
+    m_pEvLoop(Q_NULLPTR),
+    m_pDownloadFile(Q_NULLPTR)
 {
     m_arguments = arguments;
 }
@@ -1198,6 +1219,11 @@ HttpDownloadRunnable::~HttpDownloadRunnable()
     if(m_pEvLoop != Q_NULLPTR) {
         delete m_pEvLoop;
         m_pEvLoop = Q_NULLPTR;
+    }
+
+    if(m_pDownloadFile != Q_NULLPTR) {
+        delete m_pDownloadFile;
+        m_pDownloadFile = Q_NULLPTR;
     }
 }
 
@@ -1229,8 +1255,8 @@ void HttpDownloadRunnable::run()
 //        connect(pReply, SIGNAL(finished()), this, SLOT(finished()));
         //    qDebug()<<"***adsdsd"<<endl;
         connect(pReply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(processDownloadProgress(qint64, qint64)), Qt::BlockingQueuedConnection);
-        connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection);
-        //    connect(reply, SIGNAL(readyRead()), this, SLOT(readyRead()));
+//        connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection);
+        connect(pReply, SIGNAL(readyRead()), this, SLOT(writeData()));
 
         m_pTimer->start(300000);
 
@@ -1252,38 +1278,17 @@ void HttpDownloadRunnable::downloadFinished(QNetworkReply *reply)
 {
     if (reply->error() == QNetworkReply::NoError)
     {
-        Arg *pArg = Arg::getInstance();
-        QDir dir;
-        pArg->getSaveDir(dir);
-        QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + m_arguments["folderName"]+"/"+ m_arguments["fileName"];
-
-        filePath.replace("//", "/");
-        filePath.replace("/", "\\");
-        qDebug()<<"ftp download file is:" << filePath;
-
-        ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
-        if(QFile(filePath).exists()){
-            bool bRemoveStatus = QFile::remove(filePath);
-            qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
-        }
-
-        QFile* pFile = new QFile(filePath);
-
-        if(pFile->open(QIODevice::WriteOnly)) {
-            pFile->write(reply->readAll());
-            pFile->close();
-
-            delete pFile;
-            pFile = Q_NULLPTR;
-        }
-
         if(m_pTimer != Q_NULLPTR) {
+            m_pTimer->moveToThread(this->thread());
+            m_pTimer->stop();
+
             delete m_pTimer;
             m_pTimer = Q_NULLPTR;
         }
 
         QMetaObject::invokeMethod(m_pInvokableObj, "httpDownLoadFinished", Qt::DirectConnection,
                                   Q_ARG(const InvokableQMap&, m_arguments));
+
     }
     else
     {
@@ -1293,6 +1298,13 @@ void HttpDownloadRunnable::downloadFinished(QNetworkReply *reply)
         QMetaObject::invokeMethod(m_pInvokableObj, "httpDownloadError", Qt::DirectConnection,
                                   Q_ARG(const InvokableQMap&, m_arguments),
                                   Q_ARG(const QString&, reply->errorString()));
+    }
+
+    if(m_pDownloadFile != Q_NULLPTR) {
+        m_pDownloadFile->close();
+
+        delete m_pDownloadFile;
+        m_pDownloadFile = Q_NULLPTR;
     }
 
     m_pEvLoop->exit();
@@ -1349,4 +1361,42 @@ void HttpDownloadRunnable::slotError(QNetworkReply::NetworkError error)
     }
 
     m_pEvLoop->exit();
+}
+
+void HttpDownloadRunnable::writeData()
+{
+    if(m_pTimer != Q_NULLPTR) {
+        m_pTimer->moveToThread(this->thread());
+        m_pTimer->stop();
+
+        delete m_pTimer;
+        m_pTimer = Q_NULLPTR;
+    }
+
+    QNetworkReply *pReply =(QNetworkReply *)sender();
+
+    if(m_pDownloadFile == Q_NULLPTR) {
+        Arg *pArg = Arg::getInstance();
+        QDir dir;
+        pArg->getSaveDir(dir);
+        QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + m_arguments["folderName"]+"/"+ m_arguments["fileName"];
+
+        filePath.replace("//", "/");
+        filePath.replace("/", "\\");
+        qDebug()<<"ftp download file is:" << filePath;
+
+        ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
+        if(QFile(filePath).exists()){
+            bool bRemoveStatus = QFile::remove(filePath);
+            qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
+        }
+
+        m_pDownloadFile = new QFile(filePath);
+    }
+
+    if(!m_pDownloadFile->isOpen()) {
+        m_pDownloadFile->open(QIODevice::WriteOnly);
+    }
+
+    m_pDownloadFile->write(pReply->readAll());
 }
