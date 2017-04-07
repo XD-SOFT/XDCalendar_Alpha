@@ -72,15 +72,15 @@ LookAndFeelConfigDialog::LookAndFeelConfigDialog(double bo, double fo, QWidget *
     layout->addLayout(opacityLayout);
 
 
-#ifdef USED_STANDARD_WRITE_LOCAL
-    Arg *pArg = Arg::getInstance();
-    QDir dir;
-    pArg->getSaveDir(dir);
-    QDir skinDir = QDir(/*Arg::configDir*/dir.absolutePath () + "/background");
-#else
+//#ifdef USED_STANDARD_WRITE_LOCAL
+//    Arg *pArg = Arg::getInstance();
+//    QDir dir;
+//    pArg->getSaveDir(dir);
+//    QDir skinDir = QDir(/*Arg::configDir*/dir.absolutePath () + "/background");
+//#else
     QDir skinDir = QDir(QApplication::applicationDirPath() + "./background");
     qDebug() << "the applicaiton dir path" << QApplication::applicationDirPath() << "filepath" << QApplication::applicationFilePath();
-#endif
+//#endif
 
     loadBackgroundImageCandidates(skinDir);
 
@@ -184,6 +184,9 @@ void LookAndFeelConfigDialog::skinButtonChecked(bool bChecked)
 
 void LookAndFeelConfigDialog::restoreDefault()
 {
+    mBackgroundOpacitySlider->setValue(100);
+    mForegroundOpacitySlider->setValue(50);
+
     emit restoreSkin();
 }
 
