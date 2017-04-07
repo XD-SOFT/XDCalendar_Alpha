@@ -49,35 +49,42 @@ CourseCellWidget::CourseCellWidget(QWidget *parent) :
     setup();
 
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
-//    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    //    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     mainLayout->setSpacing (0);
     mainLayout->setMargin(0);
 
+    //mark Layout ,使编辑按钮在中间
+    QHBoxLayout* location = new QHBoxLayout;
+    location->addWidget(courseLabel);
+    location->addWidget(locationLabel);
+
     QHBoxLayout* editLayout = new QHBoxLayout;
-    editLayout->addWidget(courseLabel);
+    editLayout->addSpacing(20);
     editLayout->addWidget(editButton);
 
     QVBoxLayout* courseLayout = new QVBoxLayout;
     courseLayout->setSpacing (0);
     courseLayout->setMargin (0);
+    courseLayout->addLayout (location); //调整.
+    //courseLayout->addWidget (locationLabel);
     courseLayout->addLayout (editLayout); //调整.
-    courseLayout->addWidget (locationLabel);
     courseLayout->addWidget (classLabel);
 
     mainLayout->addWidget (colorButton);
+    mainLayout->addSpacing(2);
     mainLayout->addLayout(courseLayout);
-    mainLayout->setSpacing(0);
-//    mainLayout->addLayout(editLayout, 5);
+    mainLayout->addSpacing(25);
+    //  mainLayout->addLayout(editLayout, 5);
     mainLayout->setMargin (0);
 
     setMouseTracking (true);
 
     ///Mark，为了好控制日期，一到上一层去CourseGrid类里.
-//    connect(CCU::ccu, SIGNAL(changeEdit()), this, SLOT(setEdit()));
+    //    connect(CCU::ccu, SIGNAL(changeEdit()), this, SLOT(setEdit()));
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-//    adjustSize ();
-//    setFixedSize(sizeHint());
-//    setFixedSize(sizeHint());
+    //    adjustSize ();
+    //    setFixedSize(sizeHint());
+    //    setFixedSize(sizeHint());
     setFixedSize(sizeHint());
     setLayout(mainLayout);
 
@@ -104,7 +111,7 @@ CourseCellWidget::~CourseCellWidget()
     NoteWidget *pNoteWgt = NoteWidget::getInstance();
 
     if(pNoteWgt != Q_NULLPTR) {
-         pNoteWgt->cleanInstance();
+        pNoteWgt->cleanInstance();
     }
 
     delete upload;
@@ -124,7 +131,7 @@ bool CourseCellWidget::isEditStatus() const
 void CourseCellWidget::showEditWindow()
 {
 
-//    qDebug()<<"showEditWindow"<<endl;
+    //    qDebug()<<"showEditWindow"<<endl;
 
     ///Mark,暂时这么处理，其实以后这个没必要每个coursecell都给创建一个，考虑弄一个总体的.
     if(editWindow == Q_NULLPTR) {
@@ -140,13 +147,13 @@ void CourseCellWidget::showEditWindow()
     lessonDB->del();
     */
 
-/*
+    /*
     loginDialog* login = new loginDialog(MainScreen::mainScreen);
     login->show();
 */
 
 
-/*
+    /*
     Dialog* download = new Dialog(this);
     download->show();
 */
@@ -156,7 +163,7 @@ void CourseCellWidget::showEditWindow()
 
 void CourseCellWidget::delCourse()
 {
-//    qDebug()<<"delete the course"<<endl;
+    //    qDebug()<<"delete the course"<<endl;
     if(mLinkedLesson == nullptr)
     {
         qDebug()<<"Delete a nullptr course!!!!"<<endl;
@@ -165,17 +172,17 @@ void CourseCellWidget::delCourse()
     else
     {
         LessonDetailDB* lesDB = DataClassInstanceManage::getInstance()->getLessonDetailDBPtr();/*new LessonDetailDB();*/
-//        LessonDetailDB *lesDB = SingleObjectManager::getInstance()->getLessonDetailDB();
+        //        LessonDetailDB *lesDB = SingleObjectManager::getInstance()->getLessonDetailDB();
         lesDB->setId(mLinkedLesson->getLessonDetailId());
         QDate delDate = mLinkedLesson->getDate();
         lesDB->setEndDate(delDate.addDays(-7));
-//        m_bDelCourseStatus = true;
+        //        m_bDelCourseStatus = true;
         setCursor(Qt::WaitCursor);
         lesDB->del();
 
         //        mLinkedLesson = nullptr;
         //delButton->setVisible(false);
-//        reset();
+        //        reset();
     }
 
 }
@@ -184,19 +191,28 @@ void CourseCellWidget::setup ()
 {
     pMenu = new QMenu(this);
     delAction = pMenu->addAction(tr("删除"));
-//    addAction(delAction);
+    //    addAction(delAction);
     connect(delAction, SIGNAL(triggered(bool)), SLOT(delCourse()));
 
-
+#if 0
     editButton = new EditButton (this, false);
     connect(editButton, SIGNAL(clicked(bool)), this, SLOT(showEditWindow()));
     editButton->move(parentWidget()->geometry().right(), parentWidget()->geometry().top());
     editButton->hide();
 
-//    QGraphicsOpacityEffect *pOpacityEffect = new QGraphicsOpacityEffect;
-//    pOpacityEffect->setOpacity(0.0f);
-//    editButton->setGraphicsEffect(pOpacityEffect);
-//    editButton->setEnabled(false);
+#else
+
+    //mark form changmanyi 取消了自绘按钮构造，使用样式表对按钮进行贴图
+    editButton->hide();
+
+    connect(editButton, SIGNAL(clicked(bool)), this, SLOT(showEditWindow()));
+
+#endif
+
+    //    QGraphicsOpacityEffect *pOpacityEffect = new QGraphicsOpacityEffect;
+    //    pOpacityEffect->setOpacity(0.0f);
+    //    editButton->setGraphicsEffect(pOpacityEffect);
+    //    editButton->setEnabled(false);
 
     /*
     delButton = new EditButton (this, true);
@@ -221,7 +237,7 @@ void CourseCellWidget::setup ()
     locationLabel = new QLabel (this);
     classLabel = new QLabel (this);
     //TEMPORAY WAITING FOR SETTINGS SGINAL TO BE FINISHED
-//    locationLabel->hide ();
+    //    locationLabel->hide ();
 
     //qDebug()<<"editButton geometry: "<<editButton->geometry()<<endl;
 }
@@ -231,6 +247,12 @@ void CourseCellWidget::resizeEvent (QResizeEvent* event)
     QWidget::resizeEvent (event);
     colorButton->setMaximumWidth (this->width () >> 4);
     fileNumWidget->move(width ()- fileNumWidget->width (), 0);
+
+    //设置课程添加按钮的位置
+    //    if(editButton != Q_NULLPTR) {
+    //        editButton->move((event->size().width() - editButton->width())/2,
+    //                         (event->size().height() - editButton->height())/2);
+    //    }
 }
 
 void CourseCellWidget::createWeekDay()
@@ -257,8 +279,8 @@ void CourseCellWidget::paintEvent(QPaintEvent *)
     //绘制网格线.
     painter.drawLine(0, 0, this->width()/* - 1*/, 0);
     painter.drawLine(0, 0, 0, this->height()/* - 1*/);
-//    painter.drawLine(this->width() - 1, 0, this->width() - 1, this->height() - 1);
-//    painter.drawLine(0, this->height() - 1, this->width() - 1, this->height() - 1);
+    //    painter.drawLine(this->width() - 1, 0, this->width() - 1, this->height() - 1);
+    //    painter.drawLine(0, this->height() - 1, this->width() - 1, this->height() - 1);
 
     //存在课程绘制课程展现.
     if (mLinkedLesson != nullptr) {
@@ -273,7 +295,7 @@ void CourseCellWidget::paintEvent(QPaintEvent *)
         }
         else {
             double opa = std::min(mOpacity * 2, 1.0);
-//            painter.save ();
+            //            painter.save ();
             painter.setPen(QColor(255, 255, 255, static_cast<int>(opa * 255)));
             brush = QBrush(QColor(255, 255, 255, static_cast<int>(opa * 255)));
         }
@@ -287,7 +309,7 @@ void CourseCellWidget::paintEvent(QPaintEvent *)
 
             //右上角弧度.
 
-//            painter.fillRect(, Qt::white);
+            //            painter.fillRect(, Qt::white);
 
             //最右侧跟colorbutton保持一致绘制.
             int radius = std::min(colorButton->width () << 1, colorButton->height () << 1);
@@ -372,7 +394,7 @@ void CourseCellWidget::enterEvent (QEvent* ev)
         disconnect(pNoteWidget, &NoteWidget::noteWidgetClosed, this, &CourseCellWidget::lostActiveted);
         connect(pNoteWidget, &NoteWidget::noteWidgetClosed, this, &CourseCellWidget::lostActiveted);
 
-//        disconnect(pNoteWidget, &NoteWidget::lessonResourceAddComplete, this, &CourseCellWidget::addLessonResource, );
+        //        disconnect(pNoteWidget, &NoteWidget::lessonResourceAddComplete, this, &CourseCellWidget::addLessonResource, );
         connect(pNoteWidget, &NoteWidget::lessonResourceAddComplete, this, &CourseCellWidget::addLessonResource, Qt::UniqueConnection);
     }
 
@@ -402,29 +424,29 @@ void CourseCellWidget::leaveEvent (QEvent* ev)
         return;
     }
 
-//    mActivated = false;
-//    QPoint bias (10, 10);
+    //    mActivated = false;
+    //    QPoint bias (10, 10);
     //ensure the note widget is not closed when the cursor is move onto it.
-//    if (/*mLinkedLesson == nullptr || (*/NoteWidget::getInstance () && NoteWidget::getInstance ()->geometry ().intersected (QRect(QCursor::pos () - bias, QCursor::pos () + bias)).isValid ()/*)*/)
-//    {
-//        ev->ignore ();
-//        return;
-//    }
-//    else if (mLinkedLesson != nullptr) {
+    //    if (/*mLinkedLesson == nullptr || (*/NoteWidget::getInstance () && NoteWidget::getInstance ()->geometry ().intersected (QRect(QCursor::pos () - bias, QCursor::pos () + bias)).isValid ()/*)*/)
+    //    {
+    //        ev->ignore ();
+    //        return;
+    //    }
+    //    else if (mLinkedLesson != nullptr) {
     ///Mark,根据NoteWidget修改.
     NoteWidget *pNoteWgt = NoteWidget::getInstance();
 
     if((pNoteWgt != Q_NULLPTR) && (pNoteWgt->isVisible())) {
-//        QPoint bias(1, 1);
-//        QPoint cellWgtPt = mapFromGlobal(QCursor::pos()); ///NoteWidget是无父窗口使用，所以这里直接是针对global计算.
-//        QRect adjustRect(QCursor::pos(), QCursor::pos() + bias);
+        //        QPoint bias(1, 1);
+        //        QPoint cellWgtPt = mapFromGlobal(QCursor::pos()); ///NoteWidget是无父窗口使用，所以这里直接是针对global计算.
+        //        QRect adjustRect(QCursor::pos(), QCursor::pos() + bias);
         ///Mark,从notewidget的非显示端离开，notewidget关闭.
         QPoint globalCursorPos = mapFromGlobal(QCursor::pos());
         int nCursorX = globalCursorPos.x();
         int nCursorY = globalCursorPos.y();
 
         if((nCursorX < 0) || (nCursorX > width()) || nCursorY < 0) {
-//            qDebug() << "the cursor pos is:" << nCursorX << nCursorY;
+            //            qDebug() << "the cursor pos is:" << nCursorX << nCursorY;
             pNoteWgt->handleLessonRemarkDB();
             pNoteWgt->hide();
         }
@@ -432,21 +454,21 @@ void CourseCellWidget::leaveEvent (QEvent* ev)
             ///Mark,notewidget使用无父窗口，所以使用全局pos.
             qDebug() << "the cursor pos is" << QCursor::pos() << pNoteWgt->geometry();
             int nShadowWidth = pNoteWgt->getShadowMargin();
-//            QPoint adjustPt = QCursor::pos() + QPoint(0, 2);
+            //            QPoint adjustPt = QCursor::pos() + QPoint(0, 2);
             //这里这么算原理，一是去掉看不到的阴影，第二，垂直方向不减掉yin阴影，为了保证notewidget跟课程部件有效的逻辑接触，能有效的进入notewidget.
             QRect noteWgtRect(pNoteWgt->pos() + QPoint(nShadowWidth, nShadowWidth), QSize(pNoteWgt->width() - 2 * nShadowWidth,
                                                                                           pNoteWgt->height() - 2 * nShadowWidth));
 
             if(noteWgtRect.contains(QCursor::pos())/*.isValid()*/) { //鼠标在noteWidget范围则默认NoteWidgety拥有鼠标.
                 ev->ignore ();
-//                pNoteWgt->show();
+                //                pNoteWgt->show();
                 pNoteWgt->setFocus();
 
                 return;
             }
         }
     }
-//    }
+    //    }
 
     if(m_pShadowEffect != Q_NULLPTR) {
         m_pShadowEffect->setBlurRadius(0);
@@ -457,7 +479,7 @@ void CourseCellWidget::leaveEvent (QEvent* ev)
     mActivated = false;
 
     update ();
-//    setGraphicsEffect (nullptr);
+    //    setGraphicsEffect (nullptr);
 
 
 }
@@ -472,7 +494,7 @@ void CourseCellWidget::leaveEvent (QEvent* ev)
 
 void CourseCellWidget::mousePressEvent(QMouseEvent *event)
 {
-//    QToolTip::showText(event->pos(), tr("我在测试"), this, rect(), 2000);
+    //    QToolTip::showText(event->pos(), tr("我在测试"), this, rect(), 2000);
 
     qDebug()<< "press: "<<event->pos()<<endl;
     //qDebug()<<"editButton: "<<editButton->geometry()<<endl;
@@ -489,7 +511,7 @@ void CourseCellWidget::mousePressEvent(QMouseEvent *event)
 
         qDebug()<<"prese course: "<<mLinkedLesson->unit()<<endl;
         ///Delete Mark 2017.02.24,猜测性去掉.
-//        Arg::fileListWidget->updateContent(mLinkedLesson->rootFolder());
+        //        Arg::fileListWidget->updateContent(mLinkedLesson->rootFolder());
         ///Delete Mark End.
         //qDebug()<<"hhhhhh"<<endl;
         //修改右侧显示课程信息的文本框内容 2016/12/14.
@@ -524,7 +546,7 @@ void CourseCellWidget::mousePressEvent(QMouseEvent *event)
             if(fileNumWidget->getFileNum() != 0) {
                 emit requestShowLessons();
 
-//                Arg::fileListWidget->updateContent(mLinkedLesson->rootFolder());
+                //                Arg::fileListWidget->updateContent(mLinkedLesson->rootFolder());
             }
             else {
                 Arg::fileListWidget->clearResourceDisplay();
@@ -533,7 +555,7 @@ void CourseCellWidget::mousePressEvent(QMouseEvent *event)
     }
 
 
-//    QWidget::mousePressEvent(event);
+    //    QWidget::mousePressEvent(event);
 }
 void CourseCellWidget::keyPressEvent(QKeyEvent *event)
 {
@@ -557,18 +579,18 @@ void CourseCellWidget::setColor()
 
     m_bNeedRecordColor = true;
     //    QColor c = QColorDialog::getColor(mLinkedLesson->getColor (), this);
-//    QColor c = CourseColorPickerWidget
+    //    QColor c = CourseColorPickerWidget
     if(m_pColorPicker == Q_NULLPTR) {
         m_pColorPicker = new CourseColorPickerWidget(this);
         connect(m_pColorPicker, &CourseColorPickerWidget::colorSelectComplete, this, &CourseCellWidget::setLinkedLessonColor);
-//        connect(m_pColorPicker, &CourseColorPickerWidget::cancelSelectedColor, this, &CourseCellWidget::cancelSetLinkedLessonColor);
+        //        connect(m_pColorPicker, &CourseColorPickerWidget::cancelSelectedColor, this, &CourseCellWidget::cancelSetLinkedLessonColor);
     }
 
     m_pColorPicker->show();
-//    if(c.isValid())
-//    {
-//        mLinkedLesson->setColor (c);
-//    }
+    //    if(c.isValid())
+    //    {
+    //        mLinkedLesson->setColor (c);
+    //    }
 
 
 }
@@ -609,34 +631,34 @@ void CourseCellWidget::addLessonResource(Lesson *pLinkedLesson, const QString &s
     }
 
     //    ///why?因为enter后会出现noteWidget，所以会存在创建资源操作.
-        QDate date = pLinkedLesson->getDate();
-        int nWeekDay = date.dayOfWeek();
-        QString sDate = date.toString("yyyy-MM-dd");
-        sDate.append(" ");
-        sDate.append(m_weekDayMap.value(nWeekDay));
-        lessonMap.insert("date", sDate);
-        lessonMap.insert("unit", mLinkedLesson->unit());
-        lessonMap.insert("subject", mLinkedLesson->subject());
-        lessonMap.insert("location", mLinkedLesson->location());
-        Arg::fileListWidget->updatecontentTextEdit(lessonMap);
+    QDate date = pLinkedLesson->getDate();
+    int nWeekDay = date.dayOfWeek();
+    QString sDate = date.toString("yyyy-MM-dd");
+    sDate.append(" ");
+    sDate.append(m_weekDayMap.value(nWeekDay));
+    lessonMap.insert("date", sDate);
+    lessonMap.insert("unit", mLinkedLesson->unit());
+    lessonMap.insert("subject", mLinkedLesson->subject());
+    lessonMap.insert("location", mLinkedLesson->location());
+    Arg::fileListWidget->updatecontentTextEdit(lessonMap);
 
-        Arg::fileListWidget->setFileMap(fileMap);
+    Arg::fileListWidget->setFileMap(fileMap);
 
-        ///Mark,可能mlinkedLesson会在某个地方被置为空值.
-        Lesson *pCurLesson = mLinkedLesson;
-        ///Mark,不建议下面这样用，替换为后面两句代码，why，因为有时候会失效，无效操作，崩溃.
+    ///Mark,可能mlinkedLesson会在某个地方被置为空值.
+    Lesson *pCurLesson = mLinkedLesson;
+    ///Mark,不建议下面这样用，替换为后面两句代码，why，因为有时候会失效，无效操作，崩溃.
     //    Arg::setCurrentLesson(pCurLesson);
-        Arg *pArg = Arg::getInstance();
-        pArg->setCurrentLesson(pCurLesson);
+    Arg *pArg = Arg::getInstance();
+    pArg->setCurrentLesson(pCurLesson);
 
-        Arg::fileListWidget->setLesson(pCurLesson);
+    Arg::fileListWidget->setLesson(pCurLesson);
 
-        if(fileNumWidget != nullptr)
-        {
-            mLinkedLesson->lesFileNumWidget = fileNumWidget;
-        }
-        ///End.
-        ///
+    if(fileNumWidget != nullptr)
+    {
+        mLinkedLesson->lesFileNumWidget = fileNumWidget;
+    }
+    ///End.
+    ///
 
     fileMap.insert(sFileName, sFileDir);
 
@@ -655,13 +677,13 @@ void CourseCellWidget::addLessonResource(Lesson *pLinkedLesson, const QString &s
     File* file = new File(fpName, mLinkedLesson->rootFolder());
     qDebug() << "add file: " << file << " name: " << file->name() << endl;
     mLinkedLesson->rootFolder()->add(file);
-//    qDebug()<<"ddddfile"<<endl;
+    //    qDebug()<<"ddddfile"<<endl;
     fileNumWidget->addFile();
     fileNumWidget->update();
 
-//    qDebug() << "add dddd: "<<endl;
+    //    qDebug() << "add dddd: "<<endl;
     mLinkedLesson->name2File.insert(file->name(), file);
-//    qDebug() << "add map: "<<endl;
+    //    qDebug() << "add map: "<<endl;
 
     if(mLinkedLesson != nullptr && fileNumWidget != nullptr)
     {
@@ -682,10 +704,10 @@ void CourseCellWidget::addLessonResource(Lesson *pLinkedLesson, const QString &s
         emit requestShowLessons();
     }
 
-//    QString sFilePathName = sFileDir;
-//    sFilePathName.replace("/","\\");
+    //    QString sFilePathName = sFileDir;
+    //    sFilePathName.replace("/","\\");
 
-//    QProcess::startDetached("explorer " + sFilePathName);
+    //    QProcess::startDetached("explorer " + sFilePathName);
 }
 
 void CourseCellWidget::setEdit(bool bEditEnabled)
@@ -696,10 +718,12 @@ void CourseCellWidget::setEdit(bool bEditEnabled)
     //qDebug()<<"come in setEdit: "<<static_cast<int>(Arg::viewMode)<<endl;
     if(m_bEditEnabled)
     {
+
+#if 0
         //---------------sec 4 and 7 are breaks-----------------//
         ///Delete 2017.02.21,这个break不使用CourseCellWidget,课程不能考虑到其它非课程功能.
-//        if(secIndex != 4 && secIndex != 7)
-//        {
+        //        if(secIndex != 4 && secIndex != 7)
+        //        {
         if(pOpacityEffect != Q_NULLPTR) {
             pOpacityEffect->setOpacity(1.0f);
             editButton->setEnabled(true);
@@ -708,7 +732,11 @@ void CourseCellWidget::setEdit(bool bEditEnabled)
         else {
             editButton->show();
         }
-//        }
+        //        }
+#else
+        editButton->show();
+
+#endif
 
         if(mLinkedLesson != nullptr/* && secIndex != 4 && secIndex != 7*/)
         {
@@ -719,7 +747,7 @@ void CourseCellWidget::setEdit(bool bEditEnabled)
     else
     {
         setContextMenuPolicy(Qt::DefaultContextMenu);
-
+#if 0
         if(pOpacityEffect != Q_NULLPTR) {
             pOpacityEffect->setOpacity(0.0f);
             editButton->setEnabled(false);
@@ -728,19 +756,22 @@ void CourseCellWidget::setEdit(bool bEditEnabled)
             editButton->hide();
         }
         //delButton->hide();
+#else
+        editButton->hide();
+#endif
     }
 }
 
 void CourseCellWidget::deleteLessonFinished(int nDetailID, const QJsonObject &jsonObj)
 {
-//    qDebug()<<"delete course result: "<<json<<endl;
+    //    qDebug()<<"delete course result: "<<json<<endl;
     if(jsonObj["status"] == "false") return;
 
-//    if(!m_bDelCourseStatus) {
-//        return;
-//    }
+    //    if(!m_bDelCourseStatus) {
+    //        return;
+    //    }
 
-//    m_bDelCourseStatus = false;
+    //    m_bDelCourseStatus = false;
 
     unsetCursor();
 
@@ -796,7 +827,7 @@ void CourseCellWidget::lostActiveted()
 void CourseCellWidget::uploadFileError(const QString &sFilePathName, const QString &sError)
 {
     if(m_bCreateNewFile) {
-//        QFile::remove(sFilePathName);
+        //        QFile::remove(sFilePathName);
         m_bCreateNewFile = false;
     }
 #ifdef USER_QT_MESSAGEBOX
@@ -881,7 +912,7 @@ void CourseCellWidget::reset()
     fileNumWidget->update();
 
     //set infos
-//    locationLabel->setText (mLinkedLesson->location ());
+    //    locationLabel->setText (mLinkedLesson->location ());
     courseLabel->setText (mLinkedLesson->subject ());
     classLabel->setText (mLinkedLesson->unit ());
 }
@@ -890,7 +921,7 @@ void CourseCellWidget::dragEnterEvent(QDragEnterEvent *event)
 {
     if(Arg::viewMode == ViewMode::Edit) {
         if(mLinkedLesson != Q_NULLPTR) {
- #ifdef USER_QT_MESSAGEBOX
+#ifdef USER_QT_MESSAGEBOX
             QMessageBox::information(this, tr("教师客户端"), tr("编辑模式不能拖入资源,请切换模式!"));
 #else
             MessageDisplayWidget::showMessage(tr("教师客户端"), tr("编辑模式不能拖入资源,请切换模式!"));
@@ -911,9 +942,9 @@ QFileInfoList CourseCellWidget::getFileList(QString path)
 
     for(int i = 0; i != folder_list.size(); i++)
     {
-         QString name = folder_list.at(i).absoluteFilePath();
-         QFileInfoList child_file_list = getFileList(name);
-         file_list.append(child_file_list);
+        QString name = folder_list.at(i).absoluteFilePath();
+        QFileInfoList child_file_list = getFileList(name);
+        file_list.append(child_file_list);
     }
 
     return file_list;
@@ -942,7 +973,7 @@ void CourseCellWidget::fileCopy(QString &from_path, QString &target_path, QStrin
         fileNumWidget->addFile();
         fileNumWidget->update();
         reset();
-     }
+    }
 
 }
 
@@ -966,8 +997,8 @@ bool CourseCellWidget::copyFileToPath(QString sourceDir ,QString toDir, QString 
         }
     }//end if
 
-//    QString store = CopyHelper::store(sourceDir, toDir);
-//    qDebug()<<store<<endl;
+    //    QString store = CopyHelper::store(sourceDir, toDir);
+    //    qDebug()<<store<<endl;
     QFile::copy(sourceDir, toDir);
 
     ///Mark,暂时这么处理，同名的覆盖，这里删除,Beta版本再做处理.
@@ -999,13 +1030,13 @@ bool CourseCellWidget::copyFileToPath(QString sourceDir ,QString toDir, QString 
     my_urls.append(QUrl::fromLocalFile(toDir));
     QString fp = "./SaveFile/" + fileName;
     File* file = new File(fp, mLinkedLesson->rootFolder());
-//    qDebug() << "add file: " << file << " name: " << file->name() << endl;
+    //    qDebug() << "add file: " << file << " name: " << file->name() << endl;
     mLinkedLesson->rootFolder()->add(file);
-//    qDebug()<<"ddddfile"<<endl;
-//    fileNumWidget->addFile();
-//    fileNumWidget->update();
+    //    qDebug()<<"ddddfile"<<endl;
+    //    fileNumWidget->addFile();
+    //    fileNumWidget->update();
 
-//    qDebug() << "add dddd: "<<endl;
+    //    qDebug() << "add dddd: "<<endl;
 
     mLinkedLesson->name2File.insert(file->name(), file);
     qDebug() << "add map: "<<endl;
@@ -1041,8 +1072,8 @@ bool CourseCellWidget::copyDirectoryFiles(QString dateString, Folder* folder, QS
             Folder* subFolder = new Folder(subFp, folder);
 
             if(!copyDirectoryFiles(dateString, subFolder, fileInfo.filePath(),
-                targetDir.filePath(fileInfo.fileName()),
-                coverFileIfExist))
+                                   targetDir.filePath(fileInfo.fileName()),
+                                   coverFileIfExist))
                 return false;
 
             else //add sub folder to root folder for UI use
@@ -1058,8 +1089,8 @@ bool CourseCellWidget::copyDirectoryFiles(QString dateString, Folder* folder, QS
 
             /// 进行文件copy
             if(!QFile::copy(fileInfo.filePath(),
-                targetDir.filePath(fileInfo.fileName()))){
-                    return false;
+                            targetDir.filePath(fileInfo.fileName()))){
+                return false;
             }
             //QString store = CopyHelper::store(fileInfo.filePath(), targetDir.filePath(fileInfo.fileName()));
             //qDebug()<<store<<endl;
@@ -1100,94 +1131,94 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
     bool bExist = false;
 
     foreach(QUrl url, urls) {
-       QFileInfo fileInfo(url.toLocalFile());
-       qDebug()<<"path type: "<<fileInfo.isFile()<<endl;
-       //QDir fdir(url.toLocalFile());
-       //qDebug()<<"filesize: "<<fileInfo.size()<<endl;
-       QFileInfoList fileInfoList = getFileList(url.toLocalFile());
-       qDebug()<<"file info list: "<<fileInfoList.size()<<endl;
+        QFileInfo fileInfo(url.toLocalFile());
+        qDebug()<<"path type: "<<fileInfo.isFile()<<endl;
+        //QDir fdir(url.toLocalFile());
+        //qDebug()<<"filesize: "<<fileInfo.size()<<endl;
+        QFileInfoList fileInfoList = getFileList(url.toLocalFile());
+        qDebug()<<"file info list: "<<fileInfoList.size()<<endl;
 
 
-       QString dateString = QString(mLinkedLesson->getDate().toString("yyyy-M-d")) + QString("-") + QString::number(mLinkedLesson->section ());
-       //QString currentApp = QCoreApplication::applicationDirPath();
-       Arg *pArg = Arg::getInstance();
-       QDir saveDir;
-       pArg->getSaveDir(saveDir);
-       QString currentApp = /*Arg::configDir*/saveDir.absolutePath();
-       qDebug()<<"currentApp: "<<currentApp<<endl;
+        QString dateString = QString(mLinkedLesson->getDate().toString("yyyy-M-d")) + QString("-") + QString::number(mLinkedLesson->section ());
+        //QString currentApp = QCoreApplication::applicationDirPath();
+        Arg *pArg = Arg::getInstance();
+        QDir saveDir;
+        pArg->getSaveDir(saveDir);
+        QString currentApp = /*Arg::configDir*/saveDir.absolutePath();
+        qDebug()<<"currentApp: "<<currentApp<<endl;
 
-       //currentApp.replace("/","\\");
-       //qDebug()<<"after replace: "<<currentApp<<endl;
+        //currentApp.replace("/","\\");
+        //qDebug()<<"after replace: "<<currentApp<<endl;
 
-       QString DirPath = currentApp + "/SaveFile";
-       QDir dir;
+        QString DirPath = currentApp + "/SaveFile";
+        QDir dir;
 
-       if(!dir.exists(DirPath) && mLinkedLesson)
-           qDebug()<<dir.mkdir(DirPath);
-       DirPath+="/"+dateString;
-       if(!dir.exists(DirPath) && mLinkedLesson)
-           qDebug()<<dir.mkdir(DirPath);
+        if(!dir.exists(DirPath) && mLinkedLesson)
+            qDebug()<<dir.mkdir(DirPath);
+        DirPath+="/"+dateString;
+        if(!dir.exists(DirPath) && mLinkedLesson)
+            qDebug()<<dir.mkdir(DirPath);
 
-       QString NewPath = DirPath+"/"+url.fileName();
+        QString NewPath = DirPath+"/"+url.fileName();
 
-       QString fileName = dateString+"/"+url.fileName();
+        QString fileName = dateString+"/"+url.fileName();
 
 
-       qDebug()<<"New path is: "<<NewPath<<endl;
+        qDebug()<<"New path is: "<<NewPath<<endl;
 
-       if(QFile(NewPath).exists())
-       {
-//           QMessageBox::information(this, tr("文件同名"), tr("改路径下存在同名文件，是否删除原文件？"));
-           QFile::remove(NewPath);
-           bExist = true;
-//           continue;
-       }
+        if(QFile(NewPath).exists())
+        {
+            //           QMessageBox::information(this, tr("文件同名"), tr("改路径下存在同名文件，是否删除原文件？"));
+            QFile::remove(NewPath);
+            bExist = true;
+            //           continue;
+        }
 
-       if(fileInfo.isFile())
-       {
+        if(fileInfo.isFile())
+        {
             //fileCopy(url.toLocalFile(), NewPath, url.fileName());
-           copyFileToPath(url.toLocalFile(), NewPath, fileName, false);
-           //qDebug() << store << endl;
-       }
-      else
-       {
-           qDebug()<<url.fileName()<<" is a folder"<<endl;
-           qDebug()<<"In version 1.0 folder is forbidden"<<endl;
-           return;
+            copyFileToPath(url.toLocalFile(), NewPath, fileName, false);
+            //qDebug() << store << endl;
+        }
+        else
+        {
+            qDebug()<<url.fileName()<<" is a folder"<<endl;
+            qDebug()<<"In version 1.0 folder is forbidden"<<endl;
+            return;
 
-           fileMap.insert(url.fileName(), NewPath);
+            fileMap.insert(url.fileName(), NewPath);
 
-           //------------------------ftp upload---------------------------------//
-           sourcefileMap.insert("fileName", url.fileName());
-           sourcefileMap.insert("localFilePath", NewPath);
-           sourcefileMap.insert("detailID", QString::number(mLinkedLesson->getLessonDetailId()));
-           sourcefileMap.insert("date", mLinkedLesson->getDate().toString("yyyy-M-d"));
-           //------------------------ftp upload---------------------------------//
+            //------------------------ftp upload---------------------------------//
+            sourcefileMap.insert("fileName", url.fileName());
+            sourcefileMap.insert("localFilePath", NewPath);
+            sourcefileMap.insert("detailID", QString::number(mLinkedLesson->getLessonDetailId()));
+            sourcefileMap.insert("date", mLinkedLesson->getDate().toString("yyyy-M-d"));
+            //------------------------ftp upload---------------------------------//
 
-           my_urls.append(QUrl::fromLocalFile(NewPath));
+            my_urls.append(QUrl::fromLocalFile(NewPath));
 
-           //sFolder* folder = new Folder(url.fileName(), lesson->rootFolder());
+            //sFolder* folder = new Folder(url.fileName(), lesson->rootFolder());
 
-           ///Mark，按照上传路径组成，这里先这么处理.
-           QString sFileName = fileName.split("/").at(1);
-           QString fpName = "./SaveFile/" + sFileName;
-           Folder* folder = new Folder(fpName, mLinkedLesson->rootFolder());
+            ///Mark，按照上传路径组成，这里先这么处理.
+            QString sFileName = fileName.split("/").at(1);
+            QString fpName = "./SaveFile/" + sFileName;
+            Folder* folder = new Folder(fpName, mLinkedLesson->rootFolder());
 
-           copyDirectoryFiles(dateString, folder, url.toLocalFile(), NewPath, true);
+            copyDirectoryFiles(dateString, folder, url.toLocalFile(), NewPath, true);
 
-           qDebug() << "add folder: " << NewPath << endl;
-           mLinkedLesson->rootFolder()->add(folder);
-           //fileNumWidget->addFile();
-           //fileNumWidget->update();
-           reset();
+            qDebug() << "add folder: " << NewPath << endl;
+            mLinkedLesson->rootFolder()->add(folder);
+            //fileNumWidget->addFile();
+            //fileNumWidget->update();
+            reset();
 
-       }
+        }
     }
 
     if(!sourcefileMap.isEmpty())
     {
-//        emit localFinish(sourcefileMap);
-//        sourcefileMap.clear();
+        //        emit localFinish(sourcefileMap);
+        //        sourcefileMap.clear();
 
         qDebug() << "drop file finish" << endl;
 
@@ -1210,7 +1241,7 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
         ///End.
         ///
 
-//        emit localFinish(sourcefileMap);
+        //        emit localFinish(sourcefileMap);
         upload->up2ftp(sourcefileMap);
         sourcefileMap.clear();
 

@@ -21,7 +21,7 @@ EditWindow::EditWindow(QWidget *parent) :
     m_bEditStatus = false;
 
     auto titleBar = new TitleBar (tr("课程编辑"), this);
-    titleBar->setFixedHeight(35);
+    titleBar->setFixedHeight(40);
     connect (titleBar, &TitleBar::tbClose, [this] ()
     {
         this->close ();
@@ -144,11 +144,11 @@ EditWindow::EditWindow(QWidget *parent) :
 
     setLayout->addStretch(1);
     setLayout->addWidget(sureButton);
-    setLayout->addStretch(1);
+    setLayout->addSpacing(55);
     setLayout->addWidget(resetButton);
     //setLayout->addStretch(1);
 
-    mainLayout->setSpacing(6);
+    mainLayout->setSpacing(3);
 
     mainLayout->addWidget (titleBar);
    // mainLayout->addStretch(1);
@@ -166,13 +166,12 @@ EditWindow::EditWindow(QWidget *parent) :
     mainLayout->addLayout(pEndDateLayout);
   //  mainLayout->addSpacing(20);
     mainLayout->addLayout(setLayout);
-    mainLayout->addSpacing(10);
+    mainLayout->addSpacing(8);
 
     ///Mark，暂时这么处理, 保持代码稳定先.
     setFixedSize (400, 350);
     //courseLayout->setMargin(0);
     //mainLayout->setMargin (5);
-
 
 
     //mainLayout->addWidget(className);

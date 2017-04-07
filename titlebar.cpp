@@ -17,6 +17,7 @@ TitleBar::TitleBar(QWidget *parent)
     mClose->setIconSize({24, 24});
     mClose->setObjectName ("CloseButton");
     mClose->setHoverdColor(QColor("#d74631"));
+    mClose->setMinimumHeight(18);
 //    connect (mClose, SIGNAL (clicked()), this, SIGNAL (tbClose ()));
     connect (mClose, &QPushButton::clicked, [this] ()
     {
