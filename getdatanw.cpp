@@ -21,6 +21,7 @@
 #include <QHash>
 #include <QMessageBox>
 #include <QDebug>
+#include "messagedisplaywidget.h"
 
 using Section = QPair<int, int>;
 using Break = QPair<int, QString>;
@@ -197,6 +198,13 @@ void GetDataNW::getScheState(const QJsonObject &json)
 void GetDataNW::getSemState(const QJsonObject &json)
 {
     qDebug()<<"semester result: "<<json<<endl;
+
+    if(json["status"] == false) {
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("请管理员库配置学期"));
+
+        qApp->quit();
+    }
+
     QJsonArray terms = json["result"].toArray();
 
     Arg::setSemesters(new QVector<Semester*>);

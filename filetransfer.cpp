@@ -695,7 +695,7 @@ void FileTransfer::httpDownloadError(const InvokableQMap &arguments, const QStri
 
     }
 
-    emit ftpDownloadError(sError);
+    emit ftpDownloadError(arguments["filename"] + sError);
 
 //    m_dwonloadArgList.removeOne(arguments);
 
