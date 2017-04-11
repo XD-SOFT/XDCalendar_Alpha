@@ -41,7 +41,7 @@ public:
      * \example MessageDisplayWidget::showMessage（"education", "确认提交信息！", MessageDisplayButtonType::Ok, MessageDisplayButtonType::Cancel）
      */
 
-    static int showMessage(const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
+    static MessageDisplayButtonType showMessage(const QString &sTitle, const QString &sInfo, MessageDisplayButtonType okBtn = MessageDisplayButtonType::Ok,
                        MessageDisplayButtonType btn = MessageDisplayButtonType::NoButton);
 
 private slots:

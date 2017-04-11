@@ -523,7 +523,7 @@ void NoteWidget::createPPT()
 #ifdef USER_QT_MESSAGEBOX
                   QMessageBox::StandardButton btn = QMessageBox::information(this, tr("文件同名"), tr("存在同名文件，请重命名文件."));
 #else
-                   int btn = MessageDisplayWidget::showMessage(tr("文件同名"), tr("存在同名文件，请重命名文件."));
+                   MessageDisplayButtonType btn = MessageDisplayWidget::showMessage(tr("文件同名"), tr("存在同名文件，请重命名文件."));
 #endif
 
                   return;
@@ -639,7 +639,7 @@ void NoteWidget::createDoc()
 #ifdef USER_QT_MESSAGEBOX
                QMessageBox::StandardButton btn = QMessageBox::information(this, tr("教师客户端"), tr("存在同名文件，请重命名文件."));
 #else
-             int btn =   MessageDisplayWidget::showMessage(tr("教师客户端"), tr("存在同名文件，请重命名文件."));
+             MessageDisplayButtonType btn =   MessageDisplayWidget::showMessage(tr("教师客户端"), tr("存在同名文件，请重命名文件."));
 #endif
 
                return;
