@@ -73,7 +73,7 @@ CourseCellWidget::CourseCellWidget(QWidget *parent) :
     mainLayout->addWidget (colorButton);
     mainLayout->addSpacing(2);
     mainLayout->addLayout(courseLayout);
-    mainLayout->addSpacing(25);
+    mainLayout->addSpacing(20);
     //  mainLayout->addLayout(editLayout, 5);
     mainLayout->setMargin (0);
 
@@ -82,9 +82,7 @@ CourseCellWidget::CourseCellWidget(QWidget *parent) :
     ///Mark，为了好控制日期，一到上一层去CourseGrid类里.
     //    connect(CCU::ccu, SIGNAL(changeEdit()), this, SLOT(setEdit()));
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    //    adjustSize ();
-    //    setFixedSize(sizeHint());
-    //    setFixedSize(sizeHint());
+
     setFixedSize(sizeHint());
     setLayout(mainLayout);
 

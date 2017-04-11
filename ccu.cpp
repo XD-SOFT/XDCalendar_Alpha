@@ -197,6 +197,8 @@ void CCU::close()
     delete MainScreen::mainScreen;
     MainScreen::mainScreen = Q_NULLPTR;
 
+    qApp->quit();
+
     ///因为http传输牵涉多线程，所以用qApp->exit或者quit都不能终止.
     exit(0);
 //    qApp->quit();
