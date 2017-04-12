@@ -458,7 +458,7 @@ void CourseCellWidget::leaveEvent (QEvent* ev)
         }
         else {
             ///Mark,notewidget使用无父窗口，所以使用全局pos.
-            qDebug() << "the cursor pos is" << QCursor::pos() << pNoteWgt->geometry();
+//            qDebug() << "the cursor pos is" << QCursor::pos() << pNoteWgt->geometry();
             int nShadowWidth = pNoteWgt->getShadowMargin();
             //            QPoint adjustPt = QCursor::pos() + QPoint(0, 2);
             //这里这么算原理，一是去掉看不到的阴影，第二，垂直方向不减掉yin阴影，为了保证notewidget跟课程部件有效的逻辑接触，能有效的进入notewidget.
@@ -1138,11 +1138,12 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
 
     foreach(QUrl url, urls) {
         QFileInfo fileInfo(url.toLocalFile());
-        qDebug()<<"path type: "<<fileInfo.isFile()<<endl;
+//        qDebug()<<"path type: "<<fileInfo.isFile()<<endl;
         //QDir fdir(url.toLocalFile());
         //qDebug()<<"filesize: "<<fileInfo.size()<<endl;
-        QFileInfoList fileInfoList = getFileList(url.toLocalFile());
-        qDebug()<<"file info list: "<<fileInfoList.size()<<endl;
+//        QFileInfoList fileInfoList =
+        getFileList(url.toLocalFile());
+//        qDebug()<<"file info list: "<<fileInfoList.size()<<endl;
 
 
         QString dateString = QString(mLinkedLesson->getDate().toString("yyyy-M-d")) + QString("-") + QString::number(mLinkedLesson->section ());
@@ -1151,7 +1152,7 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
         QDir saveDir;
         pArg->getSaveDir(saveDir);
         QString currentApp = /*Arg::configDir*/saveDir.absolutePath();
-        qDebug()<<"currentApp: "<<currentApp<<endl;
+//        qDebug()<<"currentApp: "<<currentApp<<endl;
 
         //currentApp.replace("/","\\");
         //qDebug()<<"after replace: "<<currentApp<<endl;
@@ -1160,10 +1161,11 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
         QDir dir;
 
         if(!dir.exists(DirPath) && mLinkedLesson)
-            qDebug()<<dir.mkdir(DirPath);
+            dir.mkdir(DirPath);
+
         DirPath+="/"+dateString;
         if(!dir.exists(DirPath) && mLinkedLesson)
-            qDebug()<<dir.mkdir(DirPath);
+           dir.mkdir(DirPath);
 
         QString NewPath = DirPath+"/"+url.fileName();
 
@@ -1189,7 +1191,7 @@ void CourseCellWidget::dropEvent(QDropEvent *event)
         else
         {
             qDebug()<<url.fileName()<<" is a folder"<<endl;
-            qDebug()<<"In version 1.0 folder is forbidden"<<endl;
+//            qDebug()<<"In version 1.0 folder is forbidden"<<endl;
             return;
 
             fileMap.insert(url.fileName(), NewPath);

@@ -197,12 +197,14 @@ void GetDataNW::getScheState(const QJsonObject &json)
 
 void GetDataNW::getSemState(const QJsonObject &json)
 {
-    qDebug()<<"semester result: "<<json<<endl;
+//    qDebug()<<"semester result: "<<json<<endl;
 
-    if(json["status"] == false) {
+    if(json["status"] == "false") {
         MessageDisplayWidget::showMessage(tr("教师客户端"), tr("请管理员库配置学期"));
 
         qApp->quit();
+
+        return;
     }
 
     QJsonArray terms = json["result"].toArray();
@@ -842,7 +844,16 @@ void GetDataNW::mapNetwork2LocalUI()
 
 void GetDataNW::getLessonDetailState(const QJsonObject &json) //获取所有课程
 {
-    qDebug()<<"lessonDetail: "<<json<<endl;
+//    qDebug()<<"lessonDetail: "<<json<<endl;
+
+    if(json["status"] == "false") {
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("课程详表返回错误"));
+
+        qApp->quit();
+
+        return;
+    }
+
     QJsonArray lessonsA = json["result"].toArray ();
     //qDebug()<<"lesson array: "<<lessonsA<<endl;
     //return;

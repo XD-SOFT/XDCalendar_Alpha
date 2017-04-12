@@ -2,6 +2,7 @@
 #include "titlebar.h"
 #include "schedule.h"
 #include "scheduledetaildb.h"
+#include "messagedisplaywidget.h"
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QLabel>
@@ -17,7 +18,7 @@ EditSectime::EditSectime(QWidget *parent, Schedule* sche, bool flag) :
     add(flag)
 {
 
-    qDebug()<<"come in editsectime"<<endl;
+//    qDebug()<<"come in editsectime"<<endl;
     setWindowFlags (Qt::Window | Qt::FramelessWindowHint);
 
     sectionNum = schedule->getSection();    
@@ -111,7 +112,7 @@ void EditSectime::sureButtonClicked()
     QTime evening(17,0);
     for (int i = 0; i < timeEditBegin.size(); i++)
     {
-        qDebug() <<"i: " << i <<" " <<timeEditBegin[i]->time()<<endl;
+//        qDebug() <<"i: " << i <<" " <<timeEditBegin[i]->time()<<endl;
 
         ScheduleDetailDB* schedb = new ScheduleDetailDB();
         schedb->setScheduleId(schedule->getId());
@@ -144,10 +145,15 @@ void EditSectime::sureButtonClicked()
 
 void EditSectime::getSecTimeState(QJsonObject json)
 {
-    qDebug()<<"------------------"<<endl;
-    qDebug()<<json<<endl;
+//    qDebug()<<"------------------"<<endl;
+//    qDebug()<<json<<endl;
     qDebug()<<"sectime: "<<json["status"]<<endl;
-    if(json["status"] == "false") return;
+    if(json["status"] == "false") {
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr(""));
+
+        return;
+    }
+
     QJsonArray secArray = json["result"].toArray();
 
     QVector<int> idV;
@@ -155,7 +161,7 @@ void EditSectime::getSecTimeState(QJsonObject json)
     QVector<QString> startV;
     QVector<QString> endV;
 
-    qDebug()<<"array size: "<<secArray.size()<<endl;
+//    qDebug()<<"array size: "<<secArray.size()<<endl;
     if(secArray.size() == 0)
     {
         return;

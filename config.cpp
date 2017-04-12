@@ -383,12 +383,19 @@ void Arg::deleteLessonFinished(int nWeekDay, int nSection, int nLessonDetailID, 
     }
 }
 
-void Arg::updateLessonFinished(Lesson *pLesson)
+void Arg::updateLessonFinished(int nPreviousDetailID, Lesson *pLesson)
 {
     if(term != Q_NULLPTR) {
         int nWeekDay = pLesson->getWeekId();
         int nSection = pLesson->getSection();
-        term->updateBaseLesson(nWeekDay, nSection, pLesson);
+//        term->updateBaseLesson(nWeekDay, nSection, pLesson);
+        //删除是特殊处理，删除日期以前的需要保持以前数据，所以需要做以前数据删除处理，加新课程添加处理.
+        QDate newStartDate = pLesson->getStartDate();
+        QDate modifiedEndDate = newStartDate.addDays(-7);
+        //因为更新牵涉了对当前lesson设置为删除标志与添加新的课程操作，所以对已经存在的pLesson拷贝构造.
+        Lesson *pNewLesson = new Lesson(*pLesson);
+        term->deleteBaseLesson(nWeekDay, nSection, nPreviousDetailID, modifiedEndDate);
+        term->addBaseLesson(nWeekDay, nSection, pNewLesson);
     }
 }
 

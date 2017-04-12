@@ -74,7 +74,7 @@ loginDialog::loginDialog(QWidget *parent, CCU* c) :
 //        this->close ();
 //    });
 
-    qDebug()<<"come in login dialog"<<endl;
+//    qDebug()<<"come in login dialog"<<endl;
 
     readLocalUserJsonFile("login.json");
 
@@ -398,7 +398,7 @@ void loginDialog::loginState(const QJsonObject &jo)
     QJsonValue statusValue = jo.value("status");
     if(statusValue.isString())
     {
-        qDebug() << "the user info jo is:" << jo;
+//        qDebug() << "the user info jo is:" << jo;
 
         QString status = statusValue.toString();
         if(status.compare("true") == 0)
@@ -473,7 +473,7 @@ void loginDialog::loginState(const QJsonObject &jo)
             pLoginAccountComboBox->setItemData(nCurrentIndex, recordState);
             pLoginAccountComboBox->setItemData(nCurrentIndex, autoState);
 
-            qDebug() << status + " " + token <<endl;
+//            qDebug() << status + " " + token <<endl;
             //QString Arg::tokenStr = "&username=admina&token=111111";
             //QString Arg::tokenStr2 = "?username=admina&token=111111";
             QString tokenStr = "&username=" + userdb->getUsername() + "&token=" + token;
@@ -755,7 +755,7 @@ void loginDialog::keyPressEvent(QKeyEvent *event)
 
 void loginDialog::readLocalUserJsonFile(const QString &filename)
 {
-    qDebug()<<"load json"<<endl;
+//    qDebug()<<"load json"<<endl;
     if(jsonFile != nullptr)
         delete jsonFile;
     else
@@ -768,7 +768,7 @@ void loginDialog::readLocalUserJsonFile(const QString &filename)
     file.close();
     QJsonDocument docu = QJsonDocument::fromJson(all.toUtf8());
     *jsonFile = docu.object();
-    qDebug() << QString(QJsonDocument(*jsonFile).toJson())<<endl;
+//    qDebug() << QString(QJsonDocument(*jsonFile).toJson())<<endl;
     //QJsonValue usersValue = jsonFile->value("users");
     //QJsonArray userArray = usersValue.toArray();
     //qDebug() << userArray.size()<<endl;
@@ -779,7 +779,7 @@ void loginDialog::writeLocalUserJsonFile(const QString &filename)
     QFile file(filename);
     file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate);
     QByteArray sJson = QJsonDocument(*jsonFile).toJson();
-    qDebug() << "the config json value is:" << QString(sJson);
+//    qDebug() << "the config json value is:" << QString(sJson);
     file.write(sJson);
     file.close();
 

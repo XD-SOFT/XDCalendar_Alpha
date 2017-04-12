@@ -138,7 +138,7 @@ public:
     /*!
      * \brief updateLessonFinished
      */
-    void updateLessonFinished(Lesson *pLesson);
+    void updateLessonFinished(int nPreviousDetailID, Lesson *pLesson);
 
     /*!
      * \brief addLessonFinished

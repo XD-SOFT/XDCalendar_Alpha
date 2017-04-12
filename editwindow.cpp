@@ -235,7 +235,22 @@ void EditWindow::sureButtonClicked()
 
         if(pLesson != nullptr)
         {
-            qDebug()<<"current lesson is not null"<<endl;
+//            qDebug()<<"current lesson is not null"<<endl;
+            QDate preStartDate = pLesson->getStartDate();
+            QDate preEndDate = pLesson->getEndDate();
+            int nPreRepeat = pLesson->getRepeat();
+
+            if((nPreRepeat == pLesson->getRepeat())
+                    && (pLesson->subject() == courseEdit->currentText())
+                    && (pLesson->location() == locationEdit->text())
+                    && (pLesson->unit() == classEdit->text())
+                    && (preStartDate == m_pStartDateEdit->date())
+                    && (preEndDate == m_pEndDateEdit->date())){
+                this->close();
+
+                return;
+            }
+
             //for ui use
             int nReapt = loopEdit->currentData().toInt();
             pLesson->setSubject(courseEdit->currentText());
@@ -256,7 +271,7 @@ void EditWindow::sureButtonClicked()
             pLessonDetailDB->setClassId(pLesson->getClassId());
             pLessonDetailDB->setRoomId(pLesson->getRoomId());
             pLessonDetailDB->setWeekId(cell->getDayIndex());
-            pLessonDetailDB->setSectionId(cell->getSecIndex() + 1);
+            pLessonDetailDB->setSectionId(cell->getSecIndex());
             pLessonDetailDB->setRepeat(nReapt);
             pLessonDetailDB->setStartDate(m_pStartDateEdit->date());
             pLessonDetailDB->setEndDate(m_pEndDateEdit->date());
@@ -449,10 +464,16 @@ void EditWindow::updateLessonFinished(const QJsonObject &json)
     }
 
     m_bEditStatus = false;
+    int lessonDetId = json["TLDid"].toInt();
 
     if(m_pCurEditLesson != Q_NULLPTR) {
+        int nPreviousID = m_pCurEditLesson->getLessonDetailId();
+        m_pCurEditLesson->setLessonDetailId(lessonDetId);
+        LessonDetailDB *pLessonDetailDB = DataClassInstanceManage::getInstance()->getLessonDetailDBPtr();
+        pLessonDetailDB->setId(lessonDetId);
+
         Arg *pArg = Arg::getInstance();
-        pArg->updateLessonFinished(m_pCurEditLesson);
+        pArg->updateLessonFinished(nPreviousID, m_pCurEditLesson);
 
         m_pCurEditLesson = Q_NULLPTR;
     }

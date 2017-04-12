@@ -67,7 +67,7 @@ private:
     ///上一次收到的所有bytes.
     qint64 m_nLastTotalReceivedBytes;
 
-    QTimer *m_pTimer;
+//    QTimer *m_pTimer;
 
     QEventLoop *m_pEvLoop;
 

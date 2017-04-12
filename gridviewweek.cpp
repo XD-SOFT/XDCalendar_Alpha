@@ -1008,6 +1008,8 @@ CourseCellWidget *CourseGrid::addCourseCell(int nSectionID, int nRow, int nWeek,
     cell->setEndTime(nEndTime);
 
     cell->setSecIndex(nSectionID);
+//    qDebug() << "the cell section id is:" << nSectionID;
+
     cell->setDayIndex(nWeek);
     cell->reset ();
     grid->addWidget(cell, nRow, nWeek);

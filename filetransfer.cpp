@@ -956,13 +956,16 @@ void FileTransfer::ftpUpload(const QMap<QString, QString> &filePath, Lesson *pLe
 
 void FileTransfer::uploadProgress(qint64 bytesSent, qint64 bytesTotal)
 {
+#if 0
     QString percent =QString::number((double)bytesSent*1000/(double)bytesTotal, 'f', 2);
 
-    qDebug()<<"------------percent:"<<percent;
+//    qDebug()<<"------------percent:"<<percent;
 
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
     emit transferPercent((int)reply, percent, this->m_replyArgsHash.value(reply));
+#endif
+
     QTimer *pTimer = qobject_cast<QTimer*>(m_timerReplyHash.key(reply));
 
     if(pTimer != Q_NULLPTR) {
@@ -1197,7 +1200,7 @@ HttpDownloadRunnable::HttpDownloadRunnable(const QMap<QString, QString> &argumen
     m_pInvokableObj(pInvokableObj),
     m_pNetworkAccessMgr(Q_NULLPTR),
     m_nLastTotalReceivedBytes(0),
-    m_pTimer(Q_NULLPTR),
+//    m_pTimer(Q_NULLPTR),
     m_pEvLoop(Q_NULLPTR),
     m_pDownloadFile(Q_NULLPTR)
 {
@@ -1211,10 +1214,10 @@ HttpDownloadRunnable::~HttpDownloadRunnable()
         m_pNetworkAccessMgr = Q_NULLPTR;
     }
 
-    if(m_pTimer != Q_NULLPTR) {
-        delete m_pTimer;
-        m_pTimer = Q_NULLPTR;
-    }
+//    if(m_pTimer != Q_NULLPTR) {
+//        delete m_pTimer;
+//        m_pTimer = Q_NULLPTR;
+//    }
 
     if(m_pEvLoop != Q_NULLPTR) {
         delete m_pEvLoop;
@@ -1246,8 +1249,8 @@ void HttpDownloadRunnable::run()
         QNetworkRequest request(url);
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/octet-stream");
 
-        m_pTimer = new QTimer;
-        connect(m_pTimer, &QTimer::timeout, this, &HttpDownloadRunnable::downloadTimeOut, Qt::BlockingQueuedConnection);
+//        m_pTimer = new QTimer;
+//        connect(m_pTimer, &QTimer::timeout, this, &HttpDownloadRunnable::downloadTimeOut, Qt::BlockingQueuedConnection);
 
         QNetworkReply *pReply = m_pNetworkAccessMgr->get(request);
 //        m_replyArgsHash.insert(reply, filearguments);
@@ -1258,7 +1261,7 @@ void HttpDownloadRunnable::run()
 //        connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection);
         connect(pReply, SIGNAL(readyRead()), this, SLOT(writeData()));
 
-        m_pTimer->start(300000);
+//        m_pTimer->start(300000);
 
         qDebug() << "the networkmgr thread is:" << m_pNetworkAccessMgr->thread() << "this thread is:" << thread() << pReply->thread();
 
@@ -1276,15 +1279,17 @@ void HttpDownloadRunnable::authenticationNetworkAcessManager(QNetworkReply *repl
 
 void HttpDownloadRunnable::downloadFinished(QNetworkReply *reply)
 {
+    qDebug() << "download finished";
+
     if (reply->error() == QNetworkReply::NoError)
     {
-        if(m_pTimer != Q_NULLPTR) {
-            m_pTimer->moveToThread(this->thread());
-            m_pTimer->stop();
+//        if(m_pTimer != Q_NULLPTR) {
+//            m_pTimer->moveToThread(this->thread());
+//            m_pTimer->stop();
 
-            delete m_pTimer;
-            m_pTimer = Q_NULLPTR;
-        }
+//            delete m_pTimer;
+//            m_pTimer = Q_NULLPTR;
+//        }
 
         QMetaObject::invokeMethod(m_pInvokableObj, "httpDownLoadFinished", Qt::DirectConnection,
                                   Q_ARG(const InvokableQMap&, m_arguments));
@@ -1301,24 +1306,28 @@ void HttpDownloadRunnable::downloadFinished(QNetworkReply *reply)
     }
 
     if(m_pDownloadFile != Q_NULLPTR) {
-        m_pDownloadFile->close();
+        if(m_pDownloadFile->flush()) {
+            m_pDownloadFile->close();
 
-        delete m_pDownloadFile;
-        m_pDownloadFile = Q_NULLPTR;
+            delete m_pDownloadFile;
+            m_pDownloadFile = Q_NULLPTR;
+        }
     }
 
     m_pEvLoop->exit();
+
+    reply->deleteLater();
 }
 
 void HttpDownloadRunnable::processDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-    if(m_pTimer != Q_NULLPTR) {
-        m_pTimer->moveToThread(this->thread());
-        m_pTimer->stop();
+//    if(m_pTimer != Q_NULLPTR) {
+//        m_pTimer->moveToThread(this->thread());
+//        m_pTimer->stop();
 
-        delete m_pTimer;
-        m_pTimer = Q_NULLPTR;
-    }
+//        delete m_pTimer;
+//        m_pTimer = Q_NULLPTR;
+//    }
 //    int curBytesRec = bytesReceived - m_nLastTotalReceivedBytes;
 
 //    if(m_pDownLoadFile == Q_NULLPTR) {
@@ -1328,11 +1337,11 @@ void HttpDownloadRunnable::processDownloadProgress(qint64 bytesReceived, qint64 
 
 void HttpDownloadRunnable::downloadTimeOut()
 {
-    m_pTimer->moveToThread(this->thread());
-    m_pTimer->stop();
+//    m_pTimer->moveToThread(this->thread());
+//    m_pTimer->stop();
 
-    delete m_pTimer;
-    m_pTimer = Q_NULLPTR;
+//    delete m_pTimer;
+//    m_pTimer = Q_NULLPTR;
 
     QMetaObject::invokeMethod(m_pInvokableObj, "httpDownloadError", Qt::DirectConnection,
                               Q_ARG(const InvokableQMap&, m_arguments),
@@ -1352,26 +1361,26 @@ void HttpDownloadRunnable::slotError(QNetworkReply::NetworkError error)
                                   Q_ARG(const QString&, replay->errorString()));
     }
 
-    if(m_pTimer != Q_NULLPTR) {
-        m_pTimer->moveToThread(this->thread());
-        m_pTimer->stop();
+//    if(m_pTimer != Q_NULLPTR) {
+//        m_pTimer->moveToThread(this->thread());
+//        m_pTimer->stop();
 
-        delete m_pTimer;
-        m_pTimer = Q_NULLPTR;
-    }
+//        delete m_pTimer;
+//        m_pTimer = Q_NULLPTR;
+//    }
 
     m_pEvLoop->exit();
 }
 
 void HttpDownloadRunnable::writeData()
 {
-    if(m_pTimer != Q_NULLPTR) {
-        m_pTimer->moveToThread(this->thread());
-        m_pTimer->stop();
+//    if(m_pTimer != Q_NULLPTR) {
+//        m_pTimer->moveToThread(this->thread());
+//        m_pTimer->stop();
 
-        delete m_pTimer;
-        m_pTimer = Q_NULLPTR;
-    }
+//        delete m_pTimer;
+//        m_pTimer = Q_NULLPTR;
+//    }
 
     QNetworkReply *pReply =(QNetworkReply *)sender();
 
@@ -1399,4 +1408,5 @@ void HttpDownloadRunnable::writeData()
     }
 
     m_pDownloadFile->write(pReply->readAll());
+    m_pDownloadFile->flush();
 }

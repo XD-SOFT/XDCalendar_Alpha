@@ -189,9 +189,8 @@ void Term::addBaseLesson(int nWeekDay, int nSection, Lesson *pLesson)
         secLessonMap.insertMulti(nSection, pLesson);
     }
     else {
-
         secLessonMap.insertMulti(nSection, pLesson);
-        mBaseLessonsMap.insert(nWeekDay, secLessonMap);
+//        mBaseLessonsMap.insert(nWeekDay, secLessonMap);
     }
 
     mBaseLessonsMap.remove(nWeekDay);
@@ -485,6 +484,10 @@ bool Term::getWeekLessonsByDate(QVector<QMap<int, Lesson*>> &weekLessons, const 
 
                     nAdjustNum = pLesson->getWeekId() - 1;
                     QDate lessonDate = weekStartDate.addDays(nAdjustNum);
+
+                    if(endDate < lessonDate) {
+                        continue;
+                    }
 
                     pLesson->setDate(lessonDate);
 
