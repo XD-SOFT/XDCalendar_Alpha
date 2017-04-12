@@ -70,14 +70,14 @@ MessageDisplayWidget::~MessageDisplayWidget()
     delete ui;
 }
 
-int MessageDisplayWidget::showMessage(const QString &sTitle, const QString &sInfo,
-                                      MessageDisplayButtonType okBtn,
-                                      MessageDisplayButtonType btn)
+MessageDisplayButtonType MessageDisplayWidget::showMessage(const QString &sTitle, const QString &sInfo,
+                                                           MessageDisplayButtonType okBtn,
+                                                           MessageDisplayButtonType btn)
 {
     int nResult  = 0;
 
-    //安全处理，当有一个执行时，再次调用崩溃
-    if(m_pEvLoop != NULL) return nResult;
+   //安全处理，当有一个执行时，再次调用崩溃
+   if(m_pEvLoop != NULL) return MessageDisplayButtonType::NoButton;
 
     ///Mark,使用QEventLoop.参照InputTextWidget ==》"inputtextwidget.h"实现.
     MessageDisplayWidget *pMessageDisplayWgt = new MessageDisplayWidget(sTitle, sInfo, okBtn, btn);
@@ -93,7 +93,7 @@ int MessageDisplayWidget::showMessage(const QString &sTitle, const QString &sInf
     delete m_pEvLoop;
     m_pEvLoop = Q_NULLPTR;
 
-    return nResult;
+    return nResult == 0 ? MessageDisplayButtonType::Ok : MessageDisplayButtonType::Cancel;
 }
 
 void MessageDisplayWidget::on_OkButton_clicked()
