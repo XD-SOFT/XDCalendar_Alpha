@@ -336,7 +336,7 @@ loginDialog::loginDialog(QWidget *parent, CCU* c) :
 
     m_nAutoLoginTimerID = -1;
 
-    qDebug() << "logindialog initilized end!";
+//    qDebug() << "logindialog initilized end!";
 
     initializeUIValue();
 
@@ -344,7 +344,7 @@ loginDialog::loginDialog(QWidget *parent, CCU* c) :
         accountChanged(0);
     }
 
-    qDebug() << "logindialog ui value end.";
+//    qDebug() << "logindialog ui value end.";
 }
 
 loginDialog::~loginDialog()

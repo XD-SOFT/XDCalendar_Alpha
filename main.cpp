@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     font.setPointSize(10);
     a.setFont(font);
 
-    qDebug() << "font settings end!";
+//    qDebug() << "font settings end!";
 
     //设置qss默认样式表
     ///Mark 2017.01.17,样式表重构时候考虑放进源码中用一个文件管理，比单独编辑txt文件方便.
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         qApp->setStyleSheet(qss);
     }
 
-    qDebug() << "load style sheet end.";
+//    qDebug() << "load style sheet end.";
 
 #ifdef USE_TEST
 //    Arg::nw->getBaseData();
@@ -117,11 +117,11 @@ int main(int argc, char *argv[])
     //-------Login Dialog-------// 
     CCU* c = new CCU();
     loginDialog* login = new loginDialog(nullptr, c);
-    qDebug() << "loginDialog initialized end!";
+//    qDebug() << "loginDialog initialized end!";
     QObject::connect(&a, SIGNAL(messageReceived(const QString&)), login, SLOT(onAppStartMessageReceived(const QString&)));
     login->show();
     //--------------------------//
-    qDebug() << "login dialog show!";
+//    qDebug() << "login dialog show!";
 #endif
 
     int nResult =  a.exec();

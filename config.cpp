@@ -80,63 +80,64 @@ GetDataNW* Arg::nw = new GetDataNW();
 
 static auto testModel = [] () -> Teacher*
 {
-        try{
-        QFile file ("in.json");
-        file.open (QIODevice::ReadOnly);
 
-        QByteArray arr = file.readAll ();
-        qDebug()<<"load data: "<<arr<<endl;
-        QJsonObject jo = QJsonDocument::fromBinaryData (arr).object ();
-        qDebug() << "jo: " << jo["terms"].toArray()<<endl;
+//        try{
+//        QFile file ("in.json");
+//        file.open (QIODevice::ReadOnly);
 
-        /*
-        QFile semeF ("samples/semesters.json");
-        semeF.open (QIODevice::ReadOnly);
-        QByteArray semeBA = semeF.readAll ();
-        jo.insert("semesters", QJsonValue(QJsonDocument::fromJson(semeBA).array()));
-        qDebug()<<"semesters------------->"<<semeBA<<endl;
+//        QByteArray arr = file.readAll ();
+//        qDebug()<<"load data: "<<arr<<endl;
+//        QJsonObject jo = QJsonDocument::fromBinaryData (arr).object ();
+//        qDebug() << "jo: " << jo["terms"].toArray()<<endl;
 
-        QFile scheF ("samples/schedule.json");
-        scheF.open (QIODevice::ReadOnly);
-        QByteArray scheBA = scheF.readAll ();
-        qDebug()<<"scheBA: "<<scheBA<<endl;
-        //QJsonObject scheJO = QJsonDocument::fromJson(scheBA).object();
-        jo.insert("schedules", QJsonValue(QJsonDocument::fromJson(scheBA).array()));
-        qDebug()<<"schedule-------------->"<<scheBA<<endl;
-        */
+//        /*
+//        QFile semeF ("samples/semesters.json");
+//        semeF.open (QIODevice::ReadOnly);
+//        QByteArray semeBA = semeF.readAll ();
+//        jo.insert("semesters", QJsonValue(QJsonDocument::fromJson(semeBA).array()));
+//        qDebug()<<"semesters------------->"<<semeBA<<endl;
 
-
-
-
-        qDebug()<< "------------Current Json-----------" << endl;
-        qDebug()<<jo<<endl;
-        qDebug()<<"------------------------------------" << endl;
-
-        Arg::settings = jo;
-        Arg::setCurrentWeekday (QDate::currentDate().dayOfWeek() - 1);
-        qDebug()<< "current day number: " << QDate::currentDate().dayOfWeek() - 1;
-
-        ///Mark 2017.02.17，这里修改掉.
-        auto t = new Teacher (jo, nullptr);
-
-        /*
-        Arg::setCurrentSemester(Arg::findCurrentSemester(t->semesters()));
-        Arg::setSemesters(&(t->semesters()));
-
-        Arg::setCurrentSchedule(Arg::findCurrentSchedule(t->schedules()));
-        Arg::setSchedules(&(t->schedules()));
-        */
-
-        //load data from network
+//        QFile scheF ("samples/schedule.json");
+//        scheF.open (QIODevice::ReadOnly);
+//        QByteArray scheBA = scheF.readAll ();
+//        qDebug()<<"scheBA: "<<scheBA<<endl;
+//        //QJsonObject scheJO = QJsonDocument::fromJson(scheBA).object();
+//        jo.insert("schedules", QJsonValue(QJsonDocument::fromJson(scheBA).array()));
+//        qDebug()<<"schedule-------------->"<<scheBA<<endl;
+//        */
 
 
 
-        return t;
-        }
-        catch(std::exception& e)
-        {
-            qDebug()<<e.what()<<endl;
-        }
+
+//        qDebug()<< "------------Current Json-----------" << endl;
+//        qDebug()<<jo<<endl;
+//        qDebug()<<"------------------------------------" << endl;
+
+//        Arg::settings = jo;
+//        Arg::setCurrentWeekday (QDate::currentDate().dayOfWeek() - 1);
+//        qDebug()<< "current day number: " << QDate::currentDate().dayOfWeek() - 1;
+
+//        ///Mark 2017.02.17，这里修改掉.
+//        auto t = new Teacher (jo, nullptr);
+
+//        /*
+//        Arg::setCurrentSemester(Arg::findCurrentSemester(t->semesters()));
+//        Arg::setSemesters(&(t->semesters()));
+
+//        Arg::setCurrentSchedule(Arg::findCurrentSchedule(t->schedules()));
+//        Arg::setSchedules(&(t->schedules()));
+//        */
+
+//        //load data from network
+
+
+
+//        return t;
+//        }
+//        catch(std::exception& e)
+//        {
+//            qDebug()<<e.what()<<endl;
+//        }
 
 };
 

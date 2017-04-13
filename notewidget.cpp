@@ -328,7 +328,7 @@ void NoteWidget::handleLessonRemarkDB()
     if(sLastRemark.compare(sCurRemark) == 0)
     {
         //do nothing
-        qDebug()<<"doing nothing for remark"<<endl;
+//        qDebug()<<"doing nothing for remark"<<endl;
     }
     else
     {

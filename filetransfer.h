@@ -39,6 +39,8 @@ public:
 
     void setDownloadUrl(const QString &url);
 
+    void abortDownload();
+
 protected:
     /*!
      *\brief 在实现类中实现对不同类型的资源的转换.
@@ -72,6 +74,8 @@ private:
     QEventLoop *m_pEvLoop;
 
     QFile *m_pDownloadFile;
+
+    QNetworkReply *m_pReply;
 };
 
 class FileTransfer : public QObject
@@ -99,22 +103,23 @@ public:
 
     void handleUploadFiles(Lesson *pLesson);
 
-    Q_INVOKABLE void httpDownloadError(const InvokableQMap &arguments, const QString &sError);
+    Q_INVOKABLE void httpDownloadError(const QString &sUrl, const InvokableQMap &arguments, const QString &sError);
 
     ///Todo,这个有待确定.
-    Q_INVOKABLE void httpDownloadProgress(const InvokableQMap &arguments, qint64 bytesReceived, qint64 bytesTotal);
+    Q_INVOKABLE void httpDownloadProgress(const QString &sUrl, const InvokableQMap &arguments, qint64 bytesReceived, qint64 bytesTotal);
 
-    Q_INVOKABLE void httpDownLoadFinished(const InvokableQMap &arguments);
+    Q_INVOKABLE void httpDownLoadFinished(const QString &sUrl, const InvokableQMap &arguments);
 
 signals:
     void ftpDownloadError(const QString &sError);
     void transferPercent(int id, QString percent, QMap<QString, QString> fileInfo );
 
+public slots:
+    void abortTransfer();
+
 protected slots:
 
 //    void ftpUpload(const QMap<QString, QString> &arguments);
-
-    void abortTransfer();
 
     void httpDownload();
 
@@ -184,6 +189,8 @@ private:
 
     //下载文件参数队列.
     QQueue<QMap<QString, QString> > m_downloadArgsQueue;
+
+    QMap<QString, QRunnable*> m_urlRunnableMap;
 
     bool m_bAbort = false;
 

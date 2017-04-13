@@ -678,7 +678,7 @@ void FileTransfer::handleUploadFiles(Lesson *pLesson)
     }
 }
 
-void FileTransfer::httpDownloadError(const InvokableQMap &arguments, const QString &sError)
+void FileTransfer::httpDownloadError(const QString &sUrl, const InvokableQMap &arguments, const QString &sError)
 {
     QMutex mutex;
     mutex.lock();
@@ -698,16 +698,17 @@ void FileTransfer::httpDownloadError(const InvokableQMap &arguments, const QStri
     emit ftpDownloadError(arguments["filename"] + sError);
 
 //    m_dwonloadArgList.removeOne(arguments);
+    m_urlRunnableMap.remove(sUrl);
 
     mutex.unlock();
 }
 
-void FileTransfer::httpDownloadProgress(const InvokableQMap &arguments, qint64 bytesReceived, qint64 bytesTotal)
+void FileTransfer::httpDownloadProgress(const QString &sUrl, const InvokableQMap &arguments, qint64 bytesReceived, qint64 bytesTotal)
 {
 
 }
 
-void FileTransfer::httpDownLoadFinished(const InvokableQMap &arguments)
+void FileTransfer::httpDownLoadFinished(const QString &sUrl, const InvokableQMap &arguments)
 {
     QMutex mutex;
     mutex.lock();
@@ -725,6 +726,8 @@ void FileTransfer::httpDownLoadFinished(const InvokableQMap &arguments)
 
     emit downloadFinished();
 
+    m_urlRunnableMap.remove(sUrl);
+
     mutex.unlock();
 }
 
@@ -737,6 +740,24 @@ void FileTransfer::abortTransfer()
     //            (*itor)->abort();
     //        }
     //    }
+
+
+    if(!m_urlRunnableMap.isEmpty()) {
+        QThreadPool *pThreadPool = QThreadPool::globalInstance();
+        QList<QRunnable*> runnableList = m_urlRunnableMap.values();
+
+        for(int index = 0; index < runnableList.size(); ++index) {
+            HttpDownloadRunnable *pRunnbale = dynamic_cast<HttpDownloadRunnable*>(runnableList.at(index));
+            pRunnbale->abortDownload();
+
+//            delete pRunnbale;
+//            pRunnbale = Q_NULLPTR;
+         }
+
+        pThreadPool->clear();
+
+        m_urlRunnableMap.clear();
+    }
 }
 
 FileTransfer::finished()
@@ -749,7 +770,7 @@ FileTransfer::finished()
 FileTransfer::FileTransfer(QObject *parent) :
     QObject(parent)
 {
-    //    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
+//    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
 }
 
 FileTransfer::~FileTransfer()
@@ -793,14 +814,14 @@ FileTransfer::FileTransfer(const QMap<QString, QString> &arguments, QDialog *dia
 {
     this->filearguments = arguments;
     this->dialog = dialog;
-    //    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
+//    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
 }
 
 FileTransfer::FileTransfer(const QMap<QString, QString> &arguments, QObject *parent):
     QObject(parent)
 {
     this->filearguments = arguments;
-    //    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
+//    connect(CCU::ccu, &CCU::transferFileAbort, this, &FileTransfer::abortTransfer);
 }
 
 //高峰修改  2016/12/1
@@ -1007,11 +1028,11 @@ void FileTransfer::downloadFileByHttp(const QJsonObject &jsonObj)
         HttpDownloadRunnable *pRunnable = new HttpDownloadRunnable(args, this);
         pRunnable->setAutoDelete(true);
         pRunnable->setDownloadUrl(sUrl);
+        m_urlRunnableMap.insert(sUrl, pRunnable);
 
         //        ++Arg::sDownLoadFileCount;
 
         QThreadPool *pThreadPool = QThreadPool::globalInstance();
-        pThreadPool->setMaxThreadCount(5);
         pThreadPool->start(pRunnable);
 
 //        QUrl url(sUrl);
@@ -1223,11 +1244,6 @@ HttpDownloadRunnable::~HttpDownloadRunnable()
         delete m_pEvLoop;
         m_pEvLoop = Q_NULLPTR;
     }
-
-    if(m_pDownloadFile != Q_NULLPTR) {
-        delete m_pDownloadFile;
-        m_pDownloadFile = Q_NULLPTR;
-    }
 }
 
 void HttpDownloadRunnable::setDownloadUrl(const QString &url)
@@ -1235,14 +1251,32 @@ void HttpDownloadRunnable::setDownloadUrl(const QString &url)
     m_sDownloadUrl = url;
 }
 
+void HttpDownloadRunnable::abortDownload()
+{
+//    m_pEvLoop->processEvents();
+    m_pEvLoop->quit();
+
+//    disconnect(m_pReply, SIGNAL(readyRead()), this, SLOT(writeData()));
+//    m_pReply->abort();
+//    m_pReply->deleteLater();
+
+//    m_pEvLoop->exit();
+
+//    if(m_pNetworkAccessMgr != Q_NULLPTR) {
+//        delete m_pNetworkAccessMgr;
+//        m_pNetworkAccessMgr = Q_NULLPTR;
+//    }
+
+}
+
 void HttpDownloadRunnable::run()
 {
     if(!m_sDownloadUrl.isEmpty()) {
         if(m_pNetworkAccessMgr == Q_NULLPTR) {
             m_pNetworkAccessMgr = new QNetworkAccessManager;
-            connect(m_pNetworkAccessMgr, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator*)),
-                    this, SLOT(authenticationNetworkAcessManager(QNetworkReply*, QAuthenticator*)), Qt::BlockingQueuedConnection );
-            connect(m_pNetworkAccessMgr, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)), Qt::BlockingQueuedConnection );
+//            connect(m_pNetworkAccessMgr, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator*)),
+//                    this, SLOT(authenticationNetworkAcessManager(QNetworkReply*, QAuthenticator*)), Qt::BlockingQueuedConnection );
+            connect(m_pNetworkAccessMgr, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)), Qt::BlockingQueuedConnection);
         }
 
         QUrl url(m_sDownloadUrl);
@@ -1252,20 +1286,21 @@ void HttpDownloadRunnable::run()
 //        m_pTimer = new QTimer;
 //        connect(m_pTimer, &QTimer::timeout, this, &HttpDownloadRunnable::downloadTimeOut, Qt::BlockingQueuedConnection);
 
-        QNetworkReply *pReply = m_pNetworkAccessMgr->get(request);
+        m_pEvLoop = new QEventLoop;
+
+        m_pReply = m_pNetworkAccessMgr->get(request);
 //        m_replyArgsHash.insert(reply, filearguments);
 //        m_timerReplyHash.insert(pTimer, reply);
 //        connect(pReply, SIGNAL(finished()), this, SLOT(finished()));
         //    qDebug()<<"***adsdsd"<<endl;
-        connect(pReply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(processDownloadProgress(qint64, qint64)), Qt::BlockingQueuedConnection);
-//        connect(pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection);
-        connect(pReply, SIGNAL(readyRead()), this, SLOT(writeData()));
+        connect(m_pReply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(processDownloadProgress(qint64, qint64)), Qt::BlockingQueuedConnection);
+        connect(m_pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection);
+        connect(m_pReply, SIGNAL(readyRead()), this, SLOT(writeData()), Qt::BlockingQueuedConnection);
 
 //        m_pTimer->start(300000);
 
-        qDebug() << "the networkmgr thread is:" << m_pNetworkAccessMgr->thread() << "this thread is:" << thread() << pReply->thread();
+//        qDebug() << "the networkmgr thread is:" << m_pNetworkAccessMgr->thread() << "this thread is:" << thread() << pReply->thread();
 
-        m_pEvLoop = new QEventLoop;
         m_pEvLoop->exec();
     }
 }
@@ -1279,19 +1314,40 @@ void HttpDownloadRunnable::authenticationNetworkAcessManager(QNetworkReply *repl
 
 void HttpDownloadRunnable::downloadFinished(QNetworkReply *reply)
 {
+    m_pEvLoop->processEvents();
+    m_pEvLoop->exit();
+
     qDebug() << "download finished";
 
     if (reply->error() == QNetworkReply::NoError)
     {
-//        if(m_pTimer != Q_NULLPTR) {
-//            m_pTimer->moveToThread(this->thread());
-//            m_pTimer->stop();
+        if(m_pDownloadFile == Q_NULLPTR) {
+            Arg *pArg = Arg::getInstance();
+            QDir dir;
+            pArg->getSaveDir(dir);
+            QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + m_arguments["folderName"]+"/"+ m_arguments["fileName"];
 
-//            delete m_pTimer;
-//            m_pTimer = Q_NULLPTR;
-//        }
+            filePath.replace("//", "/");
+            filePath.replace("/", "\\");
+            qDebug()<<"http download file is:" << filePath;
+
+            ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
+            if(QFile(filePath).exists()){
+                QFile::remove(filePath);
+            }
+
+            m_pDownloadFile = new QFile(filePath);
+
+
+            if(!m_pDownloadFile->isOpen()) {
+                m_pDownloadFile->open(QIODevice::WriteOnly);
+            }
+
+            m_pDownloadFile->write(reply->readAll());
+        }
 
         QMetaObject::invokeMethod(m_pInvokableObj, "httpDownLoadFinished", Qt::DirectConnection,
+                                  Q_ARG(const QString&, m_sDownloadUrl),
                                   Q_ARG(const InvokableQMap&, m_arguments));
 
     }
@@ -1301,6 +1357,7 @@ void HttpDownloadRunnable::downloadFinished(QNetworkReply *reply)
         qDebug( "found error ....code: %d %d\n", statusCodeV.toInt(), (int)reply->error());
 
         QMetaObject::invokeMethod(m_pInvokableObj, "httpDownloadError", Qt::DirectConnection,
+                                  Q_ARG(const QString&, m_sDownloadUrl),
                                   Q_ARG(const InvokableQMap&, m_arguments),
                                   Q_ARG(const QString&, reply->errorString()));
     }
@@ -1308,13 +1365,9 @@ void HttpDownloadRunnable::downloadFinished(QNetworkReply *reply)
     if(m_pDownloadFile != Q_NULLPTR) {
         if(m_pDownloadFile->flush()) {
             m_pDownloadFile->close();
-
-            delete m_pDownloadFile;
-            m_pDownloadFile = Q_NULLPTR;
+            m_pDownloadFile->deleteLater();
         }
     }
-
-    m_pEvLoop->exit();
 
     reply->deleteLater();
 }
@@ -1343,22 +1396,28 @@ void HttpDownloadRunnable::downloadTimeOut()
 //    delete m_pTimer;
 //    m_pTimer = Q_NULLPTR;
 
+    m_pEvLoop->exit();
+
     QMetaObject::invokeMethod(m_pInvokableObj, "httpDownloadError", Qt::DirectConnection,
+                              Q_ARG(const QString&, m_sDownloadUrl),
                               Q_ARG(const InvokableQMap&, m_arguments),
                               Q_ARG(const QString&, tr("下载超时")));
-
-    m_pEvLoop->exit();
 }
 
 void HttpDownloadRunnable::slotError(QNetworkReply::NetworkError error)
 {
+    m_pEvLoop->exit();
+
     QNetworkReply *replay =(QNetworkReply *)sender();
     if(replay)
     {
         qDebug()<<"--------------------transerError:"<< error;
         QMetaObject::invokeMethod(m_pInvokableObj, "httpDownloadError", Qt::DirectConnection,
+                                  Q_ARG(const QString&, m_sDownloadUrl),
                                   Q_ARG(const InvokableQMap&, m_arguments),
                                   Q_ARG(const QString&, replay->errorString()));
+
+        replay->deleteLater();
     }
 
 //    if(m_pTimer != Q_NULLPTR) {
@@ -1368,8 +1427,6 @@ void HttpDownloadRunnable::slotError(QNetworkReply::NetworkError error)
 //        delete m_pTimer;
 //        m_pTimer = Q_NULLPTR;
 //    }
-
-    m_pEvLoop->exit();
 }
 
 void HttpDownloadRunnable::writeData()
@@ -1383,30 +1440,33 @@ void HttpDownloadRunnable::writeData()
 //    }
 
     QNetworkReply *pReply =(QNetworkReply *)sender();
+    if(pReply) {
 
-    if(m_pDownloadFile == Q_NULLPTR) {
-        Arg *pArg = Arg::getInstance();
-        QDir dir;
-        pArg->getSaveDir(dir);
-        QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + m_arguments["folderName"]+"/"+ m_arguments["fileName"];
+        if(m_pDownloadFile == Q_NULLPTR) {
+            Arg *pArg = Arg::getInstance();
+            QDir dir;
+            pArg->getSaveDir(dir);
+            QString filePath = /*Arg::configDir*/dir.absolutePath() + "/SaveFile/" + m_arguments["folderName"]+"/"+ m_arguments["fileName"];
 
-        filePath.replace("//", "/");
-        filePath.replace("/", "\\");
-        qDebug()<<"ftp download file is:" << filePath;
+            filePath.replace("//", "/");
+            filePath.replace("/", "\\");
+            qDebug()<<"http download file is:" << filePath;
 
-        ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
-        if(QFile(filePath).exists()){
-            bool bRemoveStatus = QFile::remove(filePath);
-            qDebug()<<"*********File Exits and delete**********"<< bRemoveStatus << endl;
+            ///Mark2017.03.03，这里做过处理，如果文件存在，则删除掉.
+            if(QFile(filePath).exists()){
+                QFile::remove(filePath);
+            }
+
+            m_pDownloadFile = new QFile(filePath);
         }
 
-        m_pDownloadFile = new QFile(filePath);
-    }
+        if(!m_pDownloadFile->isOpen()) {
+            m_pDownloadFile->open(QIODevice::WriteOnly);
+        }
 
-    if(!m_pDownloadFile->isOpen()) {
-        m_pDownloadFile->open(QIODevice::WriteOnly);
+        quint64 nBytes = pReply->bytesAvailable();
+        if(nBytes > 0) {
+            m_pDownloadFile->write(pReply->read(nBytes));
+        }
     }
-
-    m_pDownloadFile->write(pReply->readAll());
-    m_pDownloadFile->flush();
 }

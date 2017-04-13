@@ -185,13 +185,14 @@ void CCU::close()
        }
 #endif
 
+       qApp->processEvents();
 
-//        emit transferFileAbort();
+       emit transferFileAbort();
         ///Mark Todo，文件取消操作处理.
     }
 
 //    qDebug()<<"close the MainScreen"<<endl;
-    Arg::dumpUserData();
+//    Arg::dumpUserData();
     //        MainScreen::mainScreen->close();
 
     delete MainScreen::mainScreen;
@@ -228,15 +229,20 @@ void CCU::logOff()
             return;
         }
 #endif
+
+        qApp->processEvents();
+
+        emit transferFileAbort();
     }
 
 
-//        emit transferFileAbort();
 //    }
 
 //    qDebug()<<"close the MainScreen"<<endl;
-    Arg::dumpUserData();
+//    Arg::dumpUserData();
     //        MainScreen::mainScreen->close();
+
+
 
     delete MainScreen::mainScreen;
     MainScreen::mainScreen = Q_NULLPTR;

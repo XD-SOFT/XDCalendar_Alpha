@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include "config.h"
+#include "ccu.h"
 
 using namespace std;
 downloadFile::downloadFile():
@@ -64,6 +65,8 @@ bool downloadFile::download(const QMap<QString, QString> &filePath, Lesson *pLes
         //            connect(this, SIGNAL(start()), transfer, SLOT( ftpDownload() ));
         connect(transfer, SIGNAL(transferPercent(int,QString,QMap<QString,QString>)),
                 this, SIGNAL(transferPercent(int,QString,QMap<QString,QString>)));
+
+        connect(CCU::ccu, &CCU::transferFileAbort, transfer, &FileTransfer::abortTransfer);
     }
 
     qDebug() << "the filePath is:" << filePath;

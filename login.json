@@ -1,11 +1,25 @@
 {
     "users": [
         {
+            "auto": false,
+            "password": "Mp���\\�*7�+���\u0013�313233343536",
+            "record": true,
+            "user": "shenjie",
+            "userid": 39
+        },
+        {
             "auto": true,
             "password": "�D+a\\\u001ea���\u001e�I��V313233343536",
             "record": true,
             "user": "lilu",
             "userid": 16
+        },
+        {
+            "auto": true,
+            "password": "��1pf\u0002��;�6ۭ\ḅ313233343536",
+            "record": true,
+            "user": "luda",
+            "userid": 18
         },
         {
             "auto": false,
