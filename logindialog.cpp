@@ -554,11 +554,16 @@ void loginDialog::on_loginButton_clicked()
 
     int index = pLoginAccountComboBox->findText(pLoginAccountComboBox->lineEdit()->text());
     if(index == -1) {
+       //进入此处说明当前用户不存在，此联接只适用于已经存在链接，新的用户由于没有设置项关联密码，会把passwordInput清空处理
+        disconnect(pLoginAccountComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(accountChanged(int)));
         pLoginAccountComboBox->addItem(pLoginAccountComboBox->lineEdit()->text());
+        connect(pLoginAccountComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(accountChanged(int)));
+
         pLoginAccountComboBox->setCurrentText(pLoginAccountComboBox->lineEdit()->text());
     }
 
-    if(pLoginAccountComboBox->currentText() != NULL && passwordInput->text() != NULL)
+    //mark
+    if(!pLoginAccountComboBox->currentText().isEmpty() && !passwordInput->text().isEmpty())
     {
         qDebug() << "login button push" <<endl;
 //        userdb = new UserDB();
