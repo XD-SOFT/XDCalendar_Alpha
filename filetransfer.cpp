@@ -1294,7 +1294,7 @@ void HttpDownloadRunnable::run()
 //        connect(pReply, SIGNAL(finished()), this, SLOT(finished()));
         //    qDebug()<<"***adsdsd"<<endl;
         connect(m_pReply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(processDownloadProgress(qint64, qint64)), Qt::BlockingQueuedConnection);
-        connect(m_pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection);
+//        connect(m_pReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(slotError(QNetworkReply::NetworkError)), Qt::BlockingQueuedConnection);
         connect(m_pReply, SIGNAL(readyRead()), this, SLOT(writeData()), Qt::BlockingQueuedConnection);
 
 //        m_pTimer->start(300000);
@@ -1406,27 +1406,27 @@ void HttpDownloadRunnable::downloadTimeOut()
 
 void HttpDownloadRunnable::slotError(QNetworkReply::NetworkError error)
 {
-    m_pEvLoop->exit();
+//    m_pEvLoop->exit();
 
-    QNetworkReply *replay =(QNetworkReply *)sender();
-    if(replay)
-    {
-        qDebug()<<"--------------------transerError:"<< error;
-        QMetaObject::invokeMethod(m_pInvokableObj, "httpDownloadError", Qt::DirectConnection,
-                                  Q_ARG(const QString&, m_sDownloadUrl),
-                                  Q_ARG(const InvokableQMap&, m_arguments),
-                                  Q_ARG(const QString&, replay->errorString()));
+//    QNetworkReply *replay =(QNetworkReply *)sender();
+//    if(replay)
+//    {
+////        qDebug()<<"--------------------transerError:"<< error;
+//        QMetaObject::invokeMethod(m_pInvokableObj, "httpDownloadError", Qt::DirectConnection,
+//                                  Q_ARG(const QString&, m_sDownloadUrl),
+//                                  Q_ARG(const InvokableQMap&, m_arguments),
+//                                  Q_ARG(const QString&, replay->errorString()));
 
-        replay->deleteLater();
-    }
-
-//    if(m_pTimer != Q_NULLPTR) {
-//        m_pTimer->moveToThread(this->thread());
-//        m_pTimer->stop();
-
-//        delete m_pTimer;
-//        m_pTimer = Q_NULLPTR;
+////        replay->deleteLater();
 //    }
+
+////    if(m_pTimer != Q_NULLPTR) {
+////        m_pTimer->moveToThread(this->thread());
+////        m_pTimer->stop();
+
+////        delete m_pTimer;
+////        m_pTimer = Q_NULLPTR;
+////    }
 }
 
 void HttpDownloadRunnable::writeData()

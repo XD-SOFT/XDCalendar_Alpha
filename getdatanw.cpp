@@ -847,11 +847,11 @@ void GetDataNW::getLessonDetailState(const QJsonObject &json) //获取所有课�
 //    qDebug()<<"lessonDetail: "<<json<<endl;
 
     if(json["status"] == "false") {
-        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("课程详表返回错误"));
+//        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("课程详表返回错误"));
 
-        qApp->quit();
+//        qApp->quit();
 
-        return;
+//        return;
     }
 
     QJsonArray lessonsA = json["result"].toArray ();
