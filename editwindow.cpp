@@ -209,10 +209,12 @@ void EditWindow::reset()
         QDate date = QDate::currentDate();
         int todayWeekDay = date.dayOfWeek();
         int lessonWeekDay = cell->getDayIndex();
-
         QDate startDate = date.addDays(lessonWeekDay - todayWeekDay);
+        Term *pCurTerm = Arg::currentTerm();
+//        QDate termStartDate = pCurTerm->getStart();
+        QDate endDate = pCurTerm->getEnd();
         m_pStartDateEdit->setDate(startDate);
-        m_pEndDateEdit->setDate(startDate.addDays(7));
+        m_pEndDateEdit->setDate(endDate);
 
         loopEdit->setCurrentIndex(0);
         courseEdit->setCurrentIndex(0);
@@ -233,14 +235,15 @@ void EditWindow::sureButtonClicked()
 //        pLessonDetailDB->setEndDate(Arg::currentSemester()->getEndTime());
         Lesson *pLesson = cell->getLesson();
 
-        if(pLesson != nullptr)
+        if(pLesson != nullptr) //update
         {
 //            qDebug()<<"current lesson is not null"<<endl;
             QDate preStartDate = pLesson->getStartDate();
             QDate preEndDate = pLesson->getEndDate();
             int nPreRepeat = pLesson->getRepeat();
+            int nCurRepeat = loopEdit->currentData().toInt();
 
-            if((nPreRepeat == pLesson->getRepeat())
+            if((nPreRepeat == nCurRepeat)
                     && (pLesson->subject() == courseEdit->currentText())
                     && (pLesson->location() == locationEdit->text())
                     && (pLesson->unit() == classEdit->text())
@@ -252,11 +255,11 @@ void EditWindow::sureButtonClicked()
             }
 
             //for ui use
-            int nReapt = loopEdit->currentData().toInt();
+//            int nReapt = loopEdit->currentData().toInt();
             pLesson->setSubject(courseEdit->currentText());
             pLesson->setLocation(locationEdit->text());
             pLesson->setUnit(classEdit->text());
-            pLesson->setRepeat(nReapt);
+            pLesson->setRepeat(nCurRepeat);
             pLesson->setStartDate(m_pStartDateEdit->date());
             pLesson->setEndDate(m_pEndDateEdit->date());
            //            pLesson->
@@ -272,7 +275,7 @@ void EditWindow::sureButtonClicked()
             pLessonDetailDB->setRoomId(pLesson->getRoomId());
             pLessonDetailDB->setWeekId(cell->getDayIndex());
             pLessonDetailDB->setSectionId(cell->getSecIndex());
-            pLessonDetailDB->setRepeat(nReapt);
+            pLessonDetailDB->setRepeat(nCurRepeat);
             pLessonDetailDB->setStartDate(m_pStartDateEdit->date());
             pLessonDetailDB->setEndDate(m_pEndDateEdit->date());
 
@@ -285,7 +288,7 @@ void EditWindow::sureButtonClicked()
 
             pLessonDetailDB->update();
         }
-        else
+        else  //Add.
         {
             Arg *pArg = Arg::getInstance();
             QDate semsterStartDate = pArg->currentSemester()->getStartTime();
@@ -293,7 +296,7 @@ void EditWindow::sureButtonClicked()
             QDate startDate = m_pStartDateEdit->date();
             QDate endDate = m_pEndDateEdit->date();
 
-            if(!((startDate > semsterStartDate) && (endDate < semesterEndDate))) {
+            if(!((startDate >= semsterStartDate) && (endDate <= semesterEndDate))) {
 #ifdef USER_QT_MESSAGEBOX
                 QMessageBox::information(this, tr("教师客户端"), tr("请重新选择日期"));
 #else
