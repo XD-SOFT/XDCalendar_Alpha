@@ -470,7 +470,10 @@ bool Term::getWeekLessonsByDate(QVector<QMap<int, Lesson*>> &weekLessons, const 
                 {
                     int weekDiff = nTermWeekNum - nStartWeekNum;
 
-                    if(weekDiff >= repeat && weekDiff % repeat == 0)
+                    if(weekDiff == 0) { //课程起始周数恰好是请求周数.
+                        bRepeatDisplay = true;
+                    }
+                    else if(weekDiff >= repeat && weekDiff % repeat == 0)
                     {
                         bRepeatDisplay = true;
                     }

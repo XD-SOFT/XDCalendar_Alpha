@@ -27,9 +27,9 @@ void LogManagement(QtMsgType type, const QMessageLogContext &context, const QStr
         sLogStr.append("Debug:");
 
         break;
-    case QtWarningMsg:
-//        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        sLogStr.append("Warning:");
+//    case QtWarningMsg:
+////        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+//        sLogStr.append("Warning:");
         break;
     case QtCriticalMsg:
 //        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
