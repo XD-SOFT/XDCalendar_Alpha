@@ -326,10 +326,11 @@ void EditWindow::sureButtonClicked()
             Term *pCurTerm = pArg->currentTerm();
             bool bConflict = pCurTerm->checkConflictLessons(startDate, endDate, weekDay, secIndex, nRepeat, conflictMap);
             if(bConflict) {
-                QString sText("存在冲突课程：");
+                QString sText = QString("与");
+
                 for(auto itor = conflictMap.begin(); itor != conflictMap.end(); ++itor) {
                     sText.append(itor.key());
-                    sText.append(":");
+                    sText.append("在");
                     QList<int> weekList = conflictMap.value(itor.key());
 
                     for(int index = 0; index < weekList.size(); ++index) {
@@ -337,9 +338,10 @@ void EditWindow::sureButtonClicked()
                         sText.append(" ");
                     }
 
-                    sText.append("\n");
+                    sText.append("周");
                 }
 
+                sText.append("时间设置冲突");
                 MessageDisplayWidget::showMessage(tr("教师客户端"), sText);
 
                 return;
