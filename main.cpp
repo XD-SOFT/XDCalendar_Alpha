@@ -8,11 +8,12 @@
 #include <QSettings>
 #include <iostream>
 #include <qtsingleapplication.h>
+#include <QProcess>
 //class Arg;
 
 //#define USE_RUNNING_LOG
 #ifdef USE_RUNNING_LOG
-    QFile g_logFile("./runlog/MoonCalendar.log");
+QFile g_logFile("./runlog/MoonCalendar.log");
 #endif
 
 void LogManagement(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -23,20 +24,20 @@ void LogManagement(QtMsgType type, const QMessageLogContext &context, const QStr
     QString sLogStr;
     switch (type) {
     case QtDebugMsg:
-//        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        //        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         sLogStr.append("Debug:");
 
         break;
-//    case QtWarningMsg:
-////        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-//        sLogStr.append("Warning:");
+        //    case QtWarningMsg:
+        ////        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        //        sLogStr.append("Warning:");
         break;
     case QtCriticalMsg:
-//        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        //        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         sLogStr.append("Critical:");
         break;
     case QtFatalMsg:
-//        fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        //        fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
         sLogStr.append("Fatal:");
         abort();
 
@@ -55,25 +56,40 @@ void LogManagement(QtMsgType type, const QMessageLogContext &context, const QStr
     sLogStr.append(context.function);
     sLogStr.append("\r\n");
 
-//#define USE_RUNNING_LOG
+    //#define USE_RUNNING_LOG
 #ifdef USE_RUNNING_LOG
     QTextStream logStream(&g_logFile);
     logStream.setAutoDetectUnicode(true);
     logStream << sLogStr;
 #endif
-//#else
-//   fprintf(stderr, "%s", sLogStr.toLocal8Bit());
-//#endif
+    //#else
+    //   fprintf(stderr, "%s", sLogStr.toLocal8Bit());
+    //#endif
 
 #endif
 }
 
+class startLogin :public QObject
+{
+    Q_OBJECT
+
+public:
+
+
+public slots:
+    void finish(int exitCode)
+    {
+
+    }
+
+};
+
 int main(int argc, char *argv[])
 {
-//    QApplication a(argc, argv);
+    //    QApplication a(argc, argv);
     QtSingleApplication a(argc, argv);
     if(a.isRunning()) {
-//        QMessageBox::information(0, QObject::tr("教师客户端"), QObject::tr("已有一个程序实例在运行!"));
+        //        QMessageBox::information(0, QObject::tr("教师客户端"), QObject::tr("已有一个程序实例在运行!"));
         a.sendMessage("");
         return 0;
     }
@@ -81,7 +97,7 @@ int main(int argc, char *argv[])
 #ifdef USE_RUNNING_LOG
     if(g_logFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-//        g_logStream.setDevice(&g_logFile);
+        //        g_logStream.setDevice(&g_logFile);
 
         qInstallMessageHandler(LogManagement);
     }
@@ -92,7 +108,7 @@ int main(int argc, char *argv[])
     font.setPointSize(10);
     a.setFont(font);
 
-//    qDebug() << "font settings end!";
+    //    qDebug() << "font settings end!";
 
     //设置qss默认样式表
     ///Mark 2017.01.17,样式表重构时候考虑放进源码中用一个文件管理，比单独编辑txt文件方便.
@@ -104,24 +120,56 @@ int main(int argc, char *argv[])
         qApp->setStyleSheet(qss);
     }
 
-//    qDebug() << "load style sheet end.";
+    //    qDebug() << "load style sheet end.";
 
 #ifdef USE_TEST
-//    Arg::nw->getBaseData();
-//    CCU c;
-//    c.startWork();
+    //    Arg::nw->getBaseData();
+    //    CCU c;
+    //    c.startWork();
     //创建单一实例管理类.
-//    ///MARK,这个重构时候要重新设计.
-//    SingleObjectManager::getInstance();
+    //    ///MARK,这个重构时候要重新设计.
+    //    SingleObjectManager::getInstance();
 #else
-    //-------Login Dialog-------// 
+    //-------Login Dialog-------//
     CCU* c = new CCU();
+
+
+    QString appPath = qApp->applicationDirPath();
+
+    //如果更新程序存,执行更新程序
+    if (QFile::exists(appPath + QDir::separator() + "updater.exe"))
+    {
+        //如过不是更新程序启动当前应用程序（没传入参数），执行更新，否则已经是最新，直接启动
+        if(argc  == 1)
+        {
+            QString serverAddress;
+            Arg *pArg =  Arg::getInstance();
+            pArg->getNetReusetHostUrl(serverAddress);
+
+            QProcess process;
+
+            QStringList arguments;
+            arguments <<serverAddress;
+            qDebug()<<"--appPath" <<appPath + QDir::separator() + "updater.exe";
+            qDebug()<<"serverAddress"<<serverAddress;
+
+            process.startDetached(appPath + QDir::separator() + "updater.exe", arguments, appPath);
+            qDebug()<< "--is start" <<process.waitForStarted();
+
+            return 0;
+        }
+    }else {
+
+        qDebug()<<"updater.exe is not find!";
+    }
+
     loginDialog* login = new loginDialog(nullptr, c);
-//    qDebug() << "loginDialog initialized end!";
+    //    qDebug() << "loginDialog initialized end!";
     QObject::connect(&a, SIGNAL(messageReceived(const QString&)), login, SLOT(onAppStartMessageReceived(const QString&)));
     login->show();
+
     //--------------------------//
-//    qDebug() << "login dialog show!";
+    //    qDebug() << "login dialog show!";
 #endif
 
     int nResult =  a.exec();
@@ -135,8 +183,8 @@ int main(int argc, char *argv[])
 #endif
 
 
-//    //销毁.
-//    SingleObjectManager::destroyInstance();
+    //    //销毁.
+    //    SingleObjectManager::destroyInstance();
 
     return nResult;
 }
