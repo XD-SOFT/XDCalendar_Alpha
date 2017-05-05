@@ -39,6 +39,7 @@
 #include <QSettings>
 #include <QProgressBar>
 #include <QEventLoop>
+#include <QDesktopServices>
 
 CourseCellWidget::CourseCellWidget(QWidget *parent) :
     QWidget(parent),
@@ -848,7 +849,9 @@ void CourseCellWidget::fileUploadFinished(const QString &fileName)
     if(m_bCreateNewFile) {
         QString sFilePathName = fileName;
         sFilePathName.replace("/","\\");
-        bool bStatus = QProcess::startDetached("explorer " + sFilePathName);
+        sFilePathName = QString("file:///") + sFilePathName;
+        bool bStatus = QDesktopServices::openUrl(QUrl(sFilePathName, QUrl::TolerantMode));
+//        bool bStatus = QProcess::startDetached("explorer " + sFilePathName);
         if(bStatus) {
 
         }

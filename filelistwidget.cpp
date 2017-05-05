@@ -28,6 +28,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QProgressBar>
+#include <QTextCodec>
 #include "coursetreewidget.h"
 #include "classinfowidget.h"
 #include "treedisplaydelegate.h"
@@ -310,9 +311,9 @@ void FileListWidget::openFile(QTreeWidgetItem* treeItem, int num)
         sFile = dir.absolutePath() + "/SaveFile/" + courseFolder + "/" + path.split("/").last();
     }
 
-    sFile.replace("//", "/");
+//    sFile.replace("//", "/");
     sFile.replace("/", "\\");
-//    qDebug() << "file path: " << sFile << endl;
+    qDebug() << "file path: " << sFile << endl;
 
     QFile file(sFile);
     if(!file.exists()) {
@@ -326,12 +327,32 @@ void FileListWidget::openFile(QTreeWidgetItem* treeItem, int num)
         return;
     }
 
-    QProcess::startDetached("explorer " + sFile);
-    //QDesktopServices::openUrl(QUrl::fromLocalFile(QFileInfo(path).absoluteFilePath()));
+#ifdef USE_DESKTOPSEVEICES
+    QVector<int> spaceIndexVec;
+    for(int i = 0; i < sFile.size(); i++)
+    {
+        if(sFile[i] == ' ')
+        {
+            spaceIndexVec.push_back(i);
+        }
+    }
+
+    for(int i = spaceIndexVec.size()-1; i >= 0; i--)
+    {
+        sFile.insert(spaceIndexVec[i] +1, "\"");
+        sFile.insert(spaceIndexVec[i], "\"");
+    }
+
+    sFile.prepend("explorer ");
+    QProcess::startDetached(sFile);
+#else
+    QString sUrlPath = QString("file:///") + sFile;
+    QDesktopServices::openUrl(QUrl(sUrlPath, QUrl::TolerantMode));
+#endif
 }
 
 //单击展开关闭文件夹
-void FileListWidget::spreadList(QTreeWidgetItem* treeItem,int num)
+void FileListWidget::spreadList(QTreeWidgetItem* treeItem, int num)
 {
     //        if(treeItem->isSelected()){
     //             treeItem->setBackground(0,QBrush(Qt::lightGray));
