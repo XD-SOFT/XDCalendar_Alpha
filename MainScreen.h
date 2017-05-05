@@ -6,6 +6,7 @@
 #include <array>
 #include <QSystemTrayIcon>
 #include <QDate>
+#include <QLabel>
 //#include "daywidget.h"
 //#include "mybutton.h"
 //#include "config.h"
@@ -91,6 +92,10 @@ public:
 
     UserInfoWidget *userInfoView;
 
+    ///@学期的地几周
+    QLabel *m_termWeek;
+
+
 
 //    Sidebar* tabWidget;
 //    MonthChoose *monthchoose;
@@ -163,6 +168,8 @@ public slots:
 
     void setBackgroundOpacity (double opacity);
     void setForegroundOpacity (double opacity);
+
+    void termWeekChanged(int termWeek);
 protected:
     /*!
     @ \brief 绘制背景图片等.

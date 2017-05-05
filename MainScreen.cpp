@@ -38,6 +38,7 @@
 #include "settingswidget.h"
 #include "messagedisplaywidget.h"
 #include "aboutwlg.h"
+#include "term.h"
 
 MainScreen* MainScreen::mainScreen = Q_NULLPTR;
 int MainScreen::window_long = 0;
@@ -93,87 +94,87 @@ void MonthChoose::setMonth(const QDate &date_data)
 
 
 MainScreen::MainScreen(/*QWidget *parent*/):
-BaseShadowWidget()
+    BaseShadowWidget()
 {
     ///这个提到最前面，避免影响后面不知道的一些样式设置.
     QString sStyle = styleSheet() +  QString("QScrollBar:vertical {"
-                                                       "margin:0px 0px 0px 0px;"
-                                                       "border: 1px solid #dadbde;"
-                                                       "border-radius: 5px;"
-                                                       "background-color:#f9f9f9;"
-                                                       "width:10px;"
-                                                       "}"
+                                             "margin:0px 0px 0px 0px;"
+                                             "border: 1px solid #dadbde;"
+                                             "border-radius: 5px;"
+                                             "background-color:#f9f9f9;"
+                                             "width:10px;"
+                                             "}"
 
-                                                       "QScrollBar::handle:vertical {"
-                                                       "border: 0px;"
-                                                       "background-color:#d9d9d9;"
-                                                       "margin:0px 0px 0px 0px;"
-                                                       "border-radius: 5px;"
-                                                       "min-height: 60px;"
-                                                       "}"
+                                             "QScrollBar::handle:vertical {"
+                                             "border: 0px;"
+                                             "background-color:#d9d9d9;"
+                                             "margin:0px 0px 0px 0px;"
+                                             "border-radius: 5px;"
+                                             "min-height: 60px;"
+                                             "}"
 
-                                                    "QScrollBar::handle:vertical:hover{"
-                                                    "border: 0px;"
-                                                    "background-color:#bfbfbf;"
-                                                    "margin:0px 0px 0px 0px;"
-                                                    "border-radius: 5px;"
-                                                    "min-height: 60px;"
-                                                    "}"
-                                                 "QScrollBar::add-line:vertical {"
-                                                       "border: 0px solid grey;"
-                                                       "height: 0px;"
-                                                       "subcontrol-position: bottom;"
-                                                       "subcontrol-origin: margin;"
-                                                   "}"
+                                             "QScrollBar::handle:vertical:hover{"
+                                             "border: 0px;"
+                                             "background-color:#bfbfbf;"
+                                             "margin:0px 0px 0px 0px;"
+                                             "border-radius: 5px;"
+                                             "min-height: 60px;"
+                                             "}"
+                                             "QScrollBar::add-line:vertical {"
+                                             "border: 0px solid grey;"
+                                             "height: 0px;"
+                                             "subcontrol-position: bottom;"
+                                             "subcontrol-origin: margin;"
+                                             "}"
 
-                                                   "QScrollBar::sub-line:vertical {"
-                                                       "border: 0px solid grey;"
-                                                       "height: 0px;"
-                                                       "subcontrol-position: top;"
-                                                       "subcontrol-origin: margin;"
-                                                   "}"
+                                             "QScrollBar::sub-line:vertical {"
+                                             "border: 0px solid grey;"
+                                             "height: 0px;"
+                                             "subcontrol-position: top;"
+                                             "subcontrol-origin: margin;"
+                                             "}"
 
-//mark2017.4.1,只修改userinfowidget.ui 中button
-                                                  ".QPushButton#pNameBtn{background:#1250b5; \
-                                                            border:1px solid #1250b5;\
-                                                            color:white;}");
+                                             //mark2017.4.1,只修改userinfowidget.ui 中button
+                                             ".QPushButton#pNameBtn{background:#1250b5; \
+                                             border:1px solid #1250b5;\
+            color:white;}");
 
 
-    setStyleSheet(sStyle); ///样式表最后要整合为一份放到源代码中管理.
+setStyleSheet(sStyle); ///样式表最后要整合为一份放到源代码中管理.
 
-    mainScreen = this;
-    ///Edit by BiXiaoxia 2016.12.20.
+mainScreen = this;
+///Edit by BiXiaoxia 2016.12.20.
 //    setShadowEnabled(false); ///Mark 2016.12.21 by BiXiaoxia, 因为好多部件尺寸写死，暂时没法启用阴影.
 //    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Window);//隐藏边框/菜单图标
-    //    setSizePolicy (QSizePolicy::Minimum, QSizePolicy::Minimum);
-    //    setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Maximum);
+//    setSizePolicy (QSizePolicy::Minimum, QSizePolicy::Minimum);
+//    setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Maximum);
 #ifdef TEST_COURSE_CELL //The TEST can't run directly. Some simple changed is required.
-    CourseCellWidget* ccw = new CourseCellWidget (this);
-    ccw->link (Arg::user->terms ().at (0)->lessonWeek (0).front ());
-    ccw->show ();
+CourseCellWidget* ccw = new CourseCellWidget (this);
+ccw->link (Arg::user->terms ().at (0)->lessonWeek (0).front ());
+ccw->show ();
 #endif
 #ifdef TEST_COURSE_GRID
-    CourseGrid* cg = new CourseGrid (this);
-    cg->link (Arg::user->terms ().at (0), 0);
-    cg->show ();
+CourseGrid* cg = new CourseGrid (this);
+cg->link (Arg::user->terms ().at (0), 0);
+cg->show ();
 #endif
 
-    if(QFile(QCoreApplication::applicationDirPath()+Const::defaultSavePath).exists())
-    {
-        loadAll(QCoreApplication::applicationDirPath()+Const::defaultSavePath);
-    }
-    setupUi ();
+if(QFile(QCoreApplication::applicationDirPath()+Const::defaultSavePath).exists())
+{
+    loadAll(QCoreApplication::applicationDirPath()+Const::defaultSavePath);
+}
+setupUi ();
 //    setAutoFillBackground (true);
 //    setAttribute (Qt::WA_TranslucentBackground);
 //    show();
 //    lower();
 //    reset();
-    onedayMode (false);
+onedayMode (false);
 
 #ifdef TEST_BACKGROUND
-    setBackgroundImage (QImage (":/Icon/images.jpg"));
-    //    setBackgroundOpacity (0.5);
-    setForegroundOpacity (0.6);
+setBackgroundImage (QImage (":/Icon/images.jpg"));
+//    setBackgroundOpacity (0.5);
+setForegroundOpacity (0.6);
 #endif
 //    setBackgroundOpacity (mBackgroundOpacity);
 //    gridView->setBackground (mForegroundOpacity);
@@ -181,17 +182,17 @@ BaseShadowWidget()
 //    connect (mLookAndFeel, SIGNAL (backgroundOpacityChanged(double)), this, SLOT (setBackgroundOpacity (double)));
 //    connect (mLookAndFeel, SIGNAL (foregroundOpacityChanged(double)), this, SLOT (setForegroundOpacity (double)));
 //    connect (mLookAndFeel, SIGNAL (backgroundImageChanged(QImage)), this, SLOT (setBackgroundImage (QImage)));
-    showSideBar (false);
+showSideBar (false);
 
-    setWindowTitle(tr("教师桌面"));
-    setWindowIcon(QIcon(":/Icon/MoonCalendar.ico"));
+setWindowTitle(tr("教师桌面"));
+setWindowIcon(QIcon(":/Icon/MoonCalendar.ico"));
 
 //    setShadowEnabled(BaseShadowWidget::ShadowSide::Left, false);
 
-    installEventFilter(this);
+installEventFilter(this);
 
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    setFixedSize(sizeHint());
+setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+setFixedSize(sizeHint());
 }
 
 MainScreen::~MainScreen()
@@ -224,16 +225,16 @@ void MainScreen::setupUi()
 
     ///<标准模式.
     if(!m_bStandardUIInitialized) {
-//        centralWidget = new QWidget(this);
-//        centralWidget->setAttribute (Qt::WA_TranslucentBackground);
-//        centralWidget->setObjectName(QStringLiteral("centralWidget"));
+        //        centralWidget = new QWidget(this);
+        //        centralWidget->setAttribute (Qt::WA_TranslucentBackground);
+        //        centralWidget->setObjectName(QStringLiteral("centralWidget"));
         //    centralWidget->setStyleSheet(QString(centralWidget->metaObject()->className())+"#"+centralWidget->objectName()+" { background-color: rgba(0,0,0,0.3) ; border: 1px solid black} ");
 
         ///Modified by BiXiaoxia 2016.12.21.
         MainGridLayout = new QGridLayout(this);
         MainGridLayout->setSpacing(0);
         MainGridLayout->setObjectName(QStringLiteral("MainGridLayout"));
-//        setShadowEnabled(BaseShadowWidget::ShadowSide::Left, false);
+        //        setShadowEnabled(BaseShadowWidget::ShadowSide::Left, false);
         int nShadowMargin = getShadowMargin();
         MainGridLayout->setContentsMargins(nShadowMargin, nShadowMargin, nShadowMargin, nShadowMargin);
 
@@ -264,8 +265,8 @@ void MainScreen::setupUi()
                                   QPushButton:checked{border-image: url(:/Icon/Standard/01_15.png)}");
 
 
-        connect (mFixButton, SIGNAL(toggled(bool)), this, SLOT(changeLockStatus()));
-        mFixButton->setCheckable(true);
+                                  connect (mFixButton, SIGNAL(toggled(bool)), this, SLOT(changeLockStatus()));
+                mFixButton->setCheckable(true);
         mFixButton->setToolTip("固定");
         mFixButton->installEventFilter(this);
 
@@ -287,7 +288,7 @@ void MainScreen::setupUi()
         TopMore->setToolTip("更多");
         TopMore->installEventFilter(this);
         connect(TopMore,SIGNAL(clicked(bool)),SLOT(showMainMenu()));
-//        mBlockButton = new TransparentButton(QIcon(":/Icon/Standard/01_20.png"), "", TopLine);
+        //        mBlockButton = new TransparentButton(QIcon(":/Icon/Standard/01_20.png"), "", TopLine);
         //    mFixButton->setToolTip("固定");
         mMinButton = new TransparentButton(QIcon(":/Icon/Standard/01_22.png"), "", TopLine);
         mMinButton->setToolTip("最小化");
@@ -305,10 +306,18 @@ void MainScreen::setupUi()
         TopMore->setSizePolicy(sizePolicy1);
         //    TopMore->setFixedSize(QSize(Const::MyButtonSize, Const::MyButtonSize));
 
-//        userInfoView = new UserInfoView (this);
+        //        userInfoView = new UserInfoView (this);
         userInfoView = new UserInfoWidget(this);
         userInfoView->setFixedHeight(45);
         userInfoView->setSizePolicy (QSizePolicy::Preferred, QSizePolicy::Fixed);
+
+        QDate date = QDateTime::currentDateTime().date();
+        int termWeek = Arg::currentTerm()->getDateWeekNumber(date);
+        m_termWeek = new QLabel(this);
+        m_termWeek->setFixedWidth(170);
+        m_termWeek->setAlignment(Qt::AlignRight| Qt::AlignBottom);
+        m_termWeek->setText("第" + QString::number(termWeek) + "周");
+        m_termWeek->setStyleSheet("color:white;font-size:18px");
 
 #ifdef SEMESTER_SETTING_ON_MAINWINDOW
         //编辑模式需要的widget在这里创建，隐藏.
@@ -316,7 +325,7 @@ void MainScreen::setupUi()
         TopLineLayout->addWidget(m_pSemesterChooserWgt);
 
         QHBoxLayout* semesterChooserLayout = new QHBoxLayout();
-//        qDebug()<<"============current view mode is edit mode=================="<<endl;
+        //        qDebug()<<"============current view mode is edit mode=================="<<endl;
         //---------------------学期设置按钮------------------------//
         if(Arg::getInstance()->currentSemester() != nullptr)
         {
@@ -381,8 +390,8 @@ void MainScreen::setupUi()
         {
             ///Replace by BiXiaoxia 2016.12.20.
             m_pSemesterChooserWgt->show();
-    //        TopLineLayout->addWidget(m_pSemesterChooserWgt);
-    //        TopLineLayout->addLayout(semesterChooserLayout, 2);
+            //        TopLineLayout->addWidget(m_pSemesterChooserWgt);
+            //        TopLineLayout->addLayout(semesterChooserLayout, 2);
         }
         else {
             m_pSemesterChooserWgt->hide();
@@ -391,15 +400,16 @@ void MainScreen::setupUi()
 
         TopLineLayout->setSpacing (2);
         TopLineLayout->addWidget(userInfoView);
+        TopLineLayout->addWidget(m_termWeek);
         TopLineLayout->addStretch (8);
         /*
         TopLineLayout->addLayout (semesterChooserLayout, 10);
         TopLineLayout->addStretch (30);
          */
 
-//        auto todayLabel = new QLabel (TopLine);
-//        todayLabel->setPixmap (QPixmap::fromImage (QImage(QString(":Icon/month/%1.png").arg (QDate::currentDate ().month ()))));
-//        TopLineLayout->addWidget(todayLabel, 5);
+        //        auto todayLabel = new QLabel (TopLine);
+        //        todayLabel->setPixmap (QPixmap::fromImage (QImage(QString(":Icon/month/%1.png").arg (QDate::currentDate ().month ()))));
+        //        TopLineLayout->addWidget(todayLabel, 5);
 
         TopLineLayout->addStretch (20);
         QWidget* operationWidget = new QWidget (this);
@@ -410,14 +420,14 @@ void MainScreen::setupUi()
         mFixButton->setObjectName("FixButton");
         mConfigLookAndFeel->setObjectName("ConfigLookAndFeel");
         TopMore->setObjectName("TopMore");
-//        mBlockButton->setObjectName("BlockButton");
+        //        mBlockButton->setObjectName("BlockButton");
         mMinButton->setObjectName("MinButton");
         mCloseButton->setObjectName("CloseButton");
 
         opLayout->addWidget (mFixButton, 1);
         opLayout->addWidget(mConfigLookAndFeel, 1);
         opLayout->addWidget(TopMore, 1);
-//        opLayout->addWidget(mBlockButton, 1);
+        //        opLayout->addWidget(mBlockButton, 1);
         opLayout->addWidget(mMinButton, 1);
         opLayout->addWidget(mCloseButton, 1);
 
@@ -425,7 +435,7 @@ void MainScreen::setupUi()
         mFixButton->setIconSize({24, 24});
         mConfigLookAndFeel->setIconSize({24, 24});
         TopMore->setIconSize({24, 24});
-//        mBlockButton->setIconSize({24, 24});
+        //        mBlockButton->setIconSize({24, 24});
         mMinButton->setIconSize({24, 24});
         mCloseButton->setIconSize({24, 24});
         /*
@@ -441,7 +451,7 @@ void MainScreen::setupUi()
         //    TopLineLayout->addWidget(TopSetup, 1);
 
         ///Delete by BiXiaoxia 2016.12.21.
-//        setCentralWidget(centralWidget);
+        //        setCentralWidget(centralWidget);
 
         retranslateUi();
 
@@ -451,31 +461,31 @@ void MainScreen::setupUi()
         gridView->link (Arg::user);
         connect(gridView, &TermWidget::requestShowLessons, this, &MainScreen::showLinkedLessons);
         connect(gridView, &TermWidget::requestResizeMainWindow, this, &MainScreen::resizeWindow);
-
+        connect(gridView, &TermWidget::termWeekChanged, this, &MainScreen::termWeekChanged);
 
 
         m_pInfoSettingsStackWgt = new InfoAndSettingsStackWidget;
         m_pInfoSettingsStackWgt->setMinimumWidth(0);
 
-//        tabWidget = new Sidebar(this);
-//        tabWidget->setMinimumWidth (0);
-//        fileListWidget = new FileListWidget (this);
-//        Arg::fileListWidget = fileListWidget;
-//        tabWidget->addTab(fileListWidget, "");
-//        //tabWidget->addTab (fileListWidget, /*"QIcon(":/Icon/Slide/Resources_default.png")"*/ "Resources");
-////        tabWidget->addTab (new UserListWidget (this), /* QIcon(":/Icon/Slide/Friends_default.png")*/ "Friends");
-////        tabWidget->addTab (new LiveWidget (this), /* QIcon(":/Icon/Slide/circle_default.png") */ "Circle");
+        //        tabWidget = new Sidebar(this);
+        //        tabWidget->setMinimumWidth (0);
+        //        fileListWidget = new FileListWidget (this);
+        //        Arg::fileListWidget = fileListWidget;
+        //        tabWidget->addTab(fileListWidget, "");
+        //        //tabWidget->addTab (fileListWidget, /*"QIcon(":/Icon/Slide/Resources_default.png")"*/ "Resources");
+        ////        tabWidget->addTab (new UserListWidget (this), /* QIcon(":/Icon/Slide/Friends_default.png")*/ "Friends");
+        ////        tabWidget->addTab (new LiveWidget (this), /* QIcon(":/Icon/Slide/circle_default.png") */ "Circle");
 
-//        tabWidget = new Sidebar(this);
-//        tabWidget->setMinimumWidth (0);
-//        fileListWidget = new FileListWidget (this);
-//        Arg::fileListWidget = fileListWidget;
-//        EditRightWidget *editRightWidget = new EditRightWidget(this);
+        //        tabWidget = new Sidebar(this);
+        //        tabWidget->setMinimumWidth (0);
+        //        fileListWidget = new FileListWidget (this);
+        //        Arg::fileListWidget = fileListWidget;
+        //        EditRightWidget *editRightWidget = new EditRightWidget(this);
 
 
-//        tabWidget->addTab (editRightWidget, /*"QIcon(":/Icon/Slide/Resources_default.png")"*/ "Resources");
-//        tabWidget->addTab (new UserListWidget (this), /* QIcon(":/Icon/Slide/Friends_default.png")*/ "Friends");
-//        tabWidget->addTab (new LiveWidget (this), /* QIcon(":/Icon/Slide/circle_default.png") */ "Circle");
+        //        tabWidget->addTab (editRightWidget, /*"QIcon(":/Icon/Slide/Resources_default.png")"*/ "Resources");
+        //        tabWidget->addTab (new UserListWidget (this), /* QIcon(":/Icon/Slide/Friends_default.png")*/ "Friends");
+        //        tabWidget->addTab (new LiveWidget (this), /* QIcon(":/Icon/Slide/circle_default.png") */ "Circle");
 
 
 
@@ -485,12 +495,12 @@ void MainScreen::setupUi()
         QPixmap icon(":/Icon/sidecontrolbuttonbg.png");
         mHideTabButton->setStyleSheet("QPushButton{background-color:transparent;"
                                       /*"border-image:url(:/Icon/sidecontrolbuttonbg.png);}"
-                                      "QPushButton:hover{background-color:transparent;"
-                                      "border-image:url(:/Icon/sidecontrolbuttonbghover.png)}"
-                                      "QPushButton:checked{background-color:transparent;"
-                                      "border-image:url(:/Icon/sidecontrolbuttonbg_checked.png)};"
-                                     "QPushButton:checked:hover{background-color:transparent;"
-                                      "border-image:url(:/Icon/sidecontrolbuttonbg_checkedhover.png)}"*/
+                                                                    "QPushButton:hover{background-color:transparent;"
+                                                                    "border-image:url(:/Icon/sidecontrolbuttonbghover.png)}"
+                                                                    "QPushButton:checked{background-color:transparent;"
+                                                                    "border-image:url(:/Icon/sidecontrolbuttonbg_checked.png)};"
+                                                                   "QPushButton:checked:hover{background-color:transparent;"
+                                                                    "border-image:url(:/Icon/sidecontrolbuttonbg_checkedhover.png)}"*/
                                       "QToolTip {background-color:white}"); ///QPushbutton的checked:hover有bug，所以一直不起作用,写其中有给会导致qi'ta其它的不太正常.
         mHideTabButton->setMask(icon.createHeuristicMask(true));
         mHideTabButton->setIconSize(QSize(icon.width(), icon.height()));
@@ -502,11 +512,11 @@ void MainScreen::setupUi()
         mHideTabButton->setToolTip(tr("显示侧边栏"));
         mHideTabButton->installEventFilter(this);
         //    mHideTabButton->setAutoFillBackground (true);
-//        ///Add by BiXiaoxia 2016.12.20.
-//        QGraphicsOpacityEffect *pOpcityEft = new QGraphicsOpacityEffect;
-//        mHideTabButton->setGraphicsEffect(pOpcityEft);
-//        pOpcityEft->setOpacity(0.7);
-//        ///Add End.
+        //        ///Add by BiXiaoxia 2016.12.20.
+        //        QGraphicsOpacityEffect *pOpcityEft = new QGraphicsOpacityEffect;
+        //        mHideTabButton->setGraphicsEffect(pOpcityEft);
+        //        pOpcityEft->setOpacity(0.7);
+        //        ///Add End.
         connect(mHideTabButton, SIGNAL (clicked (bool)), this, SLOT (showSideBar (bool)));
 
         composing();
@@ -520,19 +530,19 @@ void MainScreen::setupUi()
         system_tray->show();
 
         ///Add by BiXiaoxia 2016.12.20,加载设置的皮肤,这里暂时这么用，重构时候需要单独建立一个settings模块，管理用户及其它设置类.
-//        qDebug() << "begin load and paint skin" << QTime::currentTime();
+        //        qDebug() << "begin load and paint skin" << QTime::currentTime();
         QString sPixmap = QApplication::applicationDirPath() + "/background/default/default.jpg";
         QSettings configSettings("./UserConfig/config", QSettings::IniFormat);
         QString sImageFilePathName = configSettings.value("Skin", sPixmap).toString();
         mBackgroundImage.load(sImageFilePathName);
-//        qDebug() << "end load and paint skin" << QTime::currentTime();
+        //        qDebug() << "end load and paint skin" << QTime::currentTime();
         mBackgroundOpacity = configSettings.value("BackGroundOpacity", 1.0f).toReal();
         mForegroundOpacity = configSettings.value("ForeGroundOpacity", 0.5f).toReal();
 
         gridView->setBackground (mForegroundOpacity);
 
         adjustSize();
-//        setFixedHeight(sizeHint().height());
+        //        setFixedHeight(sizeHint().height());
 
         m_bStandardUIInitialized = true;
     }
@@ -574,74 +584,74 @@ void MainScreen::setupUi()
 
     //Modified by wangqin 12-12
 
-//    qDebug()<<"current view mode is:"<<endl;
+    //    qDebug()<<"current view mode is:"<<endl;
 
-//    if(/*(*/Arg::viewMode == ViewMode::Edit/*) && (!m_bEditUIInitialized)*/)
-//    {
-//        QHBoxLayout* semesterChooserLayout = new QHBoxLayout();
-//        qDebug()<<"============current view mode is edit mode=================="<<endl;
-//        //---------------------学期设置按钮------------------------//
-//        if(Arg::getInstance()->currentSemester() != nullptr)
-//        {
-//            setSemester = new QPushButton (Arg::getInstance()->currentSemester()->getTitle(), TopLine);
-//            connect(Arg::getInstance(), &Arg::currentSemesterChanged, [&](Semester *s){
-//                setSemester->setText(s->getTitle());
-//                setSemester->update();
-//            });
-//        }
-//        else
-//        {
-//            setSemester = new QPushButton (tr("学期设置"), TopLine);
-//        }
+    //    if(/*(*/Arg::viewMode == ViewMode::Edit/*) && (!m_bEditUIInitialized)*/)
+    //    {
+    //        QHBoxLayout* semesterChooserLayout = new QHBoxLayout();
+    //        qDebug()<<"============current view mode is edit mode=================="<<endl;
+    //        //---------------------学期设置按钮------------------------//
+    //        if(Arg::getInstance()->currentSemester() != nullptr)
+    //        {
+    //            setSemester = new QPushButton (Arg::getInstance()->currentSemester()->getTitle(), TopLine);
+    //            connect(Arg::getInstance(), &Arg::currentSemesterChanged, [&](Semester *s){
+    //                setSemester->setText(s->getTitle());
+    //                setSemester->update();
+    //            });
+    //        }
+    //        else
+    //        {
+    //            setSemester = new QPushButton (tr("学期设置"), TopLine);
+    //        }
 
-//        connect (setSemester, &QPushButton::clicked, [this] ()
-//        {
-//            auto semeD = new SemesterDialog (this);
-//            semeD->show ();
-//        });
+    //        connect (setSemester, &QPushButton::clicked, [this] ()
+    //        {
+    //            auto semeD = new SemesterDialog (this);
+    //            semeD->show ();
+    //        });
 
-//        setSemester->setObjectName ("SetSemester");
+    //        setSemester->setObjectName ("SetSemester");
 
-//        //---------------------作息时间设置按钮------------------------//
-//        if(Arg::getInstance()->currentSchedule() != nullptr)
-//        {
-//            setSchedule = new QPushButton (Arg::getInstance()->currentSchedule()->getName(), TopLine);
-//            connect(Arg::getInstance(), &Arg::currentScheduleChanged, [&](Schedule *s){
-//                setSchedule->setText(s->getName());
-//                setSchedule->update();
-//            });
-//        }
-//        else
-//        {
-//            setSchedule = new QPushButton (tr("作息时间设置"), TopLine);
-//        }
+    //        //---------------------作息时间设置按钮------------------------//
+    //        if(Arg::getInstance()->currentSchedule() != nullptr)
+    //        {
+    //            setSchedule = new QPushButton (Arg::getInstance()->currentSchedule()->getName(), TopLine);
+    //            connect(Arg::getInstance(), &Arg::currentScheduleChanged, [&](Schedule *s){
+    //                setSchedule->setText(s->getName());
+    //                setSchedule->update();
+    //            });
+    //        }
+    //        else
+    //        {
+    //            setSchedule = new QPushButton (tr("作息时间设置"), TopLine);
+    //        }
 
-//        connect (setSchedule, &QPushButton::clicked, [this] ()
-//        {
-//            auto scheD = new ScheduleDialog (this);
-//            scheD->show ();
-//        });
-//        setSchedule->setObjectName ("SetSchedule");
+    //        connect (setSchedule, &QPushButton::clicked, [this] ()
+    //        {
+    //            auto scheD = new ScheduleDialog (this);
+    //            scheD->show ();
+    //        });
+    //        setSchedule->setObjectName ("SetSchedule");
 
-//        /*
-//        //2016/12/1修改
-//        testButton = new QPushButton (tr("测试"), TopLine);
-//        connect (testButton, &QPushButton::clicked, [this] ()
-//        {
-//            qDebug()<<"loginDialog"<<endl;
-//            auto login = new loginDialog (this);
-//            login->show ();
-//        });
-//        */
+    //        /*
+    //        //2016/12/1修改
+    //        testButton = new QPushButton (tr("测试"), TopLine);
+    //        connect (testButton, &QPushButton::clicked, [this] ()
+    //        {
+    //            qDebug()<<"loginDialog"<<endl;
+    //            auto login = new loginDialog (this);
+    //            login->show ();
+    //        });
+    //        */
 
-//        semesterChooserLayout->addWidget (setSemester);
-//        semesterChooserLayout->addWidget (setSchedule);
-//        //semesterChooserLayout->addWidget (testButton);
-//        semesterChooserLayout->setContentsMargins(0, 0, 0, 0);
-//        m_pSemesterChooserWgt->setLayout(semesterChooserLayout);
+    //        semesterChooserLayout->addWidget (setSemester);
+    //        semesterChooserLayout->addWidget (setSchedule);
+    //        //semesterChooserLayout->addWidget (testButton);
+    //        semesterChooserLayout->setContentsMargins(0, 0, 0, 0);
+    //        m_pSemesterChooserWgt->setLayout(semesterChooserLayout);
 
-//        m_bEditUIInitialized = true;
-//    }
+    //        m_bEditUIInitialized = true;
+    //    }
 
 
     //--------------For login test-----------------------//
@@ -664,29 +674,29 @@ void MainScreen::setupUi()
         semesterChooserLayout->addWidget (testButton);
         */
 
-//    if(Arg::viewMode == ViewMode::Edit)
-//    {
-//        ///Replace by BiXiaoxia 2016.12.20.
-//        m_pSemesterChooserWgt->show();
-////        TopLineLayout->addWidget(m_pSemesterChooserWgt);
-////        TopLineLayout->addLayout(semesterChooserLayout, 2);
-//    }
-//    else {
-//        m_pSemesterChooserWgt->hide();
-//    }
+    //    if(Arg::viewMode == ViewMode::Edit)
+    //    {
+    //        ///Replace by BiXiaoxia 2016.12.20.
+    //        m_pSemesterChooserWgt->show();
+    ////        TopLineLayout->addWidget(m_pSemesterChooserWgt);
+    ////        TopLineLayout->addLayout(semesterChooserLayout, 2);
+    //    }
+    //    else {
+    //        m_pSemesterChooserWgt->hide();
+    //    }
 
-//    if(!m_bStandardUIInitialized) {
+    //    if(!m_bStandardUIInitialized) {
 
-//        ///End.
-//    }
+    //        ///End.
+    //    }
 
-//    if(!m_bStandardUIInitialized) {
-//         m_bStandardUIInitialized = true;
-//    }
-//    else if(isSideBarShown){ //如果side bar是显示的，要重新刷新一下右侧信息栏，使其同步.
-//        showSideBar(false);
-//        showSideBar(true);
-//    }
+    //    if(!m_bStandardUIInitialized) {
+    //         m_bStandardUIInitialized = true;
+    //    }
+    //    else if(isSideBarShown){ //如果side bar是显示的，要重新刷新一下右侧信息栏，使其同步.
+    //        showSideBar(false);
+    //        showSideBar(true);
+    //    }
 
     setFixedSize(sizeHint());
 
@@ -746,7 +756,7 @@ void MainScreen::showMainMenu()
     QAction *setupConfig_action = menu->addAction(tr("设置"));
     setupConfig_action->setIcon (QIcon(":/Icon/Standard/01_60.png"));
     connect(setupConfig_action, SIGNAL(triggered(bool)), SLOT(setupConfig()));
-    menu->addSeparator ();  
+    menu->addSeparator ();
 
 #if 0
     QAction *upgradeAction = menu->addAction (tr("检查更新"));
@@ -800,7 +810,7 @@ void MainScreen::close()
     delete system_tray;
     system_tray = Q_NULLPTR;
 
-//    saveAll(QCoreApplication::applicationDirPath()+Const::defaultSavePath);
+    //    saveAll(QCoreApplication::applicationDirPath()+Const::defaultSavePath);
     QWidget::close();
 }
 
@@ -893,15 +903,15 @@ void MainScreen::changeLockStatus()
     }
 
     move(pt);
-//    setAttribute (Qt::WA_TransparentForMouseEvents, true);
-//    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnBottomHint);
-//    setWindowOpacity (0.6);
-//    show();
-//    lower();
-//    qApp->processEvents();
-//#ifdef WIN
-//    window_long = GetWindowLong((HWND)this->winId(), GWL_EXSTYLE);
-//    SetWindowLong((HWND)this->winId(), GWL_EXSTYLE, window_long | WS_EX_TRANSPARENT | WS_EX_LAYERED |WS_EX_TOOLWINDOW);
+    //    setAttribute (Qt::WA_TransparentForMouseEvents, true);
+    //    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnBottomHint);
+    //    setWindowOpacity (0.6);
+    //    show();
+    //    lower();
+    //    qApp->processEvents();
+    //#ifdef WIN
+    //    window_long = GetWindowLong((HWND)this->winId(), GWL_EXSTYLE);
+    //    SetWindowLong((HWND)this->winId(), GWL_EXSTYLE, window_long | WS_EX_TRANSPARENT | WS_EX_LAYERED |WS_EX_TOOLWINDOW);
     //#endif
 }
 
@@ -945,7 +955,7 @@ void MainScreen::saveAll(QString s)
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::warning(0, tr("教师客户端"), tr("无法打开文件:%1").arg(s));
 #else
-       MessageDisplayWidget::showMessage(tr("教师客户端"), tr("无法打开文件:%1").arg(s));
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("无法打开文件:%1").arg(s));
 #endif
     }
 
@@ -970,7 +980,7 @@ void MainScreen::loadAll(QString s)
     }else
     {
 #ifdef USER_QT_MESSAGEBOX
-       QMessageBox::warning(0,"教师客户端","文件不存在或数据格式错误！");
+        QMessageBox::warning(0,"教师客户端","文件不存在或数据格式错误！");
 #else
         MessageDisplayWidget::showMessage("教师客户端","文件不存在或数据格式错误！");
 #endif
@@ -1015,22 +1025,22 @@ void MainScreen::setupConfig()
     m_pConfigDialog->show();
 #endif
 
-//    if(m_pSettingsWgt == Q_NULLPTR) {
-//        m_pSettingsWgt = new SettingsWidget(this);
-//    }
+    //    if(m_pSettingsWgt == Q_NULLPTR) {
+    //        m_pSettingsWgt = new SettingsWidget(this);
+    //    }
     SettingsWidget *pSettingsWgt = SettingsWidget::getInstance();
     pSettingsWgt->load();
     pSettingsWgt->show();
 
     ///Delete by BiXiaoxia 2016.12.23，样式表移到配置类里一次加载，样式表加载效率比较低，这里如果不是换了样式，不要每次加载.
-//    dlgConfig dialog;
-//    QFile stylesheet{":/config.qss"};
-//    stylesheet.open(QIODevice::ReadOnly | QIODevice::Text);
-//    QString str = QString(stylesheet.readAll());
-//    dialog.setStyleSheet(str);
+    //    dlgConfig dialog;
+    //    QFile stylesheet{":/config.qss"};
+    //    stylesheet.open(QIODevice::ReadOnly | QIODevice::Text);
+    //    QString str = QString(stylesheet.readAll());
+    //    dialog.setStyleSheet(str);
 
-//    dialog.exec();
-//    reset();
+    //    dialog.exec();
+    //    reset();
 }
 
 void MainScreen::composing ()
@@ -1040,13 +1050,13 @@ void MainScreen::composing ()
     //MainGridLayout->addWidget(monthchoose, 1, 0, 1, 1);
     MainGridLayout->addWidget(gridView, 1, 0, 1, 1);
     MainGridLayout->addWidget(mHideTabButton, 1, 1, 1, 1);
-//    MainGridLayout->addWidget(m_pInfoSettingsStackWgt, 1, 2, 1, 1);
+    //    MainGridLayout->addWidget(m_pInfoSettingsStackWgt, 1, 2, 1, 1);
     MainGridLayout->addWidget(m_pInfoSettingsStackWgt, 1, 2, 1, 1);
-//    MainGridLayout->setRowMinimumHeight(1, height() - TopLine->height());
-//    MainGridLayout->addWidget (tabWidget, 1, 2, 1, 1);
-//    MainGridLayout->setColumnStretch (0, 10000);
-//    MainGridLayout->setColumnStretch (1, 1);
-//    MainGridLayout->setColumnStretch (2, 3750);
+    //    MainGridLayout->setRowMinimumHeight(1, height() - TopLine->height());
+    //    MainGridLayout->addWidget (tabWidget, 1, 2, 1, 1);
+    //    MainGridLayout->setColumnStretch (0, 10000);
+    //    MainGridLayout->setColumnStretch (1, 1);
+    //    MainGridLayout->setColumnStretch (2, 3750);
 
     //    Term
 }
@@ -1059,32 +1069,32 @@ void MainScreen::onedayMode (bool on )
 
     if (on)
     {
-//        ///Mark,这里必须要放在前面，适应利用布局控制size的gridView.
-//        resize(sizeHint());
-//        setFixedSize(sizeHint());
-//        ///Mark End.
+        //        ///Mark,这里必须要放在前面，适应利用布局控制size的gridView.
+        //        resize(sizeHint());
+        //        setFixedSize(sizeHint());
+        //        ///Mark End.
 
         ///Mark，这里有时有时无的bug，暂时替换掉.
         //gridView->showOneDay (/*Arg::currentWeekday ()*/);
         ///Replace end.
         gridView->showOneDay(QDate::currentDate().dayOfWeek() - 1);
         userInfoView->hide ();
-//        lastSemester->hide ();
-//        setSemester->hide ();
-//        nextSemester->hide ();
-//        mBlockButton->hide ();
+        //        lastSemester->hide ();
+        //        setSemester->hide ();
+        //        nextSemester->hide ();
+        //        mBlockButton->hide ();
         mCloseButton->hide ();
         mConfigLookAndFeel->hide ();
-        mMinButton->hide ();       
+        mMinButton->hide ();
     }
     else
     {
         gridView->showAllDay ();
         userInfoView->show ();
-//        lastSemester->show ();
-//        setSemester->show ();
-//        nextSemester->show();
-//        mBlockButton->show ();
+        //        lastSemester->show ();
+        //        setSemester->show ();
+        //        nextSemester->show();
+        //        mBlockButton->show ();
         mCloseButton->show ();
         mConfigLookAndFeel->show ();
         mMinButton->show ();
@@ -1095,10 +1105,10 @@ void MainScreen::onedayMode (bool on )
 
     //    setMinimumHeight (gridView->sizeHint ().height () + 50);
     //    setFixedSize (gridView->sizeHint ().width ()+ tabWidget->width () + mHideTabButton->width (), height ());
-//    update();
-//    updateGeometry ();
-//    setMinimumSize(sizeHint ());
-//    resize (sizeHint());
+    //    update();
+    //    updateGeometry ();
+    //    setMinimumSize(sizeHint ());
+    //    resize (sizeHint());
 
 
 }
@@ -1135,13 +1145,29 @@ void MainScreen::setForegroundOpacity (double opacity)
 {
     mForegroundOpacity = opacity;
     gridView->setBackground (opacity);
-//    auto palette = tabWidget->palette ();
-//    palette.setBrush (tabWidget->backgroundRole (), QBrush (QColor (255, 255, 255, static_cast<int>(opacity * 255))));
-//    tabWidget->setPalette (palette);
+    //    auto palette = tabWidget->palette ();
+    //    palette.setBrush (tabWidget->backgroundRole (), QBrush (QColor (255, 255, 255, static_cast<int>(opacity * 255))));
+    //    tabWidget->setPalette (palette);
     //    static_cast<Sidebar*>(tabWidget)->setOpacity (opacity);
     ///Mark 2017.01.05 by BiXiaoxia，暂时这么记录透明度,可以上课模式共用.
     QSettings configSettings("./UserConfig/config", QSettings::IniFormat);
     configSettings.setValue("ForeGroundOpacity", opacity);
+}
+
+void MainScreen::termWeekChanged(int termWeek)
+{
+    QString sTermWeek;
+    if(termWeek > 0)
+    {
+        sTermWeek = QString::number(termWeek);
+        m_termWeek->setText("第" + QString::number(termWeek) + "周");
+
+    }else {
+        sTermWeek ="没在学期周内!";
+        m_termWeek->setText(sTermWeek);
+    }
+
+
 }
 
 void MainScreen::drawExcludeShadowPart(QPainter *painter, QPaintEvent *ev)
@@ -1202,7 +1228,7 @@ void MainScreen::showSideBar(bool on)
 {
     ///Modified by BiXiaoxia 2016.12.23,重新规划右侧信息显示与编辑窗口.
     isSideBarShown = on;
-//    MainGridLayout->setRowFixedHeight(1, height() - TopLine->height());
+    //    MainGridLayout->setRowFixedHeight(1, height() - TopLine->height());
 
     m_pInfoSettingsStackWgt->setFixedWidth (on ? m_pInfoSettingsStackWgt->sizeHint ().width (): 0);
     setFixedSize(sizeHint());
@@ -1230,32 +1256,32 @@ void MainScreen::showSideBar(bool on)
         }
     }
 
-      ///Mark delete 2017.03.03,暂时注释掉，编辑状态页面暂时不显示.
-//    InfoAndSettingsStackWidget::InfoSettingsType type;
-//    if(Arg::viewMode == ViewMode::Edit) {
-//        type = InfoAndSettingsStackWidget::EditMode;
-//    }
-//    else if(Arg::viewMode == ViewMode::Standard){
-//        type = InfoAndSettingsStackWidget::StandardMode;
-//    }
+    ///Mark delete 2017.03.03,暂时注释掉，编辑状态页面暂时不显示.
+    //    InfoAndSettingsStackWidget::InfoSettingsType type;
+    //    if(Arg::viewMode == ViewMode::Edit) {
+    //        type = InfoAndSettingsStackWidget::EditMode;
+    //    }
+    //    else if(Arg::viewMode == ViewMode::Standard){
+    //        type = InfoAndSettingsStackWidget::StandardMode;
+    //    }
 
-//    m_pInfoSettingsStackWgt->switchInfoAndSettingsWidget(type);
+    //    m_pInfoSettingsStackWgt->switchInfoAndSettingsWidget(type);
     ///Mark End.
 
     ///REMOVE by BiXiaoxia 2012.12.20.
-//    update ();
-//    updateGeometry ();
-//     setMinimumSize (sizeHint ());
+    //    update ();
+    //    updateGeometry ();
+    //     setMinimumSize (sizeHint ());
     ///REMOVE END.
-//    emit mainScreenResized(sizeHint());
+    //    emit mainScreenResized(sizeHint());
 
-//    resize(sizeHint());
-//    setFixedSize(sizeHint());
+    //    resize(sizeHint());
+    //    setFixedSize(sizeHint());
 
-//    if (on)
-//        mHideTabButton->setIcon (QPixmap::fromImage (QImage(":/Icon/Slide/sidehide.png").scaled (mHideTabButton->size ())));
-//    else
-//        mHideTabButton->setIcon (QPixmap::fromImage (QImage(":/Icon/Slide/sideshow.png").scaled (mHideTabButton->size ())));
+    //    if (on)
+    //        mHideTabButton->setIcon (QPixmap::fromImage (QImage(":/Icon/Slide/sidehide.png").scaled (mHideTabButton->size ())));
+    //    else
+    //        mHideTabButton->setIcon (QPixmap::fromImage (QImage(":/Icon/Slide/sideshow.png").scaled (mHideTabButton->size ())));
 
     //    auto anchor = gridView->geometry ();
     //    mHideTabButton->move ((anchor.right () - (on? 0 : mHideTabButton->width ())), (anchor.top () + anchor.bottom ()) >> 1);
@@ -1264,11 +1290,11 @@ void MainScreen::showSideBar(bool on)
 
 void MainScreen::mousePressEvent (QMouseEvent* ev)
 {
-//    if(TopLine->rect().contains(ev->pos())) {
-//        mPressed = true;
-//        mLastMousePos = ev->globalPos ();
-//        mLastWindowPos = this->pos ();
-//    }
+    //    if(TopLine->rect().contains(ev->pos())) {
+    //        mPressed = true;
+    //        mLastMousePos = ev->globalPos ();
+    //        mLastWindowPos = this->pos ();
+    //    }
 
     QWidget::mousePressEvent (ev);
 }
@@ -1282,7 +1308,7 @@ void MainScreen::mouseMoveEvent (QMouseEvent* ev)
         QPoint pt = mLastWindowPos + ev->globalPos () - mLastMousePos;
 
         int nShadowWidth = getShadowMargin();
-//        QPoint nextRightTopPt = rect().topRight() + pt;
+        //        QPoint nextRightTopPt = rect().topRight() + pt;
 
         if((pt.x() > -nShadowWidth)
                 && (pt.x() < availRect.width() - width() + nShadowWidth)
@@ -1293,7 +1319,7 @@ void MainScreen::mouseMoveEvent (QMouseEvent* ev)
     }
 
     QWidget::mouseMoveEvent (ev);
-//    mHideTabButton->setIcon (QPixmap::fromImage (QImage(":/Icon/Slide/sideshow.png")));
+    //    mHideTabButton->setIcon (QPixmap::fromImage (QImage(":/Icon/Slide/sideshow.png")));
 }
 
 void MainScreen::mouseReleaseEvent (QMouseEvent* ev)
@@ -1304,9 +1330,9 @@ void MainScreen::mouseReleaseEvent (QMouseEvent* ev)
 
 QSize MainScreen::sizeHint() const
 {
-//    if(!isVisible()) {
-//        return QSize(0, 0);
-//    }
+    //    if(!isVisible()) {
+    //        return QSize(0, 0);
+    //    }
 
 #define USE_EXPANDING_GRIDVIEW
 #ifdef USE_EXPANDING_GRIDVIEW
@@ -1316,7 +1342,7 @@ QSize MainScreen::sizeHint() const
     int nShadowWidth = getShadowMargin();
     int nWidth = gs.width () + ss.width () + mHideTabButton->width() + nShadowWidth + nShadowWidth;
     int nHeight = TopLine->height() + gs.height() + 2 * nShadowWidth /*+ layout()->spacing() +
-            layout()->contentsMargins().bottom()*/;
+                    layout()->contentsMargins().bottom()*/;
 
 #if 0
     if(m_bFirstVisible) { ///加入这个为了调整第一次尺寸较小，后面会变大情况, 这些及gridView关联的类里相关的调整都是临时手段.
@@ -1451,7 +1477,7 @@ bool MainScreen::eventFilter(QObject *watched, QEvent *event)
             if(watched == mHideTabButton) {
                 if(mHideTabButton->isChecked()) {
                     QPixmap icon(":/Icon/sidecontrolbuttonbg_checkedhover.png");
-//                    mHideTabButton->setMask(icon.createHeuristicMask(true));
+                    //                    mHideTabButton->setMask(icon.createHeuristicMask(true));
                     mHideTabButton->setIcon(icon);
                 }
                 else {
@@ -1468,7 +1494,7 @@ bool MainScreen::eventFilter(QObject *watched, QEvent *event)
             if(watched == mHideTabButton) {
                 if(mHideTabButton->isChecked()) {
                     QPixmap icon(":/Icon/sidecontrolbuttonbg_checked.png");
-//                    mHideTabButton->setMask(icon.createHeuristicMask(true));
+                    //                    mHideTabButton->setMask(icon.createHeuristicMask(true));
                     mHideTabButton->setIcon(icon);
                 }
                 else {
@@ -1481,9 +1507,9 @@ bool MainScreen::eventFilter(QObject *watched, QEvent *event)
         }
             break;
 
-    default:
+        default:
             break;
-    }
+        }
         break;
     }
 
