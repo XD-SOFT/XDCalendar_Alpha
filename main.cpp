@@ -69,20 +69,6 @@ void LogManagement(QtMsgType type, const QMessageLogContext &context, const QStr
 #endif
 }
 
-class startLogin :public QObject
-{
-    Q_OBJECT
-
-public:
-
-
-public slots:
-    void finish(int exitCode)
-    {
-
-    }
-
-};
 
 int main(int argc, char *argv[])
 {
@@ -137,7 +123,7 @@ int main(int argc, char *argv[])
     QString appPath = qApp->applicationDirPath();
 
     //如果更新程序存,执行更新程序
-    if (QFile::exists(appPath + QDir::separator() + "updater.exe"))
+    if (QFile::exists(appPath + QDir::separator() + "mcdudp.exe"))
     {
         //如过不是更新程序启动当前应用程序（没传入参数），执行更新，否则已经是最新，直接启动
         if(argc  == 1)
@@ -150,13 +136,19 @@ int main(int argc, char *argv[])
 
             QStringList arguments;
             arguments <<serverAddress;
-            qDebug()<<"--appPath" <<appPath + QDir::separator() + "updater.exe";
+            qDebug()<<"--appPath" <<appPath + QDir::separator() + "mcdudp.exe";
             qDebug()<<"serverAddress"<<serverAddress;
 
-            process.startDetached(appPath + QDir::separator() + "updater.exe", arguments, appPath);
+            process.startDetached(appPath + QDir::separator() + "mcdudp.exe", arguments, appPath);
             qDebug()<< "--is start" <<process.waitForStarted();
 
             return 0;
+        }else {
+
+            QProcess process;
+            process.execute("taskkill /im mcdudp.exe /f");
+            process.waitForFinished();
+
         }
     }else {
 
