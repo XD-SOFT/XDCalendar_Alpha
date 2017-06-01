@@ -105,7 +105,7 @@ public:
      * \param weekDate,日期.
      * \return 返回false，获取不成功.
      */
-    bool getWeekLessonsByDate(QVector<QMap<int, Lesson*>> &weekLessons, const QDate &weekDate);
+    bool getWeekLessonsByDate(QVector<QMultiMap<int, Lesson *> > &weekLessons, const QDate &weekDate);
 
     void getSections(QMap<int, QMap<int, QPair<int, int> > > &sectionMap) const;
 
