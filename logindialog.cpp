@@ -520,7 +520,7 @@ void loginDialog::loginState(const QJsonObject &jo)
 #ifdef USER_QT_MESSAGEBOX
         QMessageBox::information(this, tr("教师客户端"), tr("登录失败,请检查网络设置！"));
 #else
-        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("登录失败,请检查网络设置！"));
+        MessageDisplayWidget::showMessage(tr("教师客户端"), tr("服务器数据异常! "));
 #endif
     }
 

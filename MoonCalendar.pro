@@ -135,7 +135,8 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     messagedisplaywidget.cpp \
     filetransferwnd.cpp \
-    aboutwlg.cpp
+    aboutwlg.cpp \
+    calendarwidget.cpp
 
 HEADERS  += MainScreen.h daywidget.h mybutton.h date.h dragbox.h database.h \
     setupdialog.h \
@@ -238,7 +239,8 @@ HEADERS  += MainScreen.h daywidget.h mybutton.h date.h dragbox.h database.h \
     mainwindow.h \
     messagedisplaywidget.h \
     filetransferwnd.h \
-    aboutwlg.h
+    aboutwlg.h \
+    calendarwidget.h
 
 RESOURCES += \
     resource.qrc
