@@ -32,8 +32,8 @@ Handler::Handler(QObject *parent):
 
 Handler::~Handler()
 {
-    delete m_pRequest;
-    m_pRequest = Q_NULLPTR;
+//    delete m_pRequest;
+//    m_pRequest = Q_NULLPTR;
 }
 
 Handler *Handler::getInstance()

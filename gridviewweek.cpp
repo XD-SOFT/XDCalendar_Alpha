@@ -17,6 +17,7 @@
 #include <stdexcept>
 #include <QPainter>
 #include <QCalendarWidget>
+#include "calendarwidget.h"
 #include <QLabel>
 #include <QEventLoop>
 #include <QDebug>
@@ -789,7 +790,8 @@ void CourseGrid::showDateWidget()
     if(Q_NULLPTR == m_pCalendarWgt) {
         m_pCalendarWgt = new CalenderSelectWidget;
         connect(m_pCalendarWgt, &CalenderSelectWidget::dateSelected, this, &CourseGrid::mapWeekLessons);
-        m_pCalendarWgt->resize(330, 230);
+        //m_pCalendarWgt->resize(330, 230);
+        m_pCalendarWgt->resize(330 +20 , 230 + 60);
     }
 
     if(m_curDisplayDate.isNull()) {
@@ -1473,8 +1475,8 @@ void BreakWidget::paintEvent(QPaintEvent *pEv)
 CalenderSelectWidget::CalenderSelectWidget(QWidget *parent):
     BaseShadowWidget(parent)
 {
-    m_pCalendarWgt = new QCalendarWidget;
-    connect(m_pCalendarWgt, &QCalendarWidget::clicked, this, &CalenderSelectWidget::dateSelected);
+    m_pCalendarWgt = new CalendarWidget;
+    connect(m_pCalendarWgt, &CalendarWidget::clicked, this, &CalenderSelectWidget::dateSelected);
 
     int nShadowWidth = getShadowMargin();
 

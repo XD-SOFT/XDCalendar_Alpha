@@ -422,7 +422,6 @@ void FileTransfer::ftpDownload()
     connect(pHandler, &Handler::downloadUrlRequestFinished, this, &FileTransfer::downloadFileByHttp, Qt::UniqueConnection);
     pHandler->requestByUrlAndType(sUrl, Handler::DownloadUrlRequest);
 
-
     QMutex mutex;
     mutex.lock();
     ++Arg::sDownLoadFileCount;
