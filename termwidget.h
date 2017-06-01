@@ -39,6 +39,9 @@ signals:
 
     void requestResizeMainWindow();
 
+    ///@brief
+    void termWeekChanged(int nTermWeek);
+
 public slots:
     void reset ();
 private:

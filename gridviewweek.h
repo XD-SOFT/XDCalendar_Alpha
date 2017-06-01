@@ -131,6 +131,9 @@ signals:
 
     void requestResizeMainWindow();
 
+    ///@brief
+    void termWeekChanged(int nTermWeek);
+
 protected:
     bool eventFilter(QObject *watched, QEvent *event);
 

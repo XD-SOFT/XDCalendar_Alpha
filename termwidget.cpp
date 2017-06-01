@@ -23,6 +23,7 @@ TermWidget::TermWidget(QWidget *parent) : QWidget(parent)
         currentCourseGrid = new CourseGrid;
         connect(currentCourseGrid, &CourseGrid::requestShowLessons, this, &TermWidget::requestShowLessons);
         connect(currentCourseGrid, &CourseGrid::requestResizeMainWindow, this, &TermWidget::requestResizeMainWindow);
+        connect(currentCourseGrid, &CourseGrid::termWeekChanged, this, &TermWidget::termWeekChanged);
         layout->addWidget(currentCourseGrid);
     }
 

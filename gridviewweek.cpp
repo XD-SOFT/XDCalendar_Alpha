@@ -20,6 +20,8 @@
 #include <QLabel>
 #include <QEventLoop>
 #include <QDebug>
+#include "ccu.h"
+#include "MainScreen.h"
 
 const int DEFAULT_GRID_ROW = 8;
 
@@ -1201,6 +1203,7 @@ void CourseGrid::mapWeekLessons(const QDate &date)
     placeHolderButton->setText(m_curDisplayDate.toString ("MMMM"));
     rearrange(m_curDisplayDate);
     bool bNotInTerm = false;
+    int nTermWeek = -1;
 
     //先看是否处于同一周，同一周不再做处理.
     if(mLinkedTerm != Q_NULLPTR) {
@@ -1258,8 +1261,12 @@ void CourseGrid::mapWeekLessons(const QDate &date)
     m_weekLessonVec.clear();
 
     if(bNotInTerm) {
+        emit termWeekChanged(nTermWeek);
         return;
     }
+
+    nTermWeek = mLinkedTerm->getDateWeekNumber(date);
+    emit termWeekChanged(nTermWeek);
 
     if(mLinkedTerm != Q_NULLPTR) {
         if(m_weekLessonVec.size() == 0) {
