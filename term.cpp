@@ -394,7 +394,7 @@ void Term::getLessonDate(int weekDayID, const QDate &inClassDate, QDate &date)
     date = weekStartDate.addDays(nAdjustNum);
 }
 
-bool Term::getWeekLessonsByDate(QVector<QMap<int, Lesson*>> &weekLessons, const QDate &weekDate)
+bool Term::getWeekLessonsByDate(QVector<QMultiMap<int, Lesson*>> &weekLessons, const QDate &weekDate)
 {
     //获取weekDate在学期中的周数.
     int nTermWeekNum = getDateWeekNumber(weekDate);
@@ -494,7 +494,7 @@ bool Term::getWeekLessonsByDate(QVector<QMap<int, Lesson*>> &weekLessons, const 
 
                     pLesson->setDate(lessonDate);
 
-                    secLessonMap.insert(nSec, pLesson);
+                    secLessonMap.insertMulti(nSec, pLesson);
                 }
             }
 
