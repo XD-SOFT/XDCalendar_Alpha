@@ -83,6 +83,8 @@ private slots:
 
     void createDoc();
 
+    void recordClass();
+
     void cancelRemark();
 private:
     static NoteWidget* instance;

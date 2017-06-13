@@ -25,6 +25,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QApplication>
+#include <QProcess>
 
 extern void drawShadow(QPainter &_painter, qint16 _margin, qreal _radius, QColor _start, QColor _end, qreal _startPosition, qreal _endPosition0, qreal _endPosition1, qreal _width, qreal _height);
 NoteWidget* NoteWidget::instance = nullptr;
@@ -61,13 +62,24 @@ NoteWidget::NoteWidget(const QRegion& region, QWidget *parent) : BaseShadowWidge
                                   QPushButton:pressed{border-image: url(:/Icon/word2)} \
                                   QPushButton:hover{border-image: url(:/Icon/word2)}");
     connect(pCreateDocBtn, &QPushButton::clicked, this, &NoteWidget::createDoc);
+    mTools.push_back (pCreateDocBtn);
 //    connect (drawingPad, &QPushButton::clicked, [this] () {
 //        QProcess* process = new QProcess (this);
 //        process->start ("./utility/Pencil2D.exe");
 //    });
 //    pCreateDocBtn->setIcon (QIcon(":/Icon/word1"));
-    mTools.push_back (pCreateDocBtn);
-//    auto p = new QPushButton (this);
+
+    QPushButton *pRecordClassBtn = new QPushButton(this);
+    pRecordClassBtn->setFixedSize(22, 22);
+    pRecordClassBtn->clearFocus();
+    pRecordClassBtn->setFlat(true);
+    pRecordClassBtn->setStyleSheet("QPushButton{border-image: url(:/Icon/yb1)} \
+                                   QPushButton:pressed{border-image: url(:/Icon/yb2)} \
+                                   QPushButton:hover{border-image: url(:/Icon/yb2)}");
+
+    connect(pRecordClassBtn, &QPushButton::clicked, this, &NoteWidget::recordClass);
+    mTools.push_back (pRecordClassBtn);
+    //    auto p = new QPushButton (this);
 //    p->setIcon (QIcon(":/Icon/Standard/01_74.png"));
 //    mTools.push_back (p);
 //    for (const auto& t: mTools)
@@ -667,5 +679,51 @@ void NoteWidget::createDoc()
         }
     }
 
-//    pSender->setIcon(QIcon(":/Icon/word1"));
+    //    pSender->setIcon(QIcon(":/Icon/word1"));
+}
+
+void NoteWidget::recordClass()
+{
+    QString dateString = QString(mLinkedLesson->getDate().toString("yyyy-M-d")) + QString("-") + QString::number(mLinkedLesson->section());
+
+    Arg *pArg = Arg::getInstance();
+    QDir rootDir;
+    pArg->getSaveDir(rootDir);
+    QString currentApp = /*Arg::configDir*/rootDir.absolutePath();
+    QString sDirPath = currentApp + "/SaveFile" + "/" + dateString;
+
+    QDir saveDir(sDirPath);
+    if(!saveDir.exists()) {
+        saveDir.mkpath(sDirPath);
+    }
+
+//    sDirPath = QDir::toNativeSeparators(sDirPath);
+
+    Lesson *pEditLesson = mLinkedLesson;
+//        QDateTime curTime = QDateTime::currentDateTime();
+//        int index = curTime.offsetFromUtc();
+    int index = pEditLesson->getResourceCount();
+    QString sDefaultFileName = "DefaultRecord" +  QString::number(index);
+    sDefaultFileName = InputTextWidget::getText(tr("请输入文件名"), sDefaultFileName, this);
+
+    if(sDefaultFileName.trimmed().isEmpty()) {
+//            pSender->setIcon(QIcon(":/Icon/word1"));
+        return;
+    }
+
+    sDirPath = sDirPath + "/";
+    QString sFilePathName = sDirPath + sDefaultFileName;
+    QFileInfo fiInfo(sFilePathName);
+    if(fiInfo.exists()) {
+        QFile::remove(sFilePathName);
+    }
+
+    QStringList args;
+    args.append(sDirPath);
+    args.append(sDefaultFileName);
+    QProcess::startDetached("G:/lukebaiban/xidianvideo.exe", args,"G:/lukebaiban");
+
+    //必须处理成上传可识别的格式.
+    QString sDateFileName = dateString + "/" + sDefaultFileName + ".mp4";
+    emit lessonResourceAddComplete(pEditLesson, sDateFileName, sFilePathName);
 }
