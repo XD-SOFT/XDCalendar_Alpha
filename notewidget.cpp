@@ -712,7 +712,7 @@ void NoteWidget::recordClass()
     }
 
     sDirPath = sDirPath + "/";
-    QString sFilePathName = sDirPath + sDefaultFileName;
+    QString sFilePathName = sDirPath + sDefaultFileName + ".mp4";
     QFileInfo fiInfo(sFilePathName);
     if(fiInfo.exists()) {
         QFile::remove(sFilePathName);
@@ -721,7 +721,13 @@ void NoteWidget::recordClass()
     QStringList args;
     args.append(sDirPath);
     args.append(sDefaultFileName);
-    QProcess::startDetached("G:/lukebaiban/xidianvideo.exe", args,"G:/lukebaiban");
+#ifdef TRUNK_VERSION
+    QString sRecordExePath = QApplication::applicationDirPath() + "/../lukebaiban";
+#else
+    QString sRecordExePath = QApplication::applicationDirPath() + "/lukebaiban";
+#endif
+    QString sRecodFile = sRecordExePath + "/" + "xidianvideo.exe";
+    QProcess::startDetached(sRecodFile, args, sRecordExePath);
 
     //必须处理成上传可识别的格式.
     QString sDateFileName = dateString + "/" + sDefaultFileName + ".mp4";
